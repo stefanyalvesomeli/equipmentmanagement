@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
+  
 <head>
+  <!-- seu CSS continua aqui -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle de Equipamentos</title>
@@ -1111,6 +1117,19 @@
 
 
 <script>
+
+  const SUPABASE_URL =
+  "https://ytnvsoodbzmjsaxkqqcg.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_zLb9jjLBuyhZFwCVZZGz9Q_kplzXoYd";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
 
   const STORAGE_KEY = "sistema_equipamentos_v1";
 
@@ -2781,13 +2800,46 @@
      LOCAL STORAGE
      ===================================================== */
 
-  function salvarDados() {
+  async function salvarEquipamentoNoSupabase(equipamento) {
 
-    localStorage.setItem(
-      "sistemaEquipamentos",
-      JSON.stringify(equipamentos)
+  const registro = {
+    tipo: equipamento.tipo,
+    codigo: equipamento.codigo,
+    nome: equipamento.nome,
+    funcao: equipamento.funcao || null,
+    observacao: equipamento.observacao || null,
+    status: equipamento.status || "Funcionando",
+    quebrado_data:
+      equipamento.quebradoEm?.data || null,
+    quebrado_hora:
+      equipamento.quebradoEm?.hora || null,
+    quebrado_observacao:
+      equipamento.quebradoEm?.observacao || null
+  };
+
+  const { data, error } =
+    await supabaseClient
+      .from("equipamentos")
+      .insert([registro])
+      .select()
+      .single();
+
+  if (error) {
+    console.error(
+      "Erro ao cadastrar:",
+      error
     );
+
+    alert(
+      "Não foi possível salvar o equipamento."
+    );
+
+    return null;
   }
+
+  return data;
+}
+
 
 
   function carregarDados() {
@@ -2999,6 +3051,8 @@
     }
   );
 
+
+  
 </script>
 
 </body>
