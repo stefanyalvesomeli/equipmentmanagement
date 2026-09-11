@@ -6,1132 +6,28 @@
   <!-- seu CSS continua aqui -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controle de Equipamentos</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f5f5f5;
-      color: #333;
-    }
-
-    header {
-      background: #ffe600;
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 28px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.15);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .logo {
-      width: 48px;
-      height: 48px;
-      background: white;
-      border: 3px solid #111;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      font-weight: bold;
-      color: #111;
-    }
-
-    .brand h1 {
-      font-size: 21px;
-      color: #222;
-    }
-
-    .brand span {
-      font-size: 12px;
-      color: #555;
-    }
-
-    .menu-button {
-      display: none;
-      border: 0;
-      background: #111;
-      color: white;
-      padding: 10px 13px;
-      border-radius: 7px;
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    .layout {
-      display: flex;
-      min-height: calc(100vh - 72px);
-    }
-
-    aside {
-      width: 245px;
-      background: #222;
-      color: white;
-      padding: 18px 12px;
-      flex-shrink: 0;
-    }
-
-    aside h2 {
-      font-size: 13px;
-      color: #aaa;
-      margin: 8px 12px 12px;
-      text-transform: uppercase;
-    }
-
-    .nav-btn {
-      width: 100%;
-      display: block;
-      border: 0;
-      background: transparent;
-      color: #eee;
-      text-align: left;
-      padding: 12px;
-      border-radius: 7px;
-      margin-bottom: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .nav-btn:hover,
-    .nav-btn.active {
-      background: #ffe600;
-      color: #222;
-      font-weight: bold;
-    }
-
-    main {
-      flex: 1;
-      padding: 28px;
-      min-width: 0;
-    }
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .page-title {
-      margin-bottom: 20px;
-    }
-
-    .page-title h2 {
-      font-size: 25px;
-      margin-bottom: 5px;
-    }
-
-    .page-title p {
-      color: #777;
-      font-size: 14px;
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 16px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 9px rgba(0,0,0,.08);
-      border-left: 5px solid #ffe600;
-    }
-
-    .card.danger {
-      border-left-color: #e53935;
-    }
-
-    .card h3 {
-      font-size: 14px;
-      color: #777;
-      margin-bottom: 12px;
-    }
-
-    .card .number {
-      font-size: 34px;
-      font-weight: bold;
-      color: #222;
-    }
-
-    .panel {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 9px rgba(0,0,0,.08);
-      margin-bottom: 20px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .form-group.full {
-      grid-column: 1 / -1;
-    }
-
-    label {
-      font-size: 13px;
-      font-weight: bold;
-      color: #555;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      padding: 11px 12px;
-      font-size: 14px;
-      outline: none;
-      background: white;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #111;
-      box-shadow: 0 0 0 2px rgba(255,230,0,.35);
-    }
-
-    textarea {
-      min-height: 80px;
-      resize: vertical;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 15px;
-    }
-
-    button {
-      font-family: inherit;
-    }
-
-    .btn {
-      border: 0;
-      border-radius: 7px;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 13px;
-    }
-
-    .btn-primary {
-      background: #ffe600;
-      color: #222;
-    }
-
-    .btn-primary:hover {
-      background: #f4d900;
-    }
-
-    .btn-dark {
-      background: #222;
-      color: white;
-    }
-
-    .btn-danger {
-      background: #e53935;
-      color: white;
-    }
-
-    .btn-secondary {
-      background: #eee;
-      color: #333;
-    }
-
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-
-    .toolbar input,
-    .toolbar select {
-      max-width: 240px;
-    }
-
-    .table-container {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 700px;
-    }
-
-    th,
-    td {
-      text-align: left;
-      padding: 12px 10px;
-      border-bottom: 1px solid #eee;
-      font-size: 13px;
-      vertical-align: top;
-    }
-
-    th {
-      background: #fafafa;
-      color: #555;
-      font-size: 12px;
-      text-transform: uppercase;
-    }
-
-    tr:hover td {
-      background: #fffdf0;
-    }
-
-    .status {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: bold;
-    }
-
-    .status-ok {
-      background: #d9f7df;
-      color: #19702b;
-    }
-
-    .status-broken {
-      background: #ffdada;
-      color: #a51d1d;
-    }
-
-    .table-actions {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
-
-    .table-actions button {
-      border: 0;
-      border-radius: 5px;
-      padding: 6px 8px;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: bold;
-    }
-
-    .edit-btn {
-      background: #ffe600;
-    }
-
-    .delete-btn {
-      background: #e53935;
-      color: white;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 35px 10px;
-      color: #888;
-    }
-
-    .pagination {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 18px;
-      flex-wrap: wrap;
-    }
-
-    .pagination button {
-      border: 1px solid #ddd;
-      background: white;
-      border-radius: 6px;
-      padding: 8px 11px;
-      cursor: pointer;
-    }
-
-    .pagination button.active {
-      background: #ffe600;
-      border-color: #ffe600;
-      font-weight: bold;
-    }
-
-    .pagination button:disabled {
-      opacity: .4;
-      cursor: not-allowed;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.55);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-box {
-      background: white;
-      width: 100%;
-      max-width: 550px;
-      max-height: 90vh;
-      overflow-y: auto;
-      border-radius: 12px;
-      padding: 22px;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
-    .close-modal {
-      border: 0;
-      background: transparent;
-      font-size: 25px;
-      cursor: pointer;
-    }
-
-    .alert {
-      padding: 12px;
-      border-radius: 7px;
-      margin-bottom: 15px;
-      display: none;
-    }
-
-    .alert.show {
-      display: block;
-    }
-
-    .alert.success {
-      background: #d9f7df;
-      color: #19702b;
-    }
-
-    .alert.error {
-      background: #ffdada;
-      color: #a51d1d;
-    }
-
-    .broken-info {
-      background: #fff3f3;
-      border: 1px solid #ffcaca;
-      border-radius: 8px;
-      padding: 12px;
-      margin-top: 12px;
-      font-size: 13px;
-      color: #8d2525;
-    }
-
-    .footer-note {
-      color: #888;
-      font-size: 12px;
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    @media (max-width: 850px) {
-      .menu-button {
-        display: block;
-      }
-
-      aside {
-        position: fixed;
-        top: 72px;
-        left: -260px;
-        height: calc(100vh - 72px);
-        z-index: 200;
-        transition: left .25s;
-      }
-
-      aside.open {
-        left: 0;
-      }
-
-      main {
-        padding: 18px;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .form-group.full {
-        grid-column: auto;
-      }
-    }
-
-    @media (max-width: 550px) {
-      header {
-        padding: 10px 15px;
-      }
-
-      .brand h1 {
-        font-size: 16px;
-      }
-
-      .brand span {
-        display: none;
-      }
-
-      .logo {
-        width: 40px;
-        height: 40px;
-      }
-
-      .dashboard-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .card {
-        padding: 15px;
-      }
-
-      .card .number {
-        font-size: 28px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-<header>
-  <div class="brand">
-    <div class="logo">ML</div>
-    <div>
-      <h1>Controle de Equipamentos</h1>
-      <span>Gestão de equipamentos</span>
-    </div>
-  </div>
-
-  <button class="menu-button" onclick="toggleMenu()">☰</button>
-</header>
-
-<div class="layout">
-
-  <aside id="sidebar">
-    <h2>Menu</h2>
-
-    <button class="nav-btn active" onclick="showPage('dashboard', this)">
-      📊 Dashboard
-    </button>
-
-    <button class="nav-btn" onclick="showPage('hh', this)">
-      👷 Cadastro de HH
-    </button>
-
-    <button class="nav-btn" onclick="showPage('notebook', this)">
-      💻 Cadastro de Notebook
-    </button>
-
-    <button class="nav-btn" onclick="showPage('radio', this)">
-      📻 Cadastro de Rádio
-    </button>
-
-    <button class="nav-btn" onclick="showPage('carregador', this)">
-      🔌 Cadastro de Carregador
-    </button>
-
-    <button class="nav-btn" onclick="showPage('doisD', this)">
-      ▣ Cadastro de 2D
-    </button>
-
-    <button class="nav-btn" onclick="showPage('impressora', this)">
-      🖨️ Impressora portátil
-    </button>
-
-    <button class="nav-btn" onclick="showPage('quebrados', this)">
-      🔴 Equipamentos Quebrados
-    </button>
-  </aside>
-
-  <main>
-
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="page active">
-
-      <div class="page-title">
-        <h2>Dashboard</h2>
-        <p>Resumo dos equipamentos cadastrados no sistema.</p>
-      </div>
-
-      <div class="dashboard-grid">
-
-        <div class="card">
-          <h3>Total de HH</h3>
-          <div class="number" id="totalHH">0</div>
-        </div>
-
-        <div class="card danger">
-          <h3>Equipamentos Quebrados</h3>
-          <div class="number" id="totalQuebrados">0</div>
-        </div>
-
-        <div class="card">
-          <h3>Notebooks</h3>
-          <div class="number" id="totalNotebook">0</div>
-        </div>
-
-        <div class="card">
-          <h3>Rádios</h3>
-          <div class="number" id="totalRadio">0</div>
-        </div>
-
-        <div class="card">
-          <h3>Carregadores</h3>
-          <div class="number" id="totalCarregador">0</div>
-        </div>
-
-        <div class="card">
-          <h3>Impressoras portáteis</h3>
-          <div class="number" id="totalImpressora">0</div>
-        </div>
-
-        <div class="card">
-          <h3>Equipamentos 2D</h3>
-          <div class="number" id="totalDoisD">0</div>
-        </div>
-
-      </div>
-
-      <div class="panel" style="margin-top:20px;">
-        <h3 style="margin-bottom:10px;">Status do sistema</h3>
-        <p style="font-size:14px;color:#666;">
-          Os dados são armazenados neste navegador automaticamente.
-        </p>
-      </div>
-
-    </section>
-
-
-    <!-- HH -->
-    <section id="hh" class="page">
-
-      <div class="page-title">
-        <h2>Cadastro de HH</h2>
-        <p>Cadastre e gerencie os equipamentos HH.</p>
-      </div>
-
-      <div id="alert-hh" class="alert"></div>
-
-      <div class="panel">
-        <form id="form-hh">
-
-          <div class="form-grid">
-
-            <div class="form-group">
-              <label>Código do equipamento *</label>
-              <input id="hh-codigo" required placeholder="Ex.: HH-001">
-            </div>
-
-            <div class="form-group">
-              <label>Nome *</label>
-              <input id="hh-nome" required placeholder="Nome do equipamento">
-            </div>
-
-            <div class="form-group">
-              <label>Status *</label>
-              <select id="hh-status">
-                <option value="Funcionando">Funcionando</option>
-                <option value="Quebrado">Quebrado</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Observação</label>
-              <input id="hh-observacao" placeholder="Observações">
-            </div>
-
-          </div>
-
-          <div class="actions">
-            <button class="btn btn-primary" type="submit">
-              Cadastrar
-            </button>
-
-            <button class="btn btn-secondary" type="button" onclick="limparForm('hh')">
-              Limpar
-            </button>
-          </div>
-
-        </form>
-      </div>
-
-      <div class="panel">
-        <div class="toolbar">
-          <input id="busca-hh" placeholder="🔎 Buscar código ou nome" oninput="renderPage('hh')">
-        </div>
-
-        <div id="tabela-hh"></div>
-      </div>
-
-    </section>
-
-
-    <!-- NOTEBOOK -->
-    <section id="notebook" class="page">
-
-      <div class="page-title">
-        <h2>Cadastro de Notebook</h2>
-        <p>Cadastre os notebooks e suas respectivas funções.</p>
-      </div>
-
-      <div id="alert-notebook" class="alert"></div>
-
-      <div class="panel">
-        <form id="form-notebook">
-
-          <div class="form-grid">
-
-            <div class="form-group">
-              <label>Código do equipamento *</label>
-              <input id="notebook-codigo" required placeholder="Ex.: NOTE-001">
-            </div>
-
-            <div class="form-group">
-              <label>Nome *</label>
-              <input id="notebook-nome" required placeholder="Nome do equipamento">
-            </div>
-
-            <div class="form-group">
-              <label>Função</label>
-              <input id="notebook-funcao" placeholder="Ex.: Operação">
-            </div>
-
-            <div class="form-group">
-              <label>Status *</label>
-              <select id="notebook-status">
-                <option value="Funcionando">Funcionando</option>
-                <option value="Quebrado">Quebrado</option>
-              </select>
-            </div>
-
-            <div class="form-group full">
-              <label>Observação</label>
-              <textarea id="notebook-observacao" placeholder="Observações"></textarea>
-            </div>
-
-          </div>
-
-          <div class="actions">
-            <button class="btn btn-primary" type="submit">
-              Cadastrar
-            </button>
-
-            <button class="btn btn-secondary" type="button" onclick="limparForm('notebook')">
-              Limpar
-            </button>
-          </div>
-
-        </form>
-      </div>
-
-      <div class="panel">
-        <div class="toolbar">
-          <input id="busca-notebook" placeholder="🔎 Buscar código ou nome" oninput="renderPage('notebook')">
-        </div>
-
-        <div id="tabela-notebook"></div>
-      </div>
-
-    </section>
-
-
-    <!-- RADIO -->
-    <section id="radio" class="page">
-
-      <div class="page-title">
-        <h2>Cadastro de Rádio</h2>
-        <p>Cadastre e gerencie os rádios.</p>
-      </div>
-
-      <div id="alert-radio" class="alert"></div>
-
-      <div class="panel">
-        <form id="form-radio">
-
-          <div class="form-grid">
-
-            <div class="form-group">
-              <label>Código do equipamento *</label>
-              <input id="radio-codigo" required placeholder="Ex.: RAD-001">
-            </div>
-
-            <div class="form-group">
-              <label>Nome *</label>
-              <input id="radio-nome" required placeholder="Nome do equipamento">
-            </div>
-
-            <div class="form-group">
-              <label>Status *</label>
-              <select id="radio-status">
-                <option value="Funcionando">Funcionando</option>
-                <option value="Quebrado">Quebrado</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Observação</label>
-              <input id="radio-observacao" placeholder="Observações">
-            </div>
-
-          </div>
-
-          <div class="actions">
-            <button class="btn btn-primary" type="submit">
-              Cadastrar
-            </button>
-
-            <button class="btn btn-secondary" type="button" onclick="limparForm('radio')">
-              Limpar
-            </button>
-          </div>
-
-        </form>
-      </div>
-
-      <div class="panel">
-        <div class="toolbar">
-          <input id="busca-radio" placeholder="🔎 Buscar código ou nome" oninput="renderPage('radio')">
-        </div>
-
-        <div id="tabela-radio"></div>
-      </div>
-
-    </section>
-
-
-    <!-- CARREGADOR -->
-    <section id="carregador" class="page">
-
-      <div class="page-title">
-        <h2>Cadastro de Carregador</h2>
-        <p>Cadastre e gerencie os carregadores.</p>
-      </div>
-
-      <div id="alert-carregador" class="alert"></div>
-
-      <div class="panel">
-        <form id="form-carregador">
-
-          <div class="form-grid">
-
-            <div class="form-group">
-              <label>Código do equipamento *</label>
-              <input id="carregador-codigo" required placeholder="Ex.: CAR-001">
-            </div>
-
-            <div class="form-group">
-              <label>Nome *</label>
-              <input id="carregador-nome" required placeholder="Nome do equipamento">
-            </div>
-
-            <div class="form-group">
-              <label>Status *</label>
-              <select id="carregador-status">
-                <option value="Funcionando">Funcionando</option>
-                <option value="Quebrado">Quebrado</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Observação</label>
-              <input id="carregador-observacao" placeholder="Observações">
-            </div>
-
-          </div>
-
-          <div class="actions">
-            <button class="btn btn-primary" type="submit">
-              Cadastrar
-            </button>
-
-            <button class="btn btn-secondary" type="button" onclick="limparForm('carregador')">
-              Limpar
-            </button>
-          </div>
-
-        </form>
-      </div>
-
-      <div class="panel">
-        <div class="toolbar">
-          <input id="busca-carregador" placeholder="🔎 Buscar código ou nome" oninput="renderPage('carregador')">
-        </div>
-
-        <div id="tabela-carregador"></div>
-      </div>
-
-    </section>
-
-
-    <!-- 2D -->
-    <section id="doisD" class="page">
-
-      <div class="page-title">
-        <h2>Cadastro de 2D</h2>
-        <p>Cadastre e gerencie os equipamentos 2D.</p>
-      </div>
-
-      <div id="alert-doisD" class="alert"></div>
-
-      <div class="panel">
-        <form id="form-doisD">
-
-          <div class="form-grid">
-
-            <div class="form-group">
-              <label>Código do equipamento *</label>
-              <input id="doisD-codigo" required placeholder="Ex.: 2D-001">
-            </div>
-
-            <div class="form-group">
-              <label>Nome *</label>
-              <input id="doisD-nome" required placeholder="Nome do equipamento">
-            </div>
-
-            <div class="form-group">
-              <label>Status *</label>
-              <select id="doisD-status">
-                <option value="Funcionando">Funcionando</option>
-                <option value="Quebrado">Quebrado</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Observação</label>
-              <input id="doisD-observacao" placeholder="Observações">
-            </div>
-
-          </div>
-
-          <div class="actions">
-            <button class="btn btn-primary" type="submit">
-              Cadastrar
-            </button>
-
-            <button class="btn btn-secondary" type="button" onclick="limparForm('doisD')">
-              Limpar
-            </button>
-          </div>
-
-        </form>
-      </div>
-
-      <div class="panel">
-        <div class="toolbar">
-          <input id="busca-doisD" placeholder="🔎 Buscar código ou nome" oninput="renderPage('doisD')">
-        </div>
-
-        <div id="tabela-doisD"></div>
-      </div>
-
-    </section>
-
-
-    <!-- IMPRESSORA -->
-    <section id="impressora" class="page">
-
-      <div class="page-title">
-        <h2>Cadastro de Impressora portátil</h2>
-        <p>Cadastre e gerencie as impressoras portáteis.</p>
-      </div>
-
-      <div id="alert-impressora" class="alert"></div>
-
-      <div class="panel">
-        <form id="form-impressora">
-
-          <div class="form-grid">
-
-            <div class="form-group">
-              <label>Código do equipamento *</label>
-              <input id="impressora-codigo" required placeholder="Ex.: IMP-001">
-            </div>
-
-            <div class="form-group">
-              <label>Nome *</label>
-              <input id="impressora-nome" required placeholder="Nome do equipamento">
-            </div>
-
-            <div class="form-group">
-              <label>Status *</label>
-              <select id="impressora-status">
-                <option value="Funcionando">Funcionando</option>
-                <option value="Quebrado">Quebrado</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Observação</label>
-              <input id="impressora-observacao" placeholder="Observações">
-            </div>
-
-          </div>
-
-          <div class="actions">
-            <button class="btn btn-primary" type="submit">
-              Cadastrar
-            </button>
-
-            <button class="btn btn-secondary" type="button" onclick="limparForm('impressora')">
-              Limpar
-            </button>
-          </div>
-
-        </form>
-      </div>
-
-      <div class="panel">
-        <div class="toolbar">
-          <input id="busca-impressora" placeholder="🔎 Buscar código ou nome" oninput="renderPage('impressora')">
-        </div>
-
-        <div id="tabela-impressora"></div>
-      </div>
-
-    </section>
-
-
-    <!-- QUEBRADOS -->
-    <section id="quebrados" class="page">
-
-      <div class="page-title">
-        <h2>Equipamentos Quebrados</h2>
-        <p>Controle e histórico dos equipamentos registrados como quebrados.</p>
-      </div>
-
-      <div class="panel">
-
-        <div class="toolbar">
-
-          <input
-            id="busca-quebrados"
-            placeholder="🔎 Buscar código ou nome"
-            oninput="renderBroken()"
-          >
-
-          <input
-            type="date"
-            id="filtro-data"
-            title="Filtrar por data"
-            onchange="renderBroken()"
-          >
-
-          <select id="filtro-mes" onchange="renderBroken()">
-            <option value="">Todos os meses</option>
-            <option value="1">Janeiro</option>
-            <option value="2">Fevereiro</option>
-            <option value="3">Março</option>
-            <option value="4">Abril</option>
-            <option value="5">Maio</option>
-            <option value="6">Junho</option>
-            <option value="7">Julho</option>
-            <option value="8">Agosto</option>
-            <option value="9">Setembro</option>
-            <option value="10">Outubro</option>
-            <option value="11">Novembro</option>
-            <option value="12">Dezembro</option>
-          </select>
-
-          <select id="filtro-ano" onchange="renderBroken()">
-            <option value="">Todos os anos</option>
-          </select>
-
-          <button class="btn btn-secondary" onclick="limparFiltrosBroken()">
-            Limpar filtros
-          </button>
-
-        </div>
-
-        <div id="tabela-quebrados"></div>
-
-      </div>
-
-    </section>
-
-    <div class="footer-note">
-      Sistema de Controle de Equipamentos
-    </div>
-
-  </main>
-</div>
-
-
-<!-- MODAL DE EDIÇÃO -->
-<div class="modal" id="modalEditar">
-
-  <div class="modal-box">
-
-    <div class="modal-header">
-      <h2>Editar equipamento</h2>
-      <button class="close-modal" onclick="fecharModal()">×</button>
-    </div>
-
-    <div id="modalContent"></div>
-
-  </div>
-
-</div>
-
-
-<script>
+ <script>
+
+  /* =========================================================
+     SUPABASE
+     ========================================================= */
 
   const SUPABASE_URL =
-  "https://ytnvsoodbzmjsaxkqqcg.supabase.co";
+    "https://ytnvsoodbzmjsaxkqqcg.supabase.co";
 
-const SUPABASE_KEY =
-  "sb_publishable_zLb9jjLBuyhZFwCVZZGz9Q_kplzXoYd";
+  const SUPABASE_KEY =
+    "COLE_AQUI_SUA_PUBLISHABLE_KEY";
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
 
 
-  const STORAGE_KEY = "sistema_equipamentos_v1";
+  /* =========================================================
+     CONFIGURAÇÕES
+     ========================================================= */
 
   const tipos = [
     "hh",
@@ -1151,7 +47,16 @@ const supabaseClient =
     impressora: "Impressora portátil"
   };
 
-  let dados = carregarDados();
+  const POR_PAGINA = 20;
+
+  let dados = {
+    hh: [],
+    notebook: [],
+    radio: [],
+    carregador: [],
+    doisD: [],
+    impressora: []
+  };
 
   let paginas = {
     hh: 1,
@@ -1163,65 +68,19 @@ const supabaseClient =
     quebrados: 1
   };
 
-  const POR_PAGINA = 20;
 
-
-  function carregarDados() {
-
-    const salvo = localStorage.getItem(STORAGE_KEY);
-
-    if (!salvo) {
-      return {
-        hh: [],
-        notebook: [],
-        radio: [],
-        carregador: [],
-        doisD: [],
-        impressora: []
-      };
-    }
-
-    try {
-      const obj = JSON.parse(salvo);
-
-      tipos.forEach(tipo => {
-        if (!Array.isArray(obj[tipo])) {
-          obj[tipo] = [];
-        }
-      });
-
-      return obj;
-
-    } catch (e) {
-
-      return {
-        hh: [],
-        notebook: [],
-        radio: [],
-        carregador: [],
-        doisD: [],
-        impressora: []
-      };
-
-    }
-  }
-
-
-  function salvarDados() {
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(dados)
-    );
-
-    atualizarDashboard();
-  }
-
+  /* =========================================================
+     UTILIDADES
+     ========================================================= */
 
   function gerarId() {
 
-    return Date.now().toString() +
-      Math.random().toString(16).slice(2);
+    return (
+      Date.now().toString() +
+      Math.random()
+        .toString(16)
+        .slice(2)
+    );
   }
 
 
@@ -1229,27 +88,33 @@ const supabaseClient =
 
     const agora = new Date();
 
-    const ano = agora.getFullYear();
+    const ano =
+      agora.getFullYear();
 
-    const mes = String(
-      agora.getMonth() + 1
-    ).padStart(2, "0");
+    const mes =
+      String(
+        agora.getMonth() + 1
+      ).padStart(2, "0");
 
-    const dia = String(
-      agora.getDate()
-    ).padStart(2, "0");
+    const dia =
+      String(
+        agora.getDate()
+      ).padStart(2, "0");
 
-    const hora = String(
-      agora.getHours()
-    ).padStart(2, "0");
+    const hora =
+      String(
+        agora.getHours()
+      ).padStart(2, "0");
 
-    const minuto = String(
-      agora.getMinutes()
-    ).padStart(2, "0");
+    const minuto =
+      String(
+        agora.getMinutes()
+      ).padStart(2, "0");
 
-    const segundo = String(
-      agora.getSeconds()
-    ).padStart(2, "0");
+    const segundo =
+      String(
+        agora.getSeconds()
+      ).padStart(2, "0");
 
     return {
       data: `${ano}-${mes}-${dia}`,
@@ -1258,9 +123,29 @@ const supabaseClient =
   }
 
 
+  function formatarData(data) {
+
+    if (!data) return "-";
+
+    const partes =
+      String(data).split("-");
+
+    if (partes.length !== 3) {
+      return data;
+    }
+
+    return (
+      `${partes[2]}/${partes[1]}/${partes[0]}`
+    );
+  }
+
+
   function escapeHTML(texto) {
 
-    if (texto === null || texto === undefined) {
+    if (
+      texto === null ||
+      texto === undefined
+    ) {
       return "";
     }
 
@@ -1273,104 +158,28 @@ const supabaseClient =
   }
 
 
-  function showPage(pageId, button) {
-
-    document.querySelectorAll(".page")
-      .forEach(page => {
-        page.classList.remove("active");
-      });
-
-    document.getElementById(pageId)
-      .classList.add("active");
-
-    document.querySelectorAll(".nav-btn")
-      .forEach(btn => {
-        btn.classList.remove("active");
-      });
-
-    if (button) {
-      button.classList.add("active");
-    }
-
-    document.getElementById("sidebar")
-      .classList.remove("open");
-
-    if (pageId === "dashboard") {
-      atualizarDashboard();
-    }
-
-    if (tipos.includes(pageId)) {
-      renderPage(pageId);
-    }
-
-    if (pageId === "quebrados") {
-      preencherAnos();
-      renderBroken();
-    }
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  }
-
-
-  function toggleMenu() {
-
-    document.getElementById("sidebar")
-      .classList.toggle("open");
-  }
-
-
-  function atualizarDashboard() {
-
-    document.getElementById("totalHH").textContent =
-      dados.hh.length;
-
-    document.getElementById("totalNotebook").textContent =
-      dados.notebook.length;
-
-    document.getElementById("totalRadio").textContent =
-      dados.radio.length;
-
-    document.getElementById("totalCarregador").textContent =
-      dados.carregador.length;
-
-    document.getElementById("totalDoisD").textContent =
-      dados.doisD.length;
-
-    document.getElementById("totalImpressora").textContent =
-      dados.impressora.length;
-
-    let quebrados = 0;
-
-    tipos.forEach(tipo => {
-
-      quebrados += dados[tipo]
-        .filter(item => item.status === "Quebrado")
-        .length;
-
-    });
-
-    document.getElementById("totalQuebrados")
-      .textContent = quebrados;
-  }
-
-
-  function mostrarAlerta(tipo, mensagem) {
+  function mostrarAlerta(
+    tipo,
+    mensagem
+  ) {
 
     const elemento =
-      document.getElementById("alert-" + tipo);
+      document.getElementById(
+        "alert-" + tipo
+      );
 
     if (!elemento) return;
 
-    elemento.className = "alert show success";
+    elemento.className =
+      "alert show success";
 
-    elemento.textContent = mensagem;
+    elemento.textContent =
+      mensagem;
 
     setTimeout(() => {
 
-      elemento.className = "alert";
+      elemento.className =
+        "alert";
 
     }, 3000);
   }
@@ -1379,7 +188,9 @@ const supabaseClient =
   function limparForm(tipo) {
 
     const form =
-      document.getElementById("form-" + tipo);
+      document.getElementById(
+        "form-" + tipo
+      );
 
     if (form) {
       form.reset();
@@ -1387,1536 +198,203 @@ const supabaseClient =
   }
 
 
-  function adicionarEquipamento(tipo) {
+  /* =========================================================
+     CONVERSÃO SUPABASE → SISTEMA
+     ========================================================= */
 
-    const codigo =
-      document.getElementById(tipo + "-codigo").value.trim();
+  function converterRegistro(row) {
 
-    const nome =
-      document.getElementById(tipo + "-nome").value.trim();
+    return {
 
-    const status =
-      document.getElementById(tipo + "-status").value;
+      id:
+        String(row.id),
 
-    const observacao =
-      document.getElementById(tipo + "-observacao").value.trim();
+      codigo:
+        row.codigo || "",
 
-    let funcao = "";
+      nome:
+        row.nome || "",
 
-    if (tipo === "notebook") {
+      funcao:
+        row.funcao || "",
 
-      funcao =
-        document.getElementById("notebook-funcao")
-          .value.trim();
+      status:
+        row.status || "Funcionando",
 
-    }
+      observacao:
+        row.observacao || "",
 
-    if (!codigo || !nome) {
-
-      alert("Preencha o código e o nome.");
-
-      return;
-
-    }
-
-    const equipamento = {
-
-      id: gerarId(),
-
-      codigo,
-
-      nome,
-
-      funcao,
-
-      status,
-
-      observacao,
-
-      criadoEm: dataHoraAtual(),
+      criadoEm: {
+        data:
+          row.criado_em
+            ? String(row.criado_em).substring(0, 10)
+            : "",
+        hora:
+          row.criado_em
+            ? String(row.criado_em).substring(11, 19)
+            : ""
+      },
 
       quebradoEm:
-        status === "Quebrado"
-          ? dataHoraAtual()
+        row.quebrado_data
+          ? {
+              data:
+                row.quebrado_data,
+
+              hora:
+                row.quebrado_hora
+                  ? String(
+                      row.quebrado_hora
+                    ).substring(0, 8)
+                  : "",
+
+              observacao:
+                row.quebrado_observacao ||
+                row.observacao ||
+                ""
+            }
           : null
 
     };
-
-    dados[tipo].push(equipamento);
-
-    salvarDados();
-
-    limparForm(tipo);
-
-    paginas[tipo] = 1;
-
-    renderPage(tipo);
-
-    mostrarAlerta(
-      tipo,
-      "Equipamento cadastrado com sucesso!"
-    );
-
-    if (status === "Quebrado") {
-
-      alert(
-        "Equipamento registrado como QUEBRADO.\n" +
-        "A data e hora da quebra foram registradas automaticamente."
-      );
-
-    }
-
   }
 
 
-  function registrarEventosFormularios() {
-
-    tipos.forEach(tipo => {
-
-      const form =
-        document.getElementById("form-" + tipo);
-
-      if (!form) return;
-
-      form.addEventListener(
-        "submit",
-        function(event) {
-
-          event.preventDefault();
-
-          adicionarEquipamento(tipo);
-
-        }
-      );
-
-    });
-
-  }
-
-
-  function obterBusca(tipo) {
-
-    const input =
-      document.getElementById("busca-" + tipo);
-
-    if (!input) return "";
-
-    return input.value
-      .trim()
-      .toLowerCase();
-
-  }
-
-
-  function filtrarDados(tipo) {
-
-    const busca = obterBusca(tipo);
-
-    if (!busca) {
-      return [...dados[tipo]];
-    }
-
-    return dados[tipo].filter(item => {
-
-      return (
-        item.codigo.toLowerCase().includes(busca) ||
-        item.nome.toLowerCase().includes(busca)
-      );
-
-    });
-
-  }
-
-
-  function renderPage(tipo) {
-
-    const container =
-      document.getElementById("tabela-" + tipo);
-
-    if (!container) return;
-
-    const lista =
-      filtrarDados(tipo);
-
-    const totalPaginas =
-      Math.max(
-        1,
-        Math.ceil(lista.length / POR_PAGINA)
-      );
-
-    if (paginas[tipo] > totalPaginas) {
-      paginas[tipo] = totalPaginas;
-    }
-
-    const inicio =
-      (paginas[tipo] - 1) * POR_PAGINA;
-
-    const pagina =
-      lista.slice(
-        inicio,
-        inicio + POR_PAGINA
-      );
-
-    let html = "";
-
-    if (pagina.length === 0) {
-
-      html = `
-        <div class="empty">
-          Nenhum equipamento encontrado.
-        </div>
-      `;
-
-      container.innerHTML = html;
-
-      return;
-
-    }
-
-    html += `
-      <div class="table-container">
-      <table>
-
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Nome</th>
-            ${tipo === "notebook" ? "<th>Função</th>" : ""}
-            <th>Status</th>
-            <th>Observação</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-
-        <tbody>
-    `;
-
-    pagina.forEach(item => {
-
-      html += `
-        <tr>
-
-          <td>
-            <strong>${escapeHTML(item.codigo)}</strong>
-          </td>
-
-          <td>
-            ${escapeHTML(item.nome)}
-          </td>
-
-          ${
-            tipo === "notebook"
-              ? `<td>${escapeHTML(item.funcao || "-")}</td>`
-              : ""
-          }
-
-          <td>
-            <span class="status ${
-              item.status === "Quebrado"
-                ? "status-broken"
-                : "status-ok"
-            }">
-              ${escapeHTML(item.status)}
-            </span>
-          </td>
-
-          <td>
-            ${escapeHTML(item.observacao || "-")}
-          </td>
-
-          <td>
-            <div class="table-actions">
-
-              <button
-                class="edit-btn"
-                onclick="editarEquipamento('${tipo}','${item.id}')">
-                ✏️ Editar
-              </button>
-
-              <button
-                class="delete-btn"
-                onclick="excluirEquipamento('${tipo}','${item.id}')">
-                🗑️ Excluir
-              </button>
-
-            </div>
-          </td>
-
-        </tr>
-      `;
-
-    });
-
-    html += `
-        </tbody>
-      </table>
-      </div>
-    `;
-
-    html += criarPaginacao(
-      tipo,
-      totalPaginas,
-      paginas[tipo],
-      "normal"
-    );
-
-    container.innerHTML = html;
-  }
-
-
-  function criarPaginacao(
-    tipo,
-    total,
-    atual,
-    modo
-  ) {
-
-    if (total <= 1) {
-      return "";
-    }
-
-    let html =
-      `<div class="pagination">`;
-
-    html += `
-      <button
-        onclick="mudarPagina('${tipo}', ${atual - 1}, '${modo}')"
-        ${atual === 1 ? "disabled" : ""}>
-        ← Anterior
-      </button>
-    `;
-
-    for (
-      let i = 1;
-      i <= total;
-      i++
-    ) {
-
-      html += `
-        <button
-          class="${i === atual ? "active" : ""}"
-          onclick="mudarPagina('${tipo}', ${i}, '${modo}')">
-          ${i}
-        </button>
-      `;
-
-    }
-
-    html += `
-      <button
-        onclick="mudarPagina('${tipo}', ${atual + 1}, '${modo}')"
-        ${atual === total ? "disabled" : ""}>
-        Próxima →
-      </button>
-    `;
-
-    html += `</div>`;
-
-    return html;
-  }
-
-
-  function mudarPagina(
-    tipo,
-    pagina,
-    modo
-  ) {
-
-    if (modo === "broken") {
-
-      paginas.quebrados = pagina;
-
-      renderBroken();
-
-      return;
-    }
-
-    paginas[tipo] = pagina;
-
-    renderPage(tipo);
-
-  }
-
-
-  function excluirEquipamento(
-    tipo,
-    id
-  ) {
-
-    const item =
-      dados[tipo].find(
-        equipamento => equipamento.id === id
-      );
-
-    if (!item) return;
-
-    const confirmou =
-      confirm(
-        `Deseja realmente excluir o equipamento "${item.nome}" (${item.codigo})?`
-      );
-
-    if (!confirmou) return;
-
-    dados[tipo] =
-      dados[tipo].filter(
-        equipamento => equipamento.id !== id
-      );
-
-    salvarDados();
-
-    renderPage(tipo);
-
-    alert("Equipamento excluído.");
-
-  }
-
-
-  function editarEquipamento(
-    tipo,
-    id
-  ) {
-
-    const item =
-      dados[tipo].find(
-        equipamento => equipamento.id === id
-      );
-
-    if (!item) return;
-
-    let html = `
-
-      <form id="form-edicao">
-
-        <div class="form-grid">
-
-          <div class="form-group">
-            <label>Código</label>
-            <input
-              id="edit-codigo"
-              value="${escapeHTML(item.codigo)}"
-              required>
-          </div>
-
-          <div class="form-group">
-            <label>Nome</label>
-            <input
-              id="edit-nome"
-              value="${escapeHTML(item.nome)}"
-              required>
-          </div>
-    `;
-
-    if (tipo === "notebook") {
-
-      html += `
-
-        <div class="form-group">
-          <label>Função</label>
-          <input
-            id="edit-funcao"
-            value="${escapeHTML(item.funcao || "")}">
-        </div>
-
-      `;
-
-    }
-
-    html += `
-
-          <div class="form-group">
-            <label>Status</label>
-
-            <select id="edit-status">
-
-              <option
-                value="Funcionando"
-                ${item.status === "Funcionando" ? "selected" : ""}>
-                Funcionando
-              </option>
-
-              <option
-                value="Quebrado"
-                ${item.status === "Quebrado" ? "selected" : ""}>
-                Quebrado
-              </option>
-
-            </select>
-          </div>
-
-          <div class="form-group full">
-
-            <label>Observação</label>
-
-            <textarea
-              id="edit-observacao">${escapeHTML(item.observacao || "")}</textarea>
-
-          </div>
-
-        </div>
-
-        <div class="actions">
-
-          <button
-            type="submit"
-            class="btn btn-primary">
-            Salvar alterações
-          </button>
-
-          <button
-            type="button"
-            class="btn btn-secondary"
-            onclick="fecharModal()">
-            Cancelar
-          </button>
-
-        </div>
-
-      </form>
-    `;
-
-    document.getElementById("modalContent")
-      .innerHTML = html;
-
-    document.getElementById("modalEditar")
-      .classList.add("show");
-
-    document.getElementById("form-edicao")
-      .addEventListener(
-        "submit",
-        function(event) {
-
-          event.preventDefault();
-
-          const novoStatus =
-            document.getElementById("edit-status").value;
-
-          const statusAnterior =
-            item.status;
-
-          item.codigo =
-            document.getElementById("edit-codigo")
-              .value.trim();
-
-          item.nome =
-            document.getElementById("edit-nome")
-              .value.trim();
-
-          if (tipo === "notebook") {
-
-            item.funcao =
-              document.getElementById("edit-funcao")
-                .value.trim();
-
-          }
-
-          item.status =
-            novoStatus;
-
-          item.observacao =
-            document.getElementById("edit-observacao")
-              .value.trim();
-
-          if (
-            statusAnterior !== "Quebrado" &&
-            novoStatus === "Quebrado"
-          ) {
-
-            item.quebradoEm =
-              dataHoraAtual();
-
-          }
-
-          if (
-            statusAnterior === "Quebrado" &&
-            novoStatus === "Funcionando"
-          ) {
-
-            item.quebradoEm = null;
-
-          }
-
-          salvarDados();
-
-          fecharModal();
-
-          renderPage(tipo);
-
-          if (
-            document.getElementById("quebrados")
-              .classList.contains("active")
-          ) {
-
-            renderBroken();
-
-          }
-
-          alert(
-            "Alterações salvas com sucesso!"
-          );
-
-        }
-      );
-
-  }
-
-
-  function fecharModal() {
-
-    document.getElementById("modalEditar")
-      .classList.remove("show");
-
-  }
-
-
-  window.addEventListener(
-    "click",
-    function(event) {
-
-      const modal =
-        document.getElementById("modalEditar");
-
-      if (event.target === modal) {
-
-        fecharModal();
-
-      }
-
-    }
-  );
-
-
-  function obterQuebrados() {
-
-    let resultado = [];
-
-    tipos.forEach(tipo => {
-
-      dados[tipo].forEach(item => {
-
-        if (item.status === "Quebrado") {
-
-          resultado.push({
-            ...item,
-            tipo
-          });
-
-        }
-
-      });
-
-    });
-
-    resultado.sort(
-      (a, b) => {
-
-        const dataA =
-          a.quebradoEm
-            ? `${a.quebradoEm.data} ${a.quebradoEm.hora}`
-            : "";
-
-        const dataB =
-          b.quebradoEm
-            ? `${b.quebradoEm.data} ${b.quebradoEm.hora}`
-            : "";
-
-        return dataB.localeCompare(dataA);
-
-      }
-    );
-
-    return resultado;
-
-  }
-
-
-  function filtrarQuebrados() {
-
-    const busca =
-      document.getElementById(
-        "busca-quebrados"
-      ).value
-        .trim()
-        .toLowerCase();
-
-    const data =
-      document.getElementById(
-        "filtro-data"
-      ).value;
-
-    const mes =
-      document.getElementById(
-        "filtro-mes"
-      ).value;
-
-    const ano =
-      document.getElementById(
-        "filtro-ano"
-      ).value;
-
-    let lista =
-      obterQuebrados();
-
-    lista =
-      lista.filter(item => {
-
-        const codigo =
-          item.codigo.toLowerCase();
-
-        const nome =
-          item.nome.toLowerCase();
-
-        if (
-          busca &&
-          !codigo.includes(busca) &&
-          !nome.includes(busca)
-        ) {
-
-          return false;
-
-        }
-
-        if (
-          data &&
-          (!item.quebradoEm ||
-           item.quebradoEm.data !== data)
-        ) {
-
-          return false;
-
-        }
-
-        if (
-          mes &&
-          (!item.quebradoEm ||
-           Number(
-             item.quebradoEm.data.split("-")[1]
-           ) !== Number(mes))
-        ) {
-
-          return false;
-
-        }
-
-        if (
-          ano &&
-          (!item.quebradoEm ||
-           Number(
-             item.quebradoEm.data.split("-")[0]
-           ) !== Number(ano))
-        ) {
-
-          return false;
-
-        }
-
-        return true;
-
-      });
-
-    return lista;
-
-  }
-
-
-  function renderBroken() {
-
-    const container =
-      document.getElementById(
-        "tabela-quebrados"
-      );
-
-    if (!container) return;
-
-    const lista =
-      filtrarQuebrados();
-
-    const totalPaginas =
-      Math.max(
-        1,
-        Math.ceil(
-          lista.length / POR_PAGINA
-        )
-      );
-
-    if (
-      paginas.quebrados >
-      totalPaginas
-    ) {
-
-      paginas.quebrados =
-        totalPaginas;
-
-    }
-
-    const inicio =
-      (paginas.quebrados - 1)
-      * POR_PAGINA;
-
-    const pagina =
-      lista.slice(
-        inicio,
-        inicio + POR_PAGINA
-      );
-
-    if (pagina.length === 0) {
-
-      container.innerHTML = `
-        <div class="empty">
-          Nenhum equipamento quebrado encontrado
-          com os filtros selecionados.
-        </div>
-      `;
-
-      return;
-
-    }
-
-    let html = `
-
-      <div class="table-container">
-
-      <table>
-
-        <thead>
-
-          <tr>
-            <th>Equipamento</th>
-            <th>Código</th>
-            <th>Nome</th>
-            <th>Data da quebra</th>
-            <th>Hora</th>
-            <th>Observação</th>
-            <th>Ações</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-    `;
-
-    pagina.forEach(item => {
-
-      html += `
-
-        <tr>
-
-          <td>
-            <strong>
-              ${escapeHTML(
-                nomesTipos[item.tipo]
-              )}
-            </strong>
-          </td>
-
-          <td>
-            ${escapeHTML(item.codigo)}
-          </td>
-
-          <td>
-            ${escapeHTML(item.nome)}
-          </td>
-
-          <td>
-            ${
-              item.quebradoEm
-                ? formatarData(
-                    item.quebradoEm.data
-                  )
-                : "-"
-            }
-          </td>
-
-          <td>
-            ${
-              item.quebradoEm
-                ? escapeHTML(
-                    item.quebradoEm.hora
-                  )
-                : "-"
-            }
-          </td>
-
-          <td>
-            ${escapeHTML(
-              item.observacao || "-"
-            )}
-          </td>
-          <td>
-
-            <div class="actions">
-
-              <button
-                class="btn btn-edit"
-                onclick="editarQuebrado('${item.id}')"
-                title="Editar"
-              >
-                ✏️ Editar
-              </button>
-
-              <button
-                class="btn btn-delete"
-                onclick="excluirQuebrado('${item.id}')"
-                title="Excluir"
-              >
-                🗑️ Excluir
-              </button>
-
-            </div>
-
-          </td>
-
-        </tr>
-      `;
-    }).join("");
-
-    tbody.innerHTML = linhas || `
-      <tr>
-        <td colspan="8" class="empty-state">
-          Nenhum equipamento quebrado encontrado.
-        </td>
-      </tr>
-    `;
-
-    atualizarPaginacaoQuebrados();
-  }
-
-  function atualizarPaginacaoQuebrados() {
-
-    const container = document.getElementById(
-      "paginacaoQuebrados"
-    );
-
-    if (!container) return;
-
-    const totalPaginas = Math.ceil(
-      quebradosFiltrados.length / ITENS_POR_PAGINA
-    );
-
-    if (totalPaginas <= 1) {
-      container.innerHTML = "";
-      return;
-    }
-
-    let html = "";
-
-    html += `
-      <button
-        class="pagination-btn"
-        onclick="mudarPaginaQuebrados(${paginaQuebrados - 1})"
-        ${paginaQuebrados === 1 ? "disabled" : ""}
-      >
-        ‹ Anterior
-      </button>
-    `;
-
-    for (let i = 1; i <= totalPaginas; i++) {
-
-      html += `
-        <button
-          class="pagination-btn ${
-            i === paginaQuebrados ? "active" : ""
-          }"
-          onclick="mudarPaginaQuebrados(${i})"
-        >
-          ${i}
-        </button>
-      `;
-    }
-
-    html += `
-      <button
-        class="pagination-btn"
-        onclick="mudarPaginaQuebrados(${paginaQuebrados + 1})"
-        ${paginaQuebrados === totalPaginas ? "disabled" : ""}
-      >
-        Próxima ›
-      </button>
-    `;
-
-    container.innerHTML = html;
-  }
-
-  function mudarPaginaQuebrados(pagina) {
-
-    const totalPaginas = Math.ceil(
-      quebradosFiltrados.length / ITENS_POR_PAGINA
-    );
-
-    if (pagina < 1 || pagina > totalPaginas) {
-      return;
-    }
-
-    paginaQuebrados = pagina;
-
-    renderizarQuebrados();
-  }
-
-  function filtrarQuebrados() {
-
-    const busca =
-      document.getElementById("buscaQuebrados")
-        ?.value
-        .toLowerCase()
-        .trim() || "";
-
-    const data =
-      document.getElementById("filtroDataQuebrados")
-        ?.value || "";
-
-    const mes =
-      document.getElementById("filtroMesQuebrados")
-        ?.value || "";
-
-    const ano =
-      document.getElementById("filtroAnoQuebrados")
-        ?.value || "";
-
-    quebradosFiltrados = equipamentos.filter(item => {
-
-      if (!item.quebradoEm) {
-        return false;
-      }
-
-      const texto = `
-        ${item.tipo || ""}
-        ${item.codigo || ""}
-        ${item.nome || ""}
-        ${item.observacao || ""}
-      `.toLowerCase();
-
-      if (
-        busca &&
-        !texto.includes(busca)
-      ) {
-        return false;
-      }
-
-      const dataQuebra =
-        item.quebradoEm.data || "";
-
-      if (
-        data &&
-        dataQuebra !== data
-      ) {
-        return false;
-      }
-
-      if (mes) {
-
-        const mesQuebra =
-          dataQuebra.substring(5, 7);
-
-        if (mesQuebra !== mes) {
-          return false;
-        }
-      }
-
-      if (ano) {
-
-        const anoQuebra =
-          dataQuebra.substring(0, 4);
-
-        if (anoQuebra !== ano) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-
-    paginaQuebrados = 1;
-
-    renderizarQuebrados();
-  }
-
-  function editarQuebrado(id) {
-
-    const equipamento =
-      equipamentos.find(
-        item => String(item.id) === String(id)
-      );
-
-    if (!equipamento) {
-      alert("Equipamento não encontrado.");
-      return;
-    }
-
-    equipamentoEmEdicao = equipamento;
-
-    document.getElementById(
-      "modalQuebrado"
-    ).classList.add("show");
-
-    document.getElementById(
-      "quebradoCodigo"
-    ).value = equipamento.codigo || "";
-
-    document.getElementById(
-      "quebradoNome"
-    ).value = equipamento.nome || "";
-
-    document.getElementById(
-      "quebradoTipo"
-    ).value = equipamento.tipo || "";
-
-    document.getElementById(
-      "quebradoObservacao"
-    ).value =
-      equipamento.quebradoEm?.observacao ||
-      equipamento.observacao ||
-      "";
-
-    document.getElementById(
-      "quebradoData"
-    ).value =
-      equipamento.quebradoEm?.data || "";
-
-    document.getElementById(
-      "quebradoHora"
-    ).value =
-      equipamento.quebradoEm?.hora || "";
-  }
-
-  function fecharModalQuebrado() {
-
-    const modal =
-      document.getElementById(
-        "modalQuebrado"
-      );
-
-    if (modal) {
-      modal.classList.remove("show");
-    }
-
-    equipamentoEmEdicao = null;
-  }
-
-  function salvarEdicaoQuebrado(event) {
-
-    event.preventDefault();
-
-    if (!equipamentoEmEdicao) {
-      return;
-    }
-
-    const observacao =
-      document.getElementById(
-        "quebradoObservacao"
-      ).value.trim();
-
-    const data =
-      document.getElementById(
-        "quebradoData"
-      ).value;
-
-    const hora =
-      document.getElementById(
-        "quebradoHora"
-      ).value;
-
-    equipamentoEmEdicao.quebradoEm = {
-      data: data,
-      hora: hora,
-      observacao: observacao
-    };
-
-    equipamentoEmEdicao.observacao =
-      observacao;
-
-    equipamentoEmEdicao.status =
-      "Quebrado";
-
-    salvarDados();
-
-    fecharModalQuebrado();
-
-    filtrarQuebrados();
-
-    atualizarDashboard();
-
-    alert(
-      "Equipamento atualizado com sucesso!"
-    );
-  }
-
-  function excluirQuebrado(id) {
-
-    const equipamento =
-      equipamentos.find(
-        item => String(item.id) === String(id)
-      );
-
-    if (!equipamento) {
-      return;
-    }
-
-    const confirmar = confirm(
-      `Deseja excluir o registro do equipamento "${equipamento.nome}"?`
-    );
-
-    if (!confirmar) {
-      return;
-    }
-
-    equipamentos =
-      equipamentos.filter(
-        item =>
-          String(item.id) !== String(id)
-      );
-
-    salvarDados();
-
-    filtrarQuebrados();
-
-    atualizarDashboard();
-
-    alert(
-      "Equipamento excluído com sucesso!"
-    );
-  }
-
-  function limparFiltrosQuebrados() {
-
-    const busca =
-      document.getElementById(
-        "buscaQuebrados"
-      );
-
-    const data =
-      document.getElementById(
-        "filtroDataQuebrados"
-      );
-
-    const mes =
-      document.getElementById(
-        "filtroMesQuebrados"
-      );
-
-    const ano =
-      document.getElementById(
-        "filtroAnoQuebrados"
-      );
-
-    if (busca) busca.value = "";
-    if (data) data.value = "";
-    if (mes) mes.value = "";
-    if (ano) ano.value = "";
-
-    paginaQuebrados = 1;
-
-    filtrarQuebrados();
-  }
-
-
-  /* =====================================================
-     CADASTRO DE EQUIPAMENTOS
-     ===================================================== */
-
-  function cadastrarEquipamento(tipo) {
-
-    const prefixos = {
-      HH: "HH",
-      Notebook: "NOTE",
-      Rádio: "RAD",
-      Carregador: "CAR",
-      "2D": "2D",
-      "Impressora portátil": "IMP"
-    };
-
-    const nomeInput =
-      document.getElementById("nomeEquipamento");
-
-    const codigoInput =
-      document.getElementById("codigoEquipamento");
-
-    const observacaoInput =
-      document.getElementById("observacaoEquipamento");
-
-    const statusInput =
-      document.getElementById("statusEquipamento");
-
-    const funcaoInput =
-      document.getElementById("funcaoNotebook");
-
-    const nome =
-      nomeInput?.value.trim() || "";
-
-    const codigo =
-      codigoInput?.value.trim() || "";
-
-    const observacao =
-      observacaoInput?.value.trim() || "";
-
-    const status =
-      statusInput?.value || "Funcionando";
-
-    const funcao =
-      funcaoInput?.value.trim() || "";
-
-    if (!codigo) {
-      alert("Informe o código do equipamento.");
-      codigoInput?.focus();
-      return;
-    }
-
-    if (!nome) {
-      alert("Informe o nome.");
-      nomeInput?.focus();
-      return;
-    }
-
-    const equipamentoExistente =
-      equipamentos.find(
-        item =>
-          item.codigo.toLowerCase() ===
-          codigo.toLowerCase()
-      );
-
-    if (equipamentoExistente) {
-      alert(
-        "Já existe um equipamento cadastrado com este código."
-      );
-      codigoInput?.focus();
-      return;
-    }
-
-    const agora = new Date();
-
-    const novoEquipamento = {
-      id: Date.now().toString(),
-      tipo: tipo,
-      codigo: codigo,
-      nome: nome,
-      funcao:
-        tipo === "Notebook"
-          ? funcao
-          : "",
-      observacao: observacao,
-      status: status
-    };
-
-    if (status === "Quebrado") {
-
-      novoEquipamento.quebradoEm = {
-        data: formatarData(agora),
-        hora: formatarHora(agora),
-        observacao: observacao
-      };
-    }
-
-    equipamentos.push(
-      novoEquipamento
-    );
-
-    salvarDados();
-
-    limparFormularioEquipamento();
-
-    atualizarDashboard();
-
-    renderizarTabelaAtual();
-
-    if (status === "Quebrado") {
-      filtrarQuebrados();
-    }
-
-    alert(
-      "Equipamento cadastrado com sucesso!"
-    );
-  }
-
-
-  function formatarData(data) {
-
-    const ano =
-      data.getFullYear();
-
-    const mes =
-      String(
-        data.getMonth() + 1
-      ).padStart(2, "0");
-
-    const dia =
-      String(
-        data.getDate()
-      ).padStart(2, "0");
-
-    return `${ano}-${mes}-${dia}`;
-  }
-
-
-  function formatarHora(data) {
-
-    const hora =
-      String(
-        data.getHours()
-      ).padStart(2, "0");
-
-    const minuto =
-      String(
-        data.getMinutes()
-      ).padStart(2, "0");
-
-    const segundo =
-      String(
-        data.getSeconds()
-      ).padStart(2, "0");
-
-    return `${hora}:${minuto}:${segundo}`;
-  }
-
-
-  function limparFormularioEquipamento() {
-
-    const campos = [
-      "codigoEquipamento",
-      "nomeEquipamento",
-      "observacaoEquipamento",
-      "funcaoNotebook"
-    ];
-
-    campos.forEach(id => {
-
-      const campo =
-        document.getElementById(id);
-
-      if (campo) {
-        campo.value = "";
-      }
-    });
-
-    const status =
-      document.getElementById(
-        "statusEquipamento"
-      );
-
-    if (status) {
-      status.value = "Funcionando";
-    }
-  }
-
-
-  /* =====================================================
-     LOCAL STORAGE
-     ===================================================== */
-
-  async function salvarEquipamentoNoSupabase(equipamento) {
-
-  const registro = {
-    tipo: equipamento.tipo,
-    codigo: equipamento.codigo,
-    nome: equipamento.nome,
-    funcao: equipamento.funcao || null,
-    observacao: equipamento.observacao || null,
-    status: equipamento.status || "Funcionando",
-    quebrado_data:
-      equipamento.quebradoEm?.data || null,
-    quebrado_hora:
-      equipamento.quebradoEm?.hora || null,
-    quebrado_observacao:
-      equipamento.quebradoEm?.observacao || null
-  };
-
-  const { data, error } =
-    await supabaseClient
-      .from("equipamentos")
-      .insert([registro])
-      .select()
-      .single();
-
-  if (error) {
-    console.error(
-      "Erro ao cadastrar:",
-      error
-    );
-
-    alert(
-      "Não foi possível salvar o equipamento."
-    );
-
-    return null;
-  }
-
-  return data;
-}
-
-
-
-  function carregarDados() {
-
-    const dados =
-      localStorage.getItem(
-        "sistemaEquipamentos"
-      );
-
-    if (!dados) {
-      equipamentos = [];
-      return;
-    }
+  /* =========================================================
+     CARREGAR TODOS OS EQUIPAMENTOS DO SUPABASE
+     ========================================================= */
+
+  async function carregarDados() {
 
     try {
 
-      equipamentos =
-        JSON.parse(dados);
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("equipamentos")
+          .select("*")
+          .order(
+            "criado_em",
+            {
+              ascending: false
+            }
+          );
 
-      if (!Array.isArray(equipamentos)) {
-        equipamentos = [];
+      if (error) {
+        throw error;
       }
 
-    } catch (erro) {
+      dados = {
+        hh: [],
+        notebook: [],
+        radio: [],
+        carregador: [],
+        doisD: [],
+        impressora: []
+      };
+
+      (data || []).forEach(row => {
+
+        const equipamento =
+          converterRegistro(row);
+
+        if (
+          tipos.includes(row.tipo)
+        ) {
+
+          dados[row.tipo].push(
+            equipamento
+          );
+
+        }
+
+      });
+
+      atualizarDashboard();
+
+      tipos.forEach(tipo => {
+
+        const pagina =
+          document.getElementById(
+            tipo
+          );
+
+        if (
+          pagina &&
+          pagina.classList.contains("active")
+        ) {
+          renderPage(tipo);
+        }
+
+      });
+
+      const paginaQuebrados =
+        document.getElementById(
+          "quebrados"
+        );
+
+      if (
+        paginaQuebrados &&
+        paginaQuebrados.classList.contains(
+          "active"
+        )
+      ) {
+
+        preencherAnos();
+
+        renderBroken();
+      }
+
+    } catch (error) {
 
       console.error(
-        "Erro ao carregar dados:",
-        erro
+        "Erro ao carregar dados do Supabase:",
+        error
       );
 
-      equipamentos = [];
+      alert(
+        "Não foi possível carregar os equipamentos do banco de dados."
+      );
     }
   }
 
 
-  /* =====================================================
+  /* =========================================================
      DASHBOARD
-     ===================================================== */
+     ========================================================= */
 
   function atualizarDashboard() {
 
     const totalHH =
-      equipamentos.filter(
-        item => item.tipo === "HH"
-      ).length;
+      dados.hh.length;
 
     const totalNotebook =
-      equipamentos.filter(
-        item => item.tipo === "Notebook"
-      ).length;
+      dados.notebook.length;
 
     const totalRadio =
-      equipamentos.filter(
-        item => item.tipo === "Rádio"
-      ).length;
+      dados.radio.length;
 
     const totalCarregador =
-      equipamentos.filter(
-        item => item.tipo === "Carregador"
-      ).length;
+      dados.carregador.length;
 
-    const total2D =
-      equipamentos.filter(
-        item => item.tipo === "2D"
-      ).length;
+    const totalDoisD =
+      dados.doisD.length;
 
     const totalImpressora =
-      equipamentos.filter(
-        item =>
-          item.tipo === "Impressora portátil"
-      ).length;
+      dados.impressora.length;
 
-    const totalQuebrados =
-      equipamentos.filter(
-        item =>
-          item.status === "Quebrado"
-      ).length;
+    let totalQuebrados = 0;
+
+    tipos.forEach(tipo => {
+
+      totalQuebrados +=
+        dados[tipo].filter(
+          item =>
+            item.status === "Quebrado"
+        ).length;
+
+    });
 
     atualizarNumero(
       "totalHH",
@@ -2939,8 +417,13 @@ const supabaseClient =
     );
 
     atualizarNumero(
+      "totalDoisD",
+      totalDoisD
+    );
+
+    atualizarNumero(
       "total2D",
-      total2D
+      totalDoisD
     );
 
     atualizarNumero(
@@ -2955,7 +438,12 @@ const supabaseClient =
 
     atualizarNumero(
       "totalEquipamentos",
-      equipamentos.length
+      totalHH +
+      totalNotebook +
+      totalRadio +
+      totalCarregador +
+      totalDoisD +
+      totalImpressora
     );
   }
 
@@ -2969,87 +457,6169 @@ const supabaseClient =
       document.getElementById(id);
 
     if (elemento) {
-      elemento.textContent = valor;
+      elemento.textContent =
+        valor;
     }
   }
 
 
-  /* =====================================================
-     SEGURANÇA
-     ===================================================== */
+  /* =========================================================
+     NAVEGAÇÃO
+     ========================================================= */
 
-  function escapeHTML(valor) {
+  function showPage(
+    pageId,
+    button
+  ) {
 
-    if (valor === null ||
-        valor === undefined) {
-      return "";
+    document
+      .querySelectorAll(".page")
+      .forEach(page => {
+
+        page.classList.remove(
+          "active"
+        );
+
+      });
+
+    const pagina =
+      document.getElementById(
+        pageId
+      );
+
+    if (pagina) {
+
+      pagina.classList.add(
+        "active"
+      );
+
     }
 
-    return String(valor)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
+    document
+      .querySelectorAll(".nav-btn")
+      .forEach(btn => {
 
+        btn.classList.remove(
+          "active"
+        );
 
-  /* =====================================================
-     INICIALIZAÇÃO
-     ===================================================== */
+      });
 
-  document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+    if (button) {
 
-      carregarDados();
+      button.classList.add(
+        "active"
+      );
+
+    }
+
+    const sidebar =
+      document.getElementById(
+        "sidebar"
+      );
+
+    if (sidebar) {
+
+      sidebar.classList.remove(
+        "open"
+      );
+
+    }
+
+    if (
+      pageId ===
+      "dashboard"
+    ) {
 
       atualizarDashboard();
 
-      renderizarTabelaAtual();
+    }
 
-      filtrarQuebrados();
+    if (
+      tipos.includes(pageId)
+    ) {
 
-      const formulario =
+      paginas[pageId] = 1;
+
+      renderPage(
+        pageId
+      );
+
+    }
+
+    if (
+      pageId ===
+      "quebrados"
+    ) {
+
+      preencherAnos();
+
+      paginas.quebrados = 1;
+
+      renderBroken();
+
+    }
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+
+  function toggleMenu() {
+
+    const sidebar =
+      document.getElementById(
+        "sidebar"
+      );
+
+    if (sidebar) {
+
+      sidebar.classList.toggle(
+        "open"
+      );
+
+    }
+  }
+
+
+  /* =========================================================
+     CADASTRAR
+     ========================================================= */
+
+  async function adicionarEquipamento(
+    tipo
+  ) {
+
+    const codigoInput =
+      document.getElementById(
+        tipo + "-codigo"
+      );
+
+    const nomeInput =
+      document.getElementById(
+        tipo + "-nome"
+      );
+
+    const statusInput =
+      document.getElementById(
+        tipo + "-status"
+      );
+
+    const observacaoInput =
+      document.getElementById(
+        tipo + "-observacao"
+      );
+
+    if (
+      !codigoInput ||
+      !nomeInput ||
+      !statusInput ||
+      !observacaoInput
+    ) {
+
+      alert(
+        "Não foi possível localizar os campos do formulário."
+      );
+
+      return;
+    }
+
+    const codigo =
+      codigoInput.value.trim();
+
+    const nome =
+      nomeInput.value.trim();
+
+    const status =
+      statusInput.value;
+
+    const observacao =
+      observacaoInput.value.trim();
+
+    let funcao = "";
+
+    if (
+      tipo ===
+      "notebook"
+    ) {
+
+      const funcaoInput =
         document.getElementById(
-          "formEquipamento"
+          "notebook-funcao"
         );
 
-      if (formulario) {
+      if (funcaoInput) {
 
-        formulario.addEventListener(
-          "submit",
-          function(event) {
+        funcao =
+          funcaoInput.value.trim();
 
-            event.preventDefault();
-
-            const tipo =
-              document.getElementById(
-                "tipoEquipamento"
-              )?.value;
-
-            if (tipo) {
-              cadastrarEquipamento(tipo);
-            }
-          }
-        );
       }
 
-      const formularioQuebrado =
+    }
+
+    if (!codigo) {
+
+      alert(
+        "Preencha o código do equipamento."
+      );
+
+      codigoInput.focus();
+
+      return;
+    }
+
+    if (!nome) {
+
+      alert(
+        "Preencha o nome."
+      );
+
+      nomeInput.focus();
+
+      return;
+    }
+
+
+    /* Verifica código duplicado no banco */
+
+    try {
+
+      const {
+        data: existente,
+        error: erroBusca
+      } =
+        await supabaseClient
+          .from("equipamentos")
+          .select("id")
+          .eq(
+            "codigo",
+            codigo
+          )
+          .maybeSingle();
+
+      if (erroBusca) {
+        throw erroBusca;
+      }
+
+      if (existente) {
+
+        alert(
+          "Já existe um equipamento cadastrado com este código."
+        );
+
+        codigoInput.focus();
+
+        return;
+      }
+
+
+      const quebra =
+        status === "Quebrado"
+          ? dataHoraAtual()
+          : null;
+
+
+      const registro = {
+
+        tipo:
+          tipo,
+
+        codigo:
+          codigo,
+
+        nome:
+          nome,
+
+        funcao:
+          tipo === "notebook"
+            ? funcao || null
+            : null,
+
+        observacao:
+          observacao || null,
+
+        status:
+          status,
+
+        quebrado_data:
+          quebra
+            ? quebra.data
+            : null,
+
+        quebrado_hora:
+          quebra
+            ? quebra.hora
+            : null,
+
+        quebrado_observacao:
+          quebra
+            ? observacao || null
+            : null
+
+      };
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("equipamentos")
+          .insert([
+            registro
+          ])
+          .select()
+          .single();
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      /* Adiciona imediatamente à memória */
+
+      const novo =
+        converterRegistro(
+          data
+        );
+
+      dados[tipo].unshift(
+        novo
+      );
+
+
+      atualizarDashboard();
+
+      limparForm(tipo);
+
+      paginas[tipo] = 1;
+
+      renderPage(tipo);
+
+
+      mostrarAlerta(
+        tipo,
+        "Equipamento cadastrado com sucesso!"
+      );
+
+
+      if (
+        status ===
+        "Quebrado"
+      ) {
+
+        alert(
+          "Equipamento registrado como QUEBRADO.\n\n" +
+          "A data e a hora da quebra foram registradas automaticamente."
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Erro ao cadastrar equipamento:",
+        error
+      );
+
+      alert(
+        "Erro ao cadastrar equipamento no banco de dados.\n\n" +
+        (error.message || "Verifique sua conexão.")
+      );
+    }
+  }
+
+
+  /* =========================================================
+     FORMULÁRIOS
+     ========================================================= */
+
+  function registrarEventosFormularios() {
+
+    tipos.forEach(tipo => {
+
+      const form =
         document.getElementById(
-          "formEditarQuebrado"
+          "form-" + tipo
         );
 
-      if (formularioQuebrado) {
+      if (!form) return;
 
-        formularioQuebrado.addEventListener(
-          "submit",
-          salvarEdicaoQuebrado
+      form.addEventListener(
+        "submit",
+        function(event) {
+
+          event.preventDefault();
+
+          adicionarEquipamento(
+            tipo
+          );
+
+        }
+      );
+
+    });
+  }
+
+
+  /* =========================================================
+     BUSCA DOS CADASTROS
+     ========================================================= */
+
+  function obterBusca(
+    tipo
+  ) {
+
+    const input =
+      document.getElementById(
+        "busca-" + tipo
+      );
+
+    if (!input) {
+      return "";
+    }
+
+    return input.value
+      .trim()
+      .toLowerCase();
+  }
+
+
+  function filtrarDados(
+    tipo
+  ) {
+
+    const busca =
+      obterBusca(tipo);
+
+    if (!busca) {
+
+      return [
+        ...dados[tipo]
+      ];
+
+    }
+
+    return dados[tipo]
+      .filter(item => {
+
+        return (
+
+          String(
+            item.codigo || ""
+          )
+            .toLowerCase()
+            .includes(busca)
+
+          ||
+
+          String(
+            item.nome || ""
+          )
+            .toLowerCase()
+            .includes(busca)
+
+          ||
+
+          String(
+            item.observacao || ""
+          )
+            .toLowerCase()
+            .includes(busca)
+
         );
+
+      });
+  }
+
+
+  /* =========================================================
+     RENDERIZAÇÃO DOS CADASTROS
+     ========================================================= */
+
+  function renderPage(
+    tipo
+  ) {
+
+    const container =
+      document.getElementById(
+        "tabela-" + tipo
+      );
+
+    if (!container) {
+      return;
+    }
+
+    const lista =
+      filtrarDados(tipo);
+
+    const totalPaginas =
+      Math.max(
+        1,
+        Math.ceil(
+          lista.length /
+          POR_PAGINA
+        )
+      );
+
+    if (
+      paginas[tipo] >
+      totalPaginas
+    ) {
+
+      paginas[tipo] =
+        totalPaginas;
+
+    }
+
+    const inicio =
+      (
+        paginas[tipo] - 1
+      ) *
+      POR_PAGINA;
+
+    const pagina =
+      lista.slice(
+        inicio,
+        inicio + POR_PAGINA
+      );
+
+
+    if (
+      pagina.length === 0
+    ) {
+
+      container.innerHTML = `
+        <div class="empty">
+          Nenhum equipamento encontrado.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    let html = `
+
+      <div class="table-container">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>Código</th>
+
+              <th>Nome</th>
+
+              ${
+                tipo === "notebook"
+                  ? "<th>Função</th>"
+                  : ""
+              }
+
+              <th>Status</th>
+
+              <th>Observação</th>
+
+              <th>Ações</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+    `;
+
+
+    pagina.forEach(item => {
+
+      html += `
+
+        <tr>
+
+          <td>
+            <strong>
+              ${escapeHTML(
+                item.codigo
+              )}
+            </strong>
+          </td>
+
+          <td>
+            ${escapeHTML(
+              item.nome
+            )}
+          </td>
+
+          ${
+            tipo === "notebook"
+              ? `
+                <td>
+                  ${escapeHTML(
+                    item.funcao ||
+                    "-"
+                  )}
+                </td>
+              `
+              : ""
+          }
+
+          <td>
+
+            <span class="status ${
+              item.status ===
+              "Quebrado"
+                ? "status-broken"
+                : "status-ok"
+            }">
+
+              ${escapeHTML(
+                item.status
+              )}
+
+            </span>
+
+          </td>
+
+          <td>
+
+            ${escapeHTML(
+              item.observacao ||
+              "-"
+            )}
+
+          </td>
+
+          <td>
+
+            <div class="table-actions">
+
+              <button
+                class="edit-btn"
+                onclick="editarEquipamento(
+                  '${tipo}',
+                  '${escapeHTML(item.id)}'
+                )">
+
+                ✏️ Editar
+
+              </button>
+
+              <button
+                class="delete-btn"
+                onclick="excluirEquipamento(
+                  '${tipo}',
+                  '${escapeHTML(item.id)}'
+                )">
+
+                🗑️ Excluir
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    });
+
+
+    html += `
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    `;
+
+
+    html += criarPaginacao(
+      tipo,
+      totalPaginas,
+      paginas[tipo],
+      "normal"
+    );
+
+
+    container.innerHTML =
+      html;
+  }
+
+
+  /* =========================================================
+     PAGINAÇÃO
+     ========================================================= */
+
+  function criarPaginacao(
+    tipo,
+    total,
+    atual,
+    modo
+  ) {
+
+    if (
+      total <= 1
+    ) {
+
+      return "";
+
+    }
+
+
+    let html =
+      `<div class="pagination">`;
+
+
+    html += `
+
+      <button
+        onclick="mudarPagina(
+          '${tipo}',
+          ${atual - 1},
+          '${modo}'
+        )"
+        ${atual === 1 ? "disabled" : ""}>
+
+        ← Anterior
+
+      </button>
+
+    `;
+
+
+    for (
+      let i = 1;
+      i <= total;
+      i++
+    ) {
+
+      html += `
+
+        <button
+          class="${
+            i === atual
+              ? "active"
+              : ""
+          }"
+          onclick="mudarPagina(
+            '${tipo}',
+            ${i},
+            '${modo}'
+          )">
+
+          ${i}
+
+        </button>
+
+      `;
+
+    }
+
+
+    html += `
+
+      <button
+        onclick="mudarPagina(
+          '${tipo}',
+          ${atual + 1},
+          '${modo}'
+        )"
+        ${atual === total ? "disabled" : ""}>
+
+        Próxima →
+
+      </button>
+
+    `;
+
+
+    html +=
+      `</div>`;
+
+
+    return html;
+  }
+
+
+  function mudarPagina(
+    tipo,
+    pagina,
+    modo
+  ) {
+
+    if (
+      modo ===
+      "broken"
+    ) {
+
+      paginas.quebrados =
+        pagina;
+
+      renderBroken();
+
+      return;
+    }
+
+
+    paginas[tipo] =
+      pagina;
+
+    renderPage(tipo);
+  }
+
+
+  /* =========================================================
+     EXCLUIR EQUIPAMENTO
+     ========================================================= */
+
+  async function excluirEquipamento(
+    tipo,
+    id
+  ) {
+
+    const item =
+      dados[tipo].find(
+        equipamento =>
+          String(
+            equipamento.id
+          ) === String(id)
+      );
+
+    if (!item) {
+      return;
+    }
+
+
+    const confirmou =
+      confirm(
+        `Deseja realmente excluir o equipamento "${item.nome}" (${item.codigo})?`
+      );
+
+
+    if (!confirmou) {
+      return;
+    }
+
+
+    try {
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("equipamentos")
+          .delete()
+          .eq(
+            "id",
+            id
+          );
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      dados[tipo] =
+        dados[tipo].filter(
+          equipamento =>
+            String(
+              equipamento.id
+            ) !== String(id)
+        );
+
+
+      atualizarDashboard();
+
+      renderPage(tipo);
+
+      renderBroken();
+
+      alert(
+        "Equipamento excluído com sucesso."
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Erro ao excluir:",
+        error
+      );
+
+      alert(
+        "Não foi possível excluir o equipamento."
+      );
+
+    }
+  }
+
+
+  /* =========================================================
+     EDITAR EQUIPAMENTO
+     ========================================================= */
+
+  async function editarEquipamento(
+    tipo,
+    id
+  ) {
+
+    const item =
+      dados[tipo].find(
+        equipamento =>
+          String(
+            equipamento.id
+          ) === String(id)
+      );
+
+
+    if (!item) {
+      return;
+    }
+
+
+    let html = `
+
+      <form id="form-edicao">
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label>
+              Código
+            </label>
+
+            <input
+              id="edit-codigo"
+              value="${escapeHTML(
+                item.codigo
+              )}"
+              required>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>
+              Nome
+            </label>
+
+            <input
+              id="edit-nome"
+              value="${escapeHTML(
+                item.nome
+              )}"
+              required>
+
+          </div>
+
+    `;
+
+
+    if (
+      tipo ===
+      "notebook"
+    ) {
+
+      html += `
+
+        <div class="form-group">
+
+          <label>
+            Função
+          </label>
+
+          <input
+            id="edit-funcao"
+            value="${escapeHTML(
+              item.funcao || ""
+            )}">
+
+        </div>
+
+      `;
+    }
+
+
+    html += `
+
+          <div class="form-group">
+
+            <label>
+              Status
+            </label>
+
+            <select
+              id="edit-status">
+
+              <option
+                value="Funcionando"
+                ${
+                  item.status ===
+                  "Funcionando"
+                    ? "selected"
+                    : ""
+                }>
+
+                Funcionando
+
+              </option>
+
+              <option
+                value="Quebrado"
+                ${
+                  item.status ===
+                  "Quebrado"
+                    ? "selected"
+                    : ""
+                }>
+
+                Quebrado
+
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group full">
+
+            <label>
+              Observação
+            </label>
+
+            <textarea
+              id="edit-observacao"
+            >${escapeHTML(
+              item.observacao ||
+              ""
+            )}</textarea>
+
+          </div>
+
+        </div>
+
+
+        <div class="actions">
+
+          <button
+            type="submit"
+            class="btn btn-primary">
+
+            Salvar alterações
+
+          </button>
+
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="fecharModal()">
+
+            Cancelar
+
+          </button>
+
+        </div>
+
+      </form>
+
+    `;
+
+
+    const modalContent =
+      document.getElementById(
+        "modalContent"
+      );
+
+    const modal =
+      document.getElementById(
+        "modalEditar"
+      );
+
+
+    if (
+      !modalContent ||
+      !modal
+    ) {
+
+      alert(
+        "Modal de edição não encontrado no HTML."
+      );
+
+      return;
+    }
+
+
+    modalContent.innerHTML =
+      html;
+
+    modal.classList.add(
+      "show"
+    );
+
+
+    const form =
+      document.getElementById(
+        "form-edicao"
+      );
+
+
+    form.addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+
+        const novoCodigo =
+          document.getElementById(
+            "edit-codigo"
+          )
+            .value
+            .trim();
+
+
+        const novoNome =
+          document.getElementById(
+            "edit-nome"
+          )
+            .value
+            .trim();
+
+
+        const novoStatus =
+          document.getElementById(
+            "edit-status"
+          ).value;
+
+
+        const novaObservacao =
+          document.getElementById(
+            "edit-observacao"
+          )
+            .value
+            .trim();
+
+
+        let novaFuncao =
+          item.funcao || "";
+
+
+        if (
+          tipo ===
+          "notebook"
+        ) {
+
+          novaFuncao =
+            document.getElementById(
+              "edit-funcao"
+            )
+              .value
+              .trim();
+
+        }
+
+
+        if (
+          !novoCodigo ||
+          !novoNome
+        ) {
+
+          alert(
+            "Código e nome são obrigatórios."
+          );
+
+          return;
+        }
+
+
+        const statusAnterior =
+          item.status;
+
+
+        let quebraData =
+          item.quebradoEm
+            ? item.quebradoEm.data
+            : null;
+
+
+        let quebraHora =
+          item.quebradoEm
+            ? item.quebradoEm.hora
+            : null;
+
+
+        let quebraObservacao =
+          item.quebradoEm
+            ? item.quebradoEm.observacao
+            : null;
+
+
+        if (
+          statusAnterior !==
+            "Quebrado" &&
+          novoStatus ===
+            "Quebrado"
+        ) {
+
+          const agora =
+            dataHoraAtual();
+
+          quebraData =
+            agora.data;
+
+          quebraHora =
+            agora.hora;
+
+          quebraObservacao =
+            novaObservacao || null;
+
+        }
+
+
+        if (
+          novoStatus ===
+          "Quebrado"
+        ) {
+
+          quebraObservacao =
+            novaObservacao || null;
+
+        }
+
+
+        if (
+          novoStatus !==
+          "Quebrado"
+        ) {
+
+          quebraData =
+            null;
+
+          quebraHora =
+            null;
+
+          quebraObservacao =
+            null;
+
+        }
+
+
+        try {
+
+          const atualizacao = {
+
+            codigo:
+              novoCodigo,
+
+            nome:
+              novoNome,
+
+            funcao:
+              tipo ===
+              "notebook"
+                ? novaFuncao ||
+                  null
+                : null,
+
+            status:
+              novoStatus,
+
+            observacao:
+              novaObservacao ||
+              null,
+
+            quebrado_data:
+              quebraData,
+
+            quebrado_hora:
+              quebraHora,
+
+            quebrado_observacao:
+              quebraObservacao
+
+          };
+
+
+          const {
+            data,
+            error
+          } =
+            await supabaseClient
+              .from(
+                "equipamentos"
+              )
+              .update(
+                atualizacao
+              )
+              .eq(
+                "id",
+                id
+              )
+              .select()
+              .single();
+
+
+          if (error) {
+            throw error;
+          }
+
+
+          const atualizado =
+            converterRegistro(
+              data
+            );
+
+
+          const indice =
+            dados[tipo].findIndex(
+              equipamento =>
+                String(
+                  equipamento.id
+                ) === String(id)
+            );
+
+
+          if (
+            indice !== -1
+          ) {
+
+            dados[tipo][indice] =
+              atualizado;
+
+          }
+
+
+          atualizarDashboard();
+
+          renderPage(tipo);
+
+          renderBroken();
+
+          fecharModal();
+
+          alert(
+            "Alterações salvas com sucesso!"
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "Erro ao editar:",
+            error
+          );
+
+          alert(
+            "Não foi possível salvar as alterações.\n\n" +
+            (
+              error.message ||
+              ""
+            )
+          );
+
+        }
+
+      }
+    );
+  }
+
+
+  /* =========================================================
+     MODAL
+     ========================================================= */
+
+  function fecharModal() {
+
+    const modal =
+      document.getElementById(
+        "modalEditar"
+      );
+
+    if (modal) {
+
+      modal.classList.remove(
+        "show"
+      );
+
+    }
+  }
+
+
+  window.addEventListener(
+    "click",
+    function(event) {
+
+      const modal =
+        document.getElementById(
+          "modalEditar"
+        );
+
+      if (
+        modal &&
+        event.target === modal
+      ) {
+
+        fecharModal();
+
       }
 
     }
   );
+
+
+  /* =========================================================
+     EQUIPAMENTOS QUEBRADOS
+     ========================================================= */
+
+  function obterQuebrados() {
+
+    const resultado = [];
+
+    tipos.forEach(tipo => {
+
+      dados[tipo].forEach(item => {
+
+        if (
+          item.status ===
+          "Quebrado"
+        ) {
+
+          resultado.push({
+            ...item,
+            tipo
+          });
+
+        }
+
+      });
+
+    });
+
+
+    resultado.sort(
+      (a, b) => {
+
+        const dataA =
+          a.quebradoEm
+            ? `${a.quebradoEm.data} ${a.quebradoEm.hora}`
+            : "";
+
+        const dataB =
+          b.quebradoEm
+            ? `${b.quebradoEm.data} ${b.quebradoEm.hora}`
+            : "";
+
+
+        return dataB.localeCompare(
+          dataA
+        );
+
+      }
+    );
+
+
+    return resultado;
+  }
+
+
+  function filtrarQuebrados() {
+
+    const buscaInput =
+      document.getElementById(
+        "busca-quebrados"
+      );
+
+    const dataInput =
+      document.getElementById(
+        "filtro-data"
+      );
+
+    const mesInput =
+      document.getElementById(
+        "filtro-mes"
+      );
+
+    const anoInput =
+      document.getElementById(
+        "filtro-ano"
+      );
+
+
+    const busca =
+      buscaInput
+        ? buscaInput.value
+            .trim()
+            .toLowerCase()
+        : "";
+
+
+    const data =
+      dataInput
+        ? dataInput.value
+        : "";
+
+
+    const mes =
+      mesInput
+        ? mesInput.value
+        : "";
+
+
+    const ano =
+      anoInput
+        ? anoInput.value
+        : "";
+
+
+    let lista =
+      obterQuebrados();
+
+
+    lista =
+      lista.filter(item => {
+
+        const codigo =
+          String(
+            item.codigo || ""
+          ).toLowerCase();
+
+
+        const nome =
+          String(
+            item.nome || ""
+          ).toLowerCase();
+
+
+        const observacao =
+          String(
+            item.observacao || ""
+          ).toLowerCase();
+
+
+        if (
+          busca &&
+          !codigo.includes(busca) &&
+          !nome.includes(busca) &&
+          !observacao.includes(busca)
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          data &&
+          (
+            !item.quebradoEm ||
+            item.quebradoEm.data !==
+              data
+          )
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          mes &&
+          (
+            !item.quebradoEm ||
+            Number(
+              item.quebradoEm.data
+                .split("-")[1]
+            ) !== Number(mes)
+          )
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          ano &&
+          (
+            !item.quebradoEm ||
+            Number(
+              item.quebradoEm.data
+                .split("-")[0]
+            ) !== Number(ano)
+          )
+        ) {
+
+          return false;
+
+        }
+
+
+        return true;
+
+      });
+
+
+    return lista;
+  }
+
+
+  /* =========================================================
+     RENDERIZAR QUEBRADOS
+     ========================================================= */
+
+  function renderBroken() {
+
+    const container =
+      document.getElementById(
+        "tabela-quebrados"
+      );
+
+    if (!container) {
+      return;
+    }
+
+
+    const lista =
+      filtrarQuebrados();
+
+
+    const totalPaginas =
+      Math.max(
+        1,
+        Math.ceil(
+          lista.length /
+          POR_PAGINA
+        )
+      );
+
+
+    if (
+      paginas.quebrados >
+      totalPaginas
+    ) {
+
+      paginas.quebrados =
+        totalPaginas;
+
+    }
+
+
+    const inicio =
+      (
+        paginas.quebrados - 1
+      ) *
+      POR_PAGINA;
+
+
+    const pagina =
+      lista.slice(
+        inicio,
+        inicio + POR_PAGINA
+      );
+
+
+    if (
+      pagina.length === 0
+    ) {
+
+      container.innerHTML = `
+
+        <div class="empty">
+
+          Nenhum equipamento quebrado
+          encontrado com os filtros selecionados.
+
+        </div>
+
+      `;
+
+      return;
+    }
+
+
+    let html = `
+
+      <div class="table-container">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>Equipamento</th>
+
+              <th>Código</th>
+
+              <th>Nome</th>
+
+              <th>Data da quebra</th>
+
+              <th>Hora</th>
+
+              <th>Observação</th>
+
+              <th>Ações</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+    `;
+
+
+    pagina.forEach(item => {
+
+      html += `
+
+        <tr>
+
+          <td>
+
+            <strong>
+              ${escapeHTML(
+                nomesTipos[
+                  item.tipo
+                ] ||
+                item.tipo
+              )}
+            </strong>
+
+          </td>
+
+
+          <td>
+
+            ${escapeHTML(
+              item.codigo
+            )}
+
+          </td>
+
+
+          <td>
+
+            ${escapeHTML(
+              item.nome
+            )}
+
+          </td>
+
+
+          <td>
+
+            ${
+              item.quebradoEm
+                ? formatarData(
+                    item.quebradoEm.data
+                  )
+                : "-"
+            }
+
+          </td>
+
+
+          <td>
+
+            ${
+              item.quebradoEm
+                ? escapeHTML(
+                    item.quebradoEm.hora
+                  )
+                : "-"
+            }
+
+          </td>
+
+
+          <td>
+
+            ${escapeHTML(
+              item.quebradoEm
+                ? (
+                    item.quebradoEm
+                      .observacao ||
+                    item.observacao ||
+                    "-"
+                  )
+                : (
+                    item.observacao ||
+                    "-"
+                  )
+            )}
+
+          </td>
+
+
+          <td>
+
+            <div class="table-actions">
+
+              <button
+                class="edit-btn"
+                onclick="editarEquipamento(
+                  '${item.tipo}',
+                  '${escapeHTML(item.id)}'
+                )">
+
+                ✏️ Editar
+
+              </button>
+
+
+              <button
+                class="delete-btn"
+                onclick="excluirEquipamento(
+                  '${item.tipo}',
+                  '${escapeHTML(item.id)}'
+                )">
+
+                🗑️ Excluir
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    });
+
+
+    html += `
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    `;
+
+
+    html += criarPaginacao(
+      "quebrados",
+      totalPaginas,
+      paginas.quebrados,
+      "broken"
+    );
+
+
+    container.innerHTML =
+      html;
+  }
+/* =========================================================
+   COMPATIBILIDADE COM OS BOTÕES DA ABA
+   ========================================================= */
+
+/*
+ * Mantém compatibilidade com os botões
+ * existentes no HTML.
+ *
+ * Exemplos:
+ *
+ * onclick="showPage('dashboard', this)"
+ * onclick="showPage('hh', this)"
+ * onclick="showPage('notebook', this)"
+ * onclick="showPage('radio', this)"
+ * onclick="showPage('carregador', this)"
+ * onclick="showPage('doisD', this)"
+ * onclick="showPage('impressora', this)"
+ * onclick="showPage('quebrados', this)"
+ */
+
+function showPage(pageId, button) {
+
+  /*
+   * Esconde todas as páginas.
+   */
+  document
+    .querySelectorAll(".page")
+    .forEach(page => {
+
+      page.classList.remove("active");
+
+    });
+
+
+  /*
+   * Mostra a página selecionada.
+   */
+  const pagina =
+    document.getElementById(pageId);
+
+  if (pagina) {
+
+    pagina.classList.add("active");
+
+  }
+
+
+  /*
+   * Remove o estado ativo
+   * dos botões da lateral.
+   */
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach(btn => {
+
+      btn.classList.remove("active");
+
+    });
+
+
+  /*
+   * Ativa o botão selecionado.
+   */
+  if (button) {
+
+    button.classList.add("active");
+
+  }
+
+
+  /*
+   * Fecha o menu lateral
+   * no celular.
+   */
+  const sidebar =
+    document.getElementById("sidebar");
+
+  if (sidebar) {
+
+    sidebar.classList.remove("open");
+
+  }
+
+
+  /*
+   * Dashboard
+   */
+  if (pageId === "dashboard") {
+
+    atualizarDashboard();
+
+  }
+
+
+  /*
+   * Abas de equipamentos
+   */
+  if (tipos.includes(pageId)) {
+
+    paginas[pageId] = 1;
+
+    renderPage(pageId);
+
+  }
+
+
+  /*
+   * Aba de equipamentos quebrados
+   */
+  if (pageId === "quebrados") {
+
+    paginas.quebrados = 1;
+
+    preencherAnos();
+
+    renderBroken();
+
+  }
+
+
+  /*
+   * Volta para o topo da página.
+   */
+  window.scrollTo({
+
+    top: 0,
+
+    behavior: "smooth"
+
+  });
+
+}
+
+
+/* =========================================================
+   MENU LATERAL
+   ========================================================= */
+
+function toggleMenu() {
+
+  const sidebar =
+    document.getElementById("sidebar");
+
+  if (!sidebar) return;
+
+  sidebar.classList.toggle("open");
+
+}
+
+
+/* =========================================================
+   BUSCA DOS EQUIPAMENTOS
+   ========================================================= */
+
+function obterBusca(tipo) {
+
+  const input =
+    document.getElementById(
+      "busca-" + tipo
+    );
+
+  if (!input) {
+
+    return "";
+
+  }
+
+  return input.value
+    .trim()
+    .toLowerCase();
+
+}
+
+
+function filtrarDados(tipo) {
+
+  const lista =
+    Array.isArray(dados[tipo])
+      ? dados[tipo]
+      : [];
+
+  const busca =
+    obterBusca(tipo);
+
+
+  /*
+   * Sem busca:
+   * retorna todos.
+   */
+  if (!busca) {
+
+    return [...lista];
+
+  }
+
+
+  /*
+   * Busca por código ou nome.
+   */
+  return lista.filter(item => {
+
+    const codigo =
+      String(
+        item.codigo || ""
+      ).toLowerCase();
+
+    const nome =
+      String(
+        item.nome || ""
+      ).toLowerCase();
+
+    return (
+      codigo.includes(busca) ||
+      nome.includes(busca)
+    );
+
+  });
+
+}
+
+
+/* =========================================================
+   RENDERIZAÇÃO DAS TABELAS
+   ========================================================= */
+
+function renderPage(tipo) {
+
+  const container =
+    document.getElementById(
+      "tabela-" + tipo
+    );
+
+  if (!container) {
+
+    return;
+
+  }
+
+
+  const lista =
+    filtrarDados(tipo);
+
+
+  const totalPaginas =
+    Math.max(
+
+      1,
+
+      Math.ceil(
+        lista.length /
+        POR_PAGINA
+      )
+
+    );
+
+
+  /*
+   * Garante que a página atual
+   * não ultrapasse o limite.
+   */
+  if (
+    paginas[tipo] >
+    totalPaginas
+  ) {
+
+    paginas[tipo] =
+      totalPaginas;
+
+  }
+
+
+  const inicio =
+    (
+      paginas[tipo] - 1
+    ) * POR_PAGINA;
+
+
+  const pagina =
+    lista.slice(
+
+      inicio,
+
+      inicio + POR_PAGINA
+
+    );
+
+
+  /*
+   * Nenhum registro.
+   */
+  if (
+    pagina.length === 0
+  ) {
+
+    container.innerHTML = `
+
+      <div class="empty">
+
+        Nenhum equipamento encontrado.
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  let html = `
+
+    <div class="table-container">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Código</th>
+
+            <th>Nome</th>
+
+            ${
+              tipo === "notebook"
+                ? "<th>Função</th>"
+                : ""
+            }
+
+            <th>Status</th>
+
+            <th>Observação</th>
+
+            <th>Ações</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+  `;
+
+
+  pagina.forEach(item => {
+
+    html += `
+
+      <tr>
+
+        <td>
+
+          <strong>
+
+            ${escapeHTML(
+              item.codigo
+            )}
+
+          </strong>
+
+        </td>
+
+
+        <td>
+
+          ${escapeHTML(
+            item.nome
+          )}
+
+        </td>
+
+
+        ${
+          tipo === "notebook"
+
+            ? `
+
+              <td>
+
+                ${escapeHTML(
+                  item.funcao || "-"
+                )}
+
+              </td>
+
+            `
+
+            : ""
+
+        }
+
+
+        <td>
+
+          <span class="status ${
+            item.status === "Quebrado"
+
+              ? "status-broken"
+
+              : "status-ok"
+
+          }">
+
+            ${escapeHTML(
+              item.status ||
+              "Funcionando"
+            )}
+
+          </span>
+
+        </td>
+
+
+        <td>
+
+          ${escapeHTML(
+            item.observacao || "-"
+          )}
+
+        </td>
+
+
+        <td>
+
+          <div class="table-actions">
+
+            <button
+
+              class="edit-btn"
+
+              onclick="
+                editarEquipamento(
+                  '${tipo}',
+                  '${item.id}'
+                )
+              ">
+
+              ✏️ Editar
+
+            </button>
+
+
+            <button
+
+              class="delete-btn"
+
+              onclick="
+                excluirEquipamento(
+                  '${tipo}',
+                  '${item.id}'
+                )
+              ">
+
+              🗑️ Excluir
+
+            </button>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html += `
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+
+  html += criarPaginacao(
+
+    tipo,
+
+    totalPaginas,
+
+    paginas[tipo],
+
+    "normal"
+
+  );
+
+
+  container.innerHTML =
+    html;
+
+}
+
+
+/* =========================================================
+   PAGINAÇÃO
+   ========================================================= */
+
+function criarPaginacao(
+  tipo,
+  total,
+  atual,
+  modo
+) {
+
+  if (
+    total <= 1
+  ) {
+
+    return "";
+
+  }
+
+
+  let html =
+    `<div class="pagination">`;
+
+
+  html += `
+
+    <button
+
+      onclick="
+        mudarPagina(
+          '${tipo}',
+          ${atual - 1},
+          '${modo}'
+        )
+      "
+
+      ${atual === 1
+        ? "disabled"
+        : ""}
+
+    >
+
+      ← Anterior
+
+    </button>
+
+  `;
+
+
+  for (
+    let i = 1;
+    i <= total;
+    i++
+  ) {
+
+    html += `
+
+      <button
+
+        class="${
+          i === atual
+            ? "active"
+            : ""
+        }"
+
+        onclick="
+          mudarPagina(
+            '${tipo}',
+            ${i},
+            '${modo}'
+          )
+        "
+
+      >
+
+        ${i}
+
+      </button>
+
+    `;
+
+  }
+
+
+  html += `
+
+    <button
+
+      onclick="
+        mudarPagina(
+          '${tipo}',
+          ${atual + 1},
+          '${modo}'
+        )
+      "
+
+      ${atual === total
+        ? "disabled"
+        : ""}
+
+    >
+
+      Próxima →
+
+    </button>
+
+  `;
+
+
+  html += `</div>`;
+
+
+  return html;
+
+}
+
+
+function mudarPagina(
+  tipo,
+  pagina,
+  modo
+) {
+
+  if (
+    modo === "broken"
+  ) {
+
+    paginas.quebrados =
+      pagina;
+
+    renderBroken();
+
+    return;
+
+  }
+
+
+  paginas[tipo] =
+    pagina;
+
+  renderPage(tipo);
+
+}
+
+
+/* =========================================================
+   EDITAR EQUIPAMENTO
+   ========================================================= */
+
+async function editarEquipamento(
+  tipo,
+  id
+) {
+
+  /*
+   * Procura primeiro nos dados
+   * que já foram carregados.
+   */
+  const item =
+    dados[tipo]?.find(
+      equipamento =>
+        String(equipamento.id) ===
+        String(id)
+    );
+
+
+  if (!item) {
+
+    alert(
+      "Equipamento não encontrado."
+    );
+
+    return;
+
+  }
+
+
+  let html = `
+
+    <form id="form-edicao">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label>
+            Código
+          </label>
+
+          <input
+
+            id="edit-codigo"
+
+            value="${escapeHTML(
+              item.codigo
+            )}"
+
+            required
+
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Nome
+          </label>
+
+          <input
+
+            id="edit-nome"
+
+            value="${escapeHTML(
+              item.nome
+            )}"
+
+            required
+
+          >
+
+        </div>
+
+  `;
+
+
+  /*
+   * Função somente para Notebook.
+   */
+  if (
+    tipo === "notebook"
+  ) {
+
+    html += `
+
+      <div class="form-group">
+
+        <label>
+          Função
+        </label>
+
+        <input
+
+          id="edit-funcao"
+
+          value="${escapeHTML(
+            item.funcao || ""
+          )}"
+
+        >
+
+      </div>
+
+    `;
+
+  }
+
+
+  html += `
+
+        <div class="form-group">
+
+          <label>
+            Status
+          </label>
+
+          <select id="edit-status">
+
+            <option
+
+              value="Funcionando"
+
+              ${
+                item.status ===
+                "Funcionando"
+                  ? "selected"
+                  : ""
+              }
+
+            >
+
+              Funcionando
+
+            </option>
+
+
+            <option
+
+              value="Quebrado"
+
+              ${
+                item.status ===
+                "Quebrado"
+                  ? "selected"
+                  : ""
+              }
+
+            >
+
+              Quebrado
+
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group full">
+
+          <label>
+            Observação
+          </label>
+
+          <textarea
+            id="edit-observacao"
+          >${escapeHTML(
+            item.observacao || ""
+          )}</textarea>
+
+        </div>
+
+
+      </div>
+
+
+      <div class="actions">
+
+        <button
+
+          type="submit"
+
+          class="btn btn-primary"
+
+        >
+
+          Salvar alterações
+
+        </button>
+
+
+        <button
+
+          type="button"
+
+          class="btn btn-secondary"
+
+          onclick="fecharModal()"
+
+        >
+
+          Cancelar
+
+        </button>
+
+      </div>
+
+    </form>
+
+  `;
+
+
+  const modalContent =
+    document.getElementById(
+      "modalContent"
+    );
+
+
+  const modal =
+    document.getElementById(
+      "modalEditar"
+    );
+
+
+  if (!modalContent || !modal) {
+
+    return;
+
+  }
+
+
+  modalContent.innerHTML =
+    html;
+
+  modal.classList.add(
+    "show"
+  );
+
+
+  const formulario =
+    document.getElementById(
+      "form-edicao"
+    );
+
+
+  formulario.addEventListener(
+    "submit",
+    async function(event) {
+
+      event.preventDefault();
+
+
+      const novoCodigo =
+        document.getElementById(
+          "edit-codigo"
+        ).value.trim();
+
+
+      const novoNome =
+        document.getElementById(
+          "edit-nome"
+        ).value.trim();
+
+
+      const novoStatus =
+        document.getElementById(
+          "edit-status"
+        ).value;
+
+
+      const novaObservacao =
+        document.getElementById(
+          "edit-observacao"
+        ).value.trim();
+
+
+      let novaFuncao = "";
+
+
+      if (
+        tipo === "notebook"
+      ) {
+
+        novaFuncao =
+          document.getElementById(
+            "edit-funcao"
+          ).value.trim();
+
+      }
+
+
+      if (
+        !novoCodigo ||
+        !novoNome
+      ) {
+
+        alert(
+          "Preencha o código e o nome."
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * Se estiver mudando o código,
+       * verifica duplicidade.
+       */
+      if (
+        novoCodigo !==
+        item.codigo
+      ) {
+
+        const {
+          data: duplicado,
+          error: erroDuplicado
+        } =
+          await supabaseClient
+
+            .from(
+              "equipamentos"
+            )
+
+            .select("id")
+
+            .eq(
+              "codigo",
+              novoCodigo
+            )
+
+            .neq(
+              "id",
+              id
+            )
+
+            .maybeSingle();
+
+
+        if (erroDuplicado) {
+
+          console.error(
+            erroDuplicado
+          );
+
+          alert(
+            "Não foi possível verificar o código."
+          );
+
+          return;
+
+        }
+
+
+        if (duplicado) {
+
+          alert(
+            "Já existe outro equipamento com este código."
+          );
+
+          return;
+
+        }
+
+      }
+
+
+      /*
+       * Mantém a data/hora antiga
+       * se já estiver quebrado.
+       */
+      let quebradoData =
+        item.quebradoEm?.data ||
+        null;
+
+      let quebradoHora =
+        item.quebradoEm?.hora ||
+        null;
+
+      let quebradoObservacao =
+        item.quebradoEm?.observacao ||
+        null;
+
+
+      /*
+       * Funcionando → Quebrado
+       */
+      if (
+        item.status !==
+          "Quebrado" &&
+        novoStatus ===
+          "Quebrado"
+      ) {
+
+        const agora =
+          dataHoraAtual();
+
+        quebradoData =
+          agora.data;
+
+        quebradoHora =
+          agora.hora;
+
+        quebradoObservacao =
+          novaObservacao;
+
+      }
+
+
+      /*
+       * Quebrado → Funcionando
+       */
+      if (
+        novoStatus ===
+        "Funcionando"
+      ) {
+
+        quebradoData =
+          null;
+
+        quebradoHora =
+          null;
+
+        quebradoObservacao =
+          null;
+
+      }
+
+
+      const atualizacao = {
+
+        codigo:
+          novoCodigo,
+
+        nome:
+          novoNome,
+
+        funcao:
+          tipo === "notebook"
+            ? novaFuncao
+            : null,
+
+        status:
+          novoStatus,
+
+        observacao:
+          novaObservacao,
+
+        quebrado_data:
+          quebradoData,
+
+        quebrado_hora:
+          quebradoHora,
+
+        quebrado_observacao:
+          quebradoObservacao
+
+      };
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+
+          .from(
+            "equipamentos"
+          )
+
+          .update(
+            atualizacao
+          )
+
+          .eq(
+            "id",
+            id
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Erro ao editar:",
+          error
+        );
+
+        alert(
+          "Não foi possível salvar as alterações."
+        );
+
+        return;
+
+      }
+
+
+      fecharModal();
+
+
+      await carregarDados();
+
+
+      renderPage(
+        tipo
+      );
+
+
+      atualizarDashboard();
+
+
+      if (
+        document
+          .getElementById(
+            "quebrados"
+          )
+          ?.classList
+          .contains(
+            "active"
+          )
+      ) {
+
+        renderBroken();
+
+      }
+
+
+      alert(
+        "Alterações salvas com sucesso!"
+      );
+
+    }
+
+  );
+
+}
+
+
+/* =========================================================
+   EXCLUIR EQUIPAMENTO
+   ========================================================= */
+
+async function excluirEquipamento(
+  tipo,
+  id
+) {
+
+  const item =
+    dados[tipo]?.find(
+      equipamento =>
+        String(equipamento.id) ===
+        String(id)
+    );
+
+
+  if (!item) {
+
+    alert(
+      "Equipamento não encontrado."
+    );
+
+    return;
+
+  }
+
+
+  const confirmou =
+    confirm(
+
+      `Deseja realmente excluir o equipamento "${item.nome}" (${item.codigo})?`
+
+    );
+
+
+  if (!confirmou) {
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+
+      .from(
+        "equipamentos"
+      )
+
+      .delete()
+
+      .eq(
+        "id",
+        id
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Erro ao excluir:",
+      error
+    );
+
+    alert(
+      "Não foi possível excluir o equipamento."
+    );
+
+    return;
+
+  }
+
+
+  await carregarDados();
+
+
+  renderPage(
+    tipo
+  );
+
+
+  atualizarDashboard();
+
+
+  alert(
+    "Equipamento excluído com sucesso."
+  );
+
+}
+
+
+/* =========================================================
+   FECHAR MODAL DE EDIÇÃO
+   ========================================================= */
+
+function fecharModal() {
+
+  const modal =
+    document.getElementById(
+      "modalEditar"
+    );
+
+  if (!modal) return;
+
+  modal.classList.remove(
+    "show"
+  );
+
+}
+
+
+/* =========================================================
+   FECHAR MODAL AO CLICAR FORA
+   ========================================================= */
+
+window.addEventListener(
+  "click",
+  function(event) {
+
+    const modal =
+      document.getElementById(
+        "modalEditar"
+      );
+
+    if (
+      modal &&
+      event.target === modal
+    ) {
+
+      fecharModal();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   EQUIPAMENTOS QUEBRADOS
+   ========================================================= */
+
+function obterQuebrados() {
+
+  let resultado = [];
+
+
+  tipos.forEach(tipo => {
+
+    const lista =
+      Array.isArray(
+        dados[tipo]
+      )
+        ? dados[tipo]
+        : [];
+
+
+    lista.forEach(item => {
+
+      if (
+        item.status ===
+        "Quebrado"
+      ) {
+
+        resultado.push({
+
+          ...item,
+
+          tipo
+
+        });
+
+      }
+
+    });
+
+  });
+
+
+  /*
+   * Mais recente primeiro.
+   */
+  resultado.sort(
+    (a, b) => {
+
+      const dataA =
+        a.quebradoEm
+
+          ? `${a.quebradoEm.data} ${a.quebradoEm.hora}`
+
+          : "";
+
+      const dataB =
+        b.quebradoEm
+
+          ? `${b.quebradoEm.data} ${b.quebradoEm.hora}`
+
+          : "";
+
+
+      return dataB.localeCompare(
+        dataA
+      );
+
+    }
+  );
+
+
+  return resultado;
+
+}
+
+
+/* =========================================================
+   FILTRO DE QUEBRADOS
+   ========================================================= */
+
+function filtrarQuebrados() {
+
+  const inputBusca =
+    document.getElementById(
+      "busca-quebrados"
+    );
+
+
+  const inputData =
+    document.getElementById(
+      "filtro-data"
+    );
+
+
+  const inputMes =
+    document.getElementById(
+      "filtro-mes"
+    );
+
+
+  const inputAno =
+    document.getElementById(
+      "filtro-ano"
+    );
+
+
+  const busca =
+    inputBusca
+      ? inputBusca.value
+          .trim()
+          .toLowerCase()
+      : "";
+
+
+  const data =
+    inputData
+      ? inputData.value
+      : "";
+
+
+  const mes =
+    inputMes
+      ? inputMes.value
+      : "";
+
+
+  const ano =
+    inputAno
+      ? inputAno.value
+      : "";
+
+
+  let lista =
+    obterQuebrados();
+
+
+  lista =
+    lista.filter(item => {
+
+      const codigo =
+        String(
+          item.codigo || ""
+        ).toLowerCase();
+
+
+      const nome =
+        String(
+          item.nome || ""
+        ).toLowerCase();
+
+
+      if (
+        busca &&
+        !codigo.includes(
+          busca
+        ) &&
+        !nome.includes(
+          busca
+        )
+      ) {
+
+        return false;
+
+      }
+
+
+      if (
+        data &&
+        (
+          !item.quebradoEm ||
+          item.quebradoEm.data !==
+            data
+        )
+      ) {
+
+        return false;
+
+      }
+
+
+      if (
+        mes &&
+        (
+          !item.quebradoEm ||
+          item.quebradoEm.data
+            .split("-")[1] !==
+            String(mes).padStart(
+              2,
+              "0"
+            )
+        )
+      ) {
+
+        return false;
+
+      }
+
+
+      if (
+        ano &&
+        (
+          !item.quebradoEm ||
+          item.quebradoEm.data
+            .split("-")[0] !==
+            String(ano)
+        )
+      ) {
+
+        return false;
+
+      }
+
+
+      return true;
+
+    });
+
+
+  return lista;
+
+}
+
+
+/* =========================================================
+   PREENCHER ANOS DOS FILTROS
+   ========================================================= */
+
+function preencherAnos() {
+
+  const select =
+    document.getElementById(
+      "filtro-ano"
+    );
+
+  if (!select) return;
+
+
+  const valorAtual =
+    select.value;
+
+
+  const anos =
+    new Set();
+
+
+  obterQuebrados()
+    .forEach(item => {
+
+      if (
+        item.quebradoEm &&
+        item.quebradoEm.data
+      ) {
+
+        anos.add(
+          item.quebradoEm.data
+            .split("-")[0]
+        );
+
+      }
+
+    });
+
+
+  const listaAnos =
+    Array.from(anos)
+      .sort(
+        (a, b) =>
+          Number(b) -
+          Number(a)
+      );
+
+
+  select.innerHTML = `
+
+    <option value="">
+      Todos os anos
+    </option>
+
+  `;
+
+
+  listaAnos.forEach(ano => {
+
+    select.innerHTML += `
+
+      <option
+        value="${escapeHTML(
+          ano
+        )}">
+
+        ${escapeHTML(
+          ano
+        )}
+
+      </option>
+
+    `;
+
+  });
+
+
+  select.value =
+    valorAtual;
+
+}
+
+
+/* =========================================================
+   RENDERIZAR EQUIPAMENTOS QUEBRADOS
+   ========================================================= */
+
+function renderBroken() {
+
+  const container =
+    document.getElementById(
+      "tabela-quebrados"
+    );
+
+  if (!container) {
+
+    return;
+
+  }
+
+
+  const lista =
+    filtrarQuebrados();
+
+
+  const totalPaginas =
+    Math.max(
+
+      1,
+
+      Math.ceil(
+        lista.length /
+        POR_PAGINA
+      )
+
+    );
+
+
+  if (
+    paginas.quebrados >
+    totalPaginas
+  ) {
+
+    paginas.quebrados =
+      totalPaginas;
+
+  }
+
+
+  const inicio =
+    (
+      paginas.quebrados - 1
+    ) * POR_PAGINA;
+
+
+  const pagina =
+    lista.slice(
+
+      inicio,
+
+      inicio + POR_PAGINA
+
+    );
+
+
+  if (
+    pagina.length === 0
+  ) {
+
+    container.innerHTML = `
+
+      <div class="empty">
+
+        Nenhum equipamento quebrado encontrado
+        com os filtros selecionados.
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  let html = `
+
+    <div class="table-container">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Equipamento</th>
+
+            <th>Código</th>
+
+            <th>Nome</th>
+
+            <th>Data da quebra</th>
+
+            <th>Hora</th>
+
+            <th>Observação</th>
+
+            <th>Ações</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+  `;
+
+
+  pagina.forEach(item => {
+
+    html += `
+
+      <tr>
+
+        <td>
+
+          <strong>
+
+            ${escapeHTML(
+              nomesTipos[item.tipo] ||
+              item.tipo
+            )}
+
+          </strong>
+
+        </td>
+
+
+        <td>
+
+          ${escapeHTML(
+            item.codigo
+          )}
+
+        </td>
+
+
+        <td>
+
+          ${escapeHTML(
+            item.nome
+          )}
+
+        </td>
+
+
+        <td>
+
+          ${
+            item.quebradoEm
+
+              ? formatarDataExibicao(
+                  item.quebradoEm.data
+                )
+
+              : "-"
+          }
+
+        </td>
+
+
+        <td>
+
+          ${
+            item.quebradoEm
+
+              ? escapeHTML(
+                  item.quebradoEm.hora
+                )
+
+              : "-"
+          }
+
+        </td>
+
+
+        <td>
+
+          ${escapeHTML(
+            item.observacao || "-"
+          )}
+
+        </td>
+
+
+        <td>
+
+          <div class="table-actions">
+
+            <button
+
+              class="edit-btn"
+
+              onclick="
+                editarQuebrado(
+                  '${item.id}'
+                )
+              "
+
+            >
+
+              ✏️ Editar
+
+            </button>
+
+
+            <button
+
+              class="delete-btn"
+
+              onclick="
+                excluirQuebrado(
+                  '${item.id}'
+                )
+              "
+
+            >
+
+              🗑️ Excluir
+
+            </button>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html += `
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+
+  html += criarPaginacao(
+
+    "quebrados",
+
+    totalPaginas,
+
+    paginas.quebrados,
+
+    "broken"
+
+  );
+
+
+  container.innerHTML =
+    html;
+
+}
+
+
+/* =========================================================
+   FORMATAR DATA PARA EXIBIÇÃO
+   ========================================================= */
+
+function formatarDataExibicao(
+  data
+) {
+
+  if (!data) {
+
+    return "-";
+
+  }
+
+
+  const partes =
+    String(data)
+      .split("-");
+
+
+  if (
+    partes.length !== 3
+  ) {
+
+    return escapeHTML(
+      data
+    );
+
+  }
+
+
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+}
+
+
+/* =========================================================
+   LIMPAR FILTROS DOS QUEBRADOS
+   ========================================================= */
+
+function limparFiltrosQuebrados() {
+
+  const busca =
+    document.getElementById(
+      "busca-quebrados"
+    );
+
+  const data =
+    document.getElementById(
+      "filtro-data"
+    );
+
+  const mes =
+    document.getElementById(
+      "filtro-mes"
+    );
+
+  const ano =
+    document.getElementById(
+      "filtro-ano"
+    );
+
+
+  if (busca) {
+
+    busca.value = "";
+
+  }
+
+
+  if (data) {
+
+    data.value = "";
+
+  }
+
+
+  if (mes) {
+
+    mes.value = "";
+
+  }
+
+
+  if (ano) {
+
+    ano.value = "";
+
+  }
+
+
+  paginas.quebrados =
+    1;
+
+
+  preencherAnos();
+
+  renderBroken();
+
+}
+
+
+/* =========================================================
+   EDITAR EQUIPAMENTO QUEBRADO
+   ========================================================= */
+
+async function editarQuebrado(
+  id
+) {
+
+  let encontrado = null;
+  let tipoEncontrado = null;
+
+
+  tipos.forEach(tipo => {
+
+    const item =
+      dados[tipo]?.find(
+        equipamento =>
+          String(
+            equipamento.id
+          ) ===
+          String(id)
+      );
+
+
+    if (item) {
+
+      encontrado =
+        item;
+
+      tipoEncontrado =
+        tipo;
+
+    }
+
+  });
+
+
+  if (!encontrado) {
+
+    alert(
+      "Equipamento não encontrado."
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Para manter compatibilidade
+   * com o modal que você já criou.
+   */
+  const modal =
+    document.getElementById(
+      "modalQuebrado"
+    );
+
+
+  if (
+    modal
+  ) {
+
+    const codigo =
+      document.getElementById(
+        "quebradoCodigo"
+      );
+
+    const nome =
+      document.getElementById(
+        "quebradoNome"
+      );
+
+    const tipo =
+      document.getElementById(
+        "quebradoTipo"
+      );
+
+    const observacao =
+      document.getElementById(
+        "quebradoObservacao"
+      );
+
+    const data =
+      document.getElementById(
+        "quebradoData"
+      );
+
+    const hora =
+      document.getElementById(
+        "quebradoHora"
+      );
+
+
+    if (codigo) {
+
+      codigo.value =
+        encontrado.codigo || "";
+
+    }
+
+
+    if (nome) {
+
+      nome.value =
+        encontrado.nome || "";
+
+    }
+
+
+    if (tipo) {
+
+      tipo.value =
+        nomesTipos[
+          tipoEncontrado
+        ] ||
+        tipoEncontrado ||
+        "";
+
+    }
+
+
+    if (observacao) {
+
+      observacao.value =
+        encontrado
+          .quebradoEm
+          ?.observacao ||
+        encontrado
+          .observacao ||
+        "";
+
+    }
+
+
+    if (data) {
+
+      data.value =
+        encontrado
+          .quebradoEm
+          ?.data ||
+        "";
+
+    }
+
+
+    if (hora) {
+
+      hora.value =
+        encontrado
+          .quebradoEm
+          ?.hora ||
+        "";
+
+    }
+
+
+    /*
+     * Guarda o equipamento
+     * em edição.
+     */
+    window.equipamentoQuebradoEmEdicao = {
+
+      id:
+        encontrado.id,
+
+      tipo:
+        tipoEncontrado
+
+    };
+
+
+    modal.classList.add(
+      "show"
+    );
+
+
+    return;
+
+  }
+
+
+  /*
+   * Caso o modal específico
+   * não exista, usa o modal
+   * padrão de edição.
+   */
+  editarEquipamento(
+    tipoEncontrado,
+    encontrado.id
+  );
+
+}
+
+
+/* =========================================================
+   SALVAR EDIÇÃO DO QUEBRADO
+   ========================================================= */
+
+async function salvarEdicaoQuebrado(
+  event
+) {
+
+  event.preventDefault();
+
+
+  const referencia =
+    window.equipamentoQuebradoEmEdicao;
+
+
+  if (!referencia) {
+
+    alert(
+      "Nenhum equipamento selecionado."
+    );
+
+    return;
+
+  }
+
+
+  const observacao =
+    document.getElementById(
+      "quebradoObservacao"
+    )?.value.trim() ||
+    "";
+
+
+  const data =
+    document.getElementById(
+      "quebradoData"
+    )?.value ||
+    "";
+
+
+  const hora =
+    document.getElementById(
+      "quebradoHora"
+    )?.value ||
+    "";
+
+
+  if (!data) {
+
+    alert(
+      "Informe a data da quebra."
+    );
+
+    return;
+
+  }
+
+
+  if (!hora) {
+
+    alert(
+      "Informe a hora da quebra."
+    );
+
+    return;
+
+  }
+
+
+  const atualizacao = {
+
+    status:
+      "Quebrado",
+
+    observacao:
+      observacao,
+
+    quebrado_data:
+      data,
+
+    quebrado_hora:
+      hora,
+
+    quebrado_observacao:
+      observacao
+
+  };
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+
+      .from(
+        "equipamentos"
+      )
+
+      .update(
+        atualizacao
+      )
+
+      .eq(
+        "id",
+        referencia.id
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Erro ao atualizar quebrado:",
+      error
+    );
+
+    alert(
+      "Não foi possível atualizar o equipamento."
+    );
+
+    return;
+
+  }
+
+
+  fecharModalQuebrado();
+
+
+  window.equipamentoQuebradoEmEdicao =
+    null;
+
+
+  await carregarDados();
+
+
+  preencherAnos();
+
+  renderBroken();
+
+  atualizarDashboard();
+
+
+  alert(
+    "Equipamento atualizado com sucesso!"
+  );
+
+}
+
+
+/* =========================================================
+   FECHAR MODAL DE QUEBRADO
+   ========================================================= */
+
+function fecharModalQuebrado() {
+
+  const modal =
+    document.getElementById(
+      "modalQuebrado"
+    );
+
+
+  if (modal) {
+
+    modal.classList.remove(
+      "show"
+    );
+
+  }
+
+
+  window.equipamentoQuebradoEmEdicao =
+    null;
+
+}
+
+
+/* =========================================================
+   EXCLUIR EQUIPAMENTO QUEBRADO
+   ========================================================= */
+
+async function excluirQuebrado(
+  id
+) {
+
+  let item = null;
+
+
+  tipos.forEach(tipo => {
+
+    const encontrado =
+      dados[tipo]?.find(
+        equipamento =>
+          String(
+            equipamento.id
+          ) ===
+          String(id)
+      );
+
+
+    if (encontrado) {
+
+      item =
+        encontrado;
+
+    }
+
+  });
+
+
+  if (!item) {
+
+    alert(
+      "Equipamento não encontrado."
+    );
+
+    return;
+
+  }
+
+
+  const confirmou =
+    confirm(
+
+      `Deseja realmente excluir o registro do equipamento "${item.nome}" (${item.codigo})?`
+
+    );
+
+
+  if (!confirmou) {
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+
+      .from(
+        "equipamentos"
+      )
+
+      .delete()
+
+      .eq(
+        "id",
+        id
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Erro ao excluir quebrado:",
+      error
+    );
+
+    alert(
+      "Não foi possível excluir o registro."
+    );
+
+    return;
+
+  }
+
+
+  await carregarDados();
+
+
+  preencherAnos();
+
+  renderBroken();
+
+  atualizarDashboard();
+
+
+  alert(
+    "Equipamento excluído com sucesso!"
+  );
+
+}
+
+/* =========================================================
+   ENTER NOS FORMULÁRIOS
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    tipos.forEach(function (tipo) {
+
+      const form =
+        document.getElementById(
+          "form-" + tipo
+        );
+
+      if (!form) return;
+
+      form.addEventListener(
+        "submit",
+        async function (event) {
+
+          event.preventDefault();
+
+          await adicionarEquipamento(
+            tipo
+          );
+
+        }
+      );
+
+    });
+
+  }
+);
+
+
+/* =========================================================
+   EDITAR EQUIPAMENTO
+   ========================================================= */
+
+async function editarEquipamento(
+  tipo,
+  id
+) {
+
+  const item =
+    dados[tipo].find(
+      equipamento =>
+        String(equipamento.id) ===
+        String(id)
+    );
+
+  if (!item) {
+
+    alert(
+      "Equipamento não encontrado."
+    );
+
+    return;
+  }
+
+  let html = `
+
+    <form id="form-edicao">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label>
+            Código
+          </label>
+
+          <input
+            id="edit-codigo"
+            value="${escapeHTML(item.codigo)}"
+            required>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Nome
+          </label>
+
+          <input
+            id="edit-nome"
+            value="${escapeHTML(item.nome)}"
+            required>
+
+        </div>
+  `;
+
+  if (tipo === "notebook") {
+
+    html += `
+
+      <div class="form-group">
+
+        <label>
+          Função
+        </label>
+
+        <input
+          id="edit-funcao"
+          value="${escapeHTML(
+            item.funcao || ""
+          )}">
+
+      </div>
+
+    `;
+
+  }
+
+  html += `
+
+        <div class="form-group">
+
+          <label>
+            Status
+          </label>
+
+          <select id="edit-status">
+
+            <option
+              value="Funcionando"
+              ${
+                item.status ===
+                "Funcionando"
+                  ? "selected"
+                  : ""
+              }>
+              Funcionando
+            </option>
+
+            <option
+              value="Quebrado"
+              ${
+                item.status ===
+                "Quebrado"
+                  ? "selected"
+                  : ""
+              }>
+              Quebrado
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="form-group full">
+
+          <label>
+            Observação
+          </label>
+
+          <textarea
+            id="edit-observacao"
+          >${escapeHTML(
+            item.observacao || ""
+          )}</textarea>
+
+        </div>
+
+      </div>
+
+      <div class="actions">
+
+        <button
+          type="submit"
+          class="btn btn-primary">
+
+          Salvar alterações
+
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="fecharModal()">
+
+          Cancelar
+
+        </button>
+
+      </div>
+
+    </form>
+
+  `;
+
+  const modalContent =
+    document.getElementById(
+      "modalContent"
+    );
+
+  const modal =
+    document.getElementById(
+      "modalEditar"
+    );
+
+  if (!modalContent || !modal) {
+
+    alert(
+      "Modal de edição não encontrado no HTML."
+    );
+
+    return;
+  }
+
+  modalContent.innerHTML =
+    html;
+
+  modal.classList.add(
+    "show"
+  );
+
+  const formulario =
+    document.getElementById(
+      "form-edicao"
+    );
+
+  formulario.addEventListener(
+    "submit",
+    async function (event) {
+
+      event.preventDefault();
+
+      const novoCodigo =
+        document.getElementById(
+          "edit-codigo"
+        ).value.trim();
+
+      const novoNome =
+        document.getElementById(
+          "edit-nome"
+        ).value.trim();
+
+      const novoStatus =
+        document.getElementById(
+          "edit-status"
+        ).value;
+
+      const novaObservacao =
+        document.getElementById(
+          "edit-observacao"
+        ).value.trim();
+
+      let novaFuncao = "";
+
+      if (
+        tipo === "notebook"
+      ) {
+
+        novaFuncao =
+          document.getElementById(
+            "edit-funcao"
+          ).value.trim();
+
+      }
+
+      if (
+        !novoCodigo ||
+        !novoNome
+      ) {
+
+        alert(
+          "Preencha o código e o nome."
+        );
+
+        return;
+      }
+
+      /*
+       * Verifica se outro equipamento
+       * já utiliza o código.
+       */
+
+      const {
+        data: duplicado,
+        error: erroDuplicado
+      } =
+        await supabaseClient
+
+          .from("equipamentos")
+
+          .select("id")
+
+          .eq(
+            "codigo",
+            novoCodigo
+          )
+
+          .neq(
+            "id",
+            item.id
+          )
+
+          .maybeSingle();
+
+      if (erroDuplicado) {
+
+        console.error(
+          erroDuplicado
+        );
+
+        alert(
+          "Não foi possível verificar o código."
+        );
+
+        return;
+      }
+
+      if (duplicado) {
+
+        alert(
+          "Outro equipamento já possui este código."
+        );
+
+        return;
+      }
+
+      const dadosAtualizados = {
+
+        codigo:
+          novoCodigo,
+
+        nome:
+          novoNome,
+
+        funcao:
+          tipo === "notebook"
+            ? novaFuncao
+            : null,
+
+        status:
+          novoStatus,
+
+        observacao:
+          novaObservacao || null
+
+      };
+
+      /*
+       * Se passou de funcionando
+       * para quebrado, registra
+       * data e hora automaticamente.
+       */
+
+      if (
+        item.status !==
+          "Quebrado" &&
+        novoStatus ===
+          "Quebrado"
+      ) {
+
+        const agora =
+          dataHoraAtual();
+
+        dadosAtualizados.quebrado_data =
+          agora.data;
+
+        dadosAtualizados.quebrado_hora =
+          agora.hora;
+
+        dadosAtualizados.quebrado_observacao =
+          novaObservacao || null;
+
+      }
+
+      /*
+       * Se voltou de quebrado
+       * para funcionando,
+       * limpa os dados da quebra.
+       */
+
+      if (
+        item.status ===
+          "Quebrado" &&
+        novoStatus ===
+          "Funcionando"
+      ) {
+
+        dadosAtualizados.quebrado_data =
+          null;
+
+        dadosAtualizados.quebrado_hora =
+          null;
+
+        dadosAtualizados.quebrado_observacao =
+          null;
+
+      }
+
+      const {
+        error
+      } =
+        await supabaseClient
+
+          .from("equipamentos")
+
+          .update(
+            dadosAtualizados
+          )
+
+          .eq(
+            "id",
+            item.id
+          );
+
+      if (error) {
+
+        console.error(
+          "Erro ao atualizar:",
+          error
+        );
+
+        alert(
+          "Não foi possível salvar as alterações."
+        );
+
+        return;
+      }
+
+      fecharModal();
+
+      await carregarDados();
+
+      renderPage(tipo);
+
+      atualizarDashboard();
+
+      /*
+       * Se a aba de quebrados
+       * estiver aberta, atualiza.
+       */
+
+      const paginaQuebrados =
+        document.getElementById(
+          "quebrados"
+        );
+
+      if (
+        paginaQuebrados &&
+        paginaQuebrados.classList.contains(
+          "active"
+        )
+      ) {
+
+        renderBroken();
+
+      }
+
+      alert(
+        "Alterações salvas com sucesso!"
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   FECHAR MODAL DE EDIÇÃO
+   ========================================================= */
+
+function fecharModal() {
+
+  const modal =
+    document.getElementById(
+      "modalEditar"
+    );
+
+  if (modal) {
+
+    modal.classList.remove(
+      "show"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   FECHAR MODAL AO CLICAR FORA
+   ========================================================= */
+
+window.addEventListener(
+  "click",
+  function (event) {
+
+    const modal =
+      document.getElementById(
+        "modalEditar"
+      );
+
+    if (
+      modal &&
+      event.target === modal
+    ) {
+
+      fecharModal();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   EXCLUIR EQUIPAMENTO
+   ========================================================= */
+
+async function excluirEquipamento(
+  tipo,
+  id
+) {
+
+  const item =
+    dados[tipo].find(
+      equipamento =>
+        String(equipamento.id) ===
+        String(id)
+    );
+
+  if (!item) {
+
+    alert(
+      "Equipamento não encontrado."
+    );
+
+    return;
+  }
+
+  const confirmou =
+    confirm(
+      `Deseja realmente excluir o equipamento "${item.nome}" (${item.codigo})?`
+    );
+
+  if (!confirmou) {
+    return;
+  }
+
+  const {
+    error
+  } =
+    await supabaseClient
+
+      .from("equipamentos")
+
+      .delete()
+
+      .eq(
+        "id",
+        item.id
+      );
+
+  if (error) {
+
+    console.error(
+      "Erro ao excluir:",
+      error
+    );
+
+    alert(
+      "Não foi possível excluir o equipamento."
+    );
+
+    return;
+  }
+
+  await carregarDados();
+
+  /*
+   * Se a página atual ficar
+   * vazia depois da exclusão,
+   * volta uma página.
+   */
+
+  const lista =
+    filtrarDados(tipo);
+
+  const totalPaginas =
+    Math.max(
+      1,
+      Math.ceil(
+        lista.length /
+        POR_PAGINA
+      )
+    );
+
+  if (
+    paginas[tipo] >
+    totalPaginas
+  ) {
+
+    paginas[tipo] =
+      totalPaginas;
+
+  }
+
+  renderPage(tipo);
+
+  atualizarDashboard();
+
+  alert(
+    "Equipamento excluído com sucesso!"
+  );
+
+}
+
+
+/* =========================================================
+   EQUIPAMENTOS QUEBRADOS
+   ========================================================= */
+
+function obterQuebrados() {
+
+  let resultado = [];
+
+  tipos.forEach(
+    function (tipo) {
+
+      dados[tipo].forEach(
+        function (item) {
+
+          if (
+            item.status ===
+            "Quebrado"
+          ) {
+
+            resultado.push({
+
+              ...item,
+
+              tipo: tipo
+
+            });
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+  resultado.sort(
+    function (a, b) {
+
+      const dataA =
+        a.quebradoEm
+          ? `${a.quebradoEm.data} ${a.quebradoEm.hora}`
+          : "";
+
+      const dataB =
+        b.quebradoEm
+          ? `${b.quebradoEm.data} ${b.quebradoEm.hora}`
+          : "";
+
+      return dataB.localeCompare(
+        dataA
+      );
+
+    }
+  );
+
+  return resultado;
+}
+
+
+/* =========================================================
+   FILTROS DOS QUEBRADOS
+   ========================================================= */
+
+function filtrarQuebrados() {
+
+  const buscaElemento =
+    document.getElementById(
+      "busca-quebrados"
+    );
+
+  const dataElemento =
+    document.getElementById(
+      "filtro-data"
+    );
+
+  const mesElemento =
+    document.getElementById(
+      "filtro-mes"
+    );
+
+  const anoElemento =
+    document.getElementById(
+      "filtro-ano"
+    );
+
+  const busca =
+    buscaElemento
+      ? buscaElemento.value
+          .trim()
+          .toLowerCase()
+      : "";
+
+  const data =
+    dataElemento
+      ? dataElemento.value
+      : "";
+
+  const mes =
+    mesElemento
+      ? mesElemento.value
+      : "";
+
+  const ano =
+    anoElemento
+      ? anoElemento.value
+      : "";
+
+  let lista =
+    obterQuebrados();
+
+  lista =
+    lista.filter(
+      function (item) {
+
+        const codigo =
+          (
+            item.codigo ||
+            ""
+          )
+            .toLowerCase();
+
+        const nome =
+          (
+            item.nome ||
+            ""
+          )
+            .toLowerCase();
+
+        /*
+         * Busca por código ou nome.
+         */
+
+        if (
+          busca &&
+          !codigo.includes(
+            busca
+          ) &&
+          !nome.includes(
+            busca
+          )
+        ) {
+
+          return false;
+
+        }
+
+        /*
+         * Filtro por data completa.
+         */
+
+        if (
+          data &&
+          (
+            !item.quebradoEm ||
+            item.quebradoEm.data !==
+              data
+          )
+        ) {
+
+          return false;
+
+        }
+
+        /*
+         * Filtro por mês.
+         */
+
+        if (mes) {
+
+          if (
+            !item.quebradoEm
+          ) {
+
+            return false;
+
+          }
+
+          const mesQuebra =
+            item.quebradoEm.data
+              .split("-")[1];
+
+          if (
+            mesQuebra !==
+            String(mes).padStart(
+              2,
+              "0"
+            )
+          ) {
+
+            return false;
+
+          }
+
+        }
+
+        /*
+         * Filtro por ano.
+         */
+
+        if (ano) {
+
+          if (
+            !item.quebradoEm
+          ) {
+
+            return false;
+
+          }
+
+          const anoQuebra =
+            item.quebradoEm.data
+              .split("-")[0];
+
+          if (
+            anoQuebra !==
+            String(ano)
+          ) {
+
+            return false;
+
+          }
+
+        }
+
+        return true;
+
+      }
+    );
+
+  return lista;
+}
+
+
+/* =========================================================
+   RENDERIZAR EQUIPAMENTOS QUEBRADOS
+   ========================================================= */
+
+function renderBroken() {
+
+  const container =
+    document.getElementById(
+      "tabela-quebrados"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const lista =
+    filtrarQuebrados();
+
+  const totalPaginas =
+    Math.max(
+      1,
+      Math.ceil(
+        lista.length /
+        POR_PAGINA
+      )
+    );
+
+  if (
+    paginas.quebrados >
+    totalPaginas
+  ) {
+
+    paginas.quebrados =
+      totalPaginas;
+
+  }
+
+  const inicio =
+    (
+      paginas.quebrados - 1
+    ) * POR_PAGINA;
+
+  const pagina =
+    lista.slice(
+      inicio,
+      inicio + POR_PAGINA
+    );
+
+  if (
+    pagina.length === 0
+  ) {
+
+    container.innerHTML = `
+
+      <div class="empty">
+
+        Nenhum equipamento quebrado
+        encontrado com os filtros
+        selecionados.
+
+      </div>
+
+    `;
+
+    return;
+  }
+
+  let html = `
+
+    <div class="table-container">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Equipamento
+            </th>
+
+            <th>
+              Código
+            </th>
+
+            <th>
+              Nome
+            </th>
+
+            <th>
+              Data da quebra
+            </th>
+
+            <th>
+              Hora
+            </th>
+
+            <th>
+              Observação
+            </th>
+
+            <th>
+              Ações
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+  `;
+
+  pagina.forEach(
+    function (item) {
+
+      html += `
+
+        <tr>
+
+          <td>
+
+            <strong>
+
+              ${escapeHTML(
+                nomesTipos[
+                  item.tipo
+                ] ||
+                item.tipo
+              )}
+
+            </strong>
+
+          </td>
+
+          <td>
+
+            ${escapeHTML(
+              item.codigo
+            )}
+
+          </td>
+
+          <td>
+
+            ${escapeHTML(
+              item.nome
+            )}
+
+          </td>
+
+          <td>
+
+            ${
+              item.quebradoEm
+                ? formatarDataExibicao(
+                    item.quebradoEm.data
+                  )
+                : "-"
+            }
+
+          </td>
+
+          <td>
+
+            ${
+              item.quebradoEm
+                ? escapeHTML(
+                    item.quebradoEm.hora
+                  )
+                : "-"
+            }
+
+          </td>
+
+          <td>
+
+            ${escapeHTML(
+              item.observacao ||
+              item.quebradoEm?.observacao ||
+              "-"
+            )}
+
+          </td>
+
+          <td>
+
+            <div class="table-actions">
+
+              <button
+                class="edit-btn"
+                onclick="editarQuebrado('${item.tipo}','${item.id}')">
+
+                ✏️ Editar
+
+              </button>
+
+              <button
+                class="delete-btn"
+                onclick="excluirQuebrado('${item.tipo}','${item.id}')">
+
+                🗑️ Excluir
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }
+  );
+
+  html += `
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+  html += criarPaginacao(
+    "quebrados",
+    totalPaginas,
+    paginas.quebrados,
+    "broken"
+  );
+
+  container.innerHTML =
+    html;
+}
+
+
+/* =========================================================
+   FORMATAR DATA PARA EXIBIÇÃO
+   ========================================================= */
+
+function formatarDataExibicao(
+  data
+) {
+
+  if (!data) {
+    return "-";
+  }
+
+  const partes =
+    data.split("-");
+
+  if (
+    partes.length !== 3
+  ) {
+
+    return data;
+
+  }
+
+  return (
+    `${partes[2]}/${partes[1]}/${partes[0]}`
+  );
+}
+
+
+/* =========================================================
+   PREENCHER ANOS DO FILTRO
+   ========================================================= */
+
+function preencherAnos() {
+
+  const select =
+    document.getElementById(
+      "filtro-ano"
+    );
+
+  if (!select) {
+    return;
+  }
+
+  const anoSelecionado =
+    select.value;
+
+  const anos =
+    new Set();
+
+  obterQuebrados().forEach(
+    function (item) {
+
+      if (
+        item.quebradoEm &&
+        item.quebradoEm.data
+      ) {
+
+        const ano =
+          item.quebradoEm.data
+            .split("-")[0];
+
+        if (ano) {
+          anos.add(ano);
+        }
+
+      }
+
+    }
+  );
+
+  const listaAnos =
+    Array.from(anos)
+      .sort()
+      .reverse();
+
+  select.innerHTML = `
+    <option value="">
+      Todos os anos
+    </option>
+  `;
+
+  listaAnos.forEach(
+    function (ano) {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        ano;
+
+      option.textContent =
+        ano;
+
+      if (
+        ano ===
+        anoSelecionado
+      ) {
+
+        option.selected =
+          true;
+
+      }
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+}
+
+
+/* =========================================================
+   EDITAR EQUIPAMENTO QUEBRADO
+   ========================================================= */
+
+async function editarQuebrado(
+  tipo,
+  id
+) {
+
+  const item =
+    dados[tipo]?.find(
+      equipamento =>
+        String(
+          equipamento.id
+        ) === String(id)
+    );
+
+  if (!item) {
+
+    alert(
+      "Equipamento não encontrado."
+    );
+
+    return;
+  }
+
+  let html = `
+
+    <form id="form-edicao-quebrado">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label>
+            Código
+          </label>
+
+          <input
+            id="edit-quebrado-codigo"
+            value="${escapeHTML(
+              item.codigo
+            )}"
+            required>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Nome
+          </label>
+
+          <input
+            id="edit-quebrado-nome"
+            value="${escapeHTML(
+              item.nome
+            )}"
+            required>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Data da quebra
+          </label>
+
+          <input
+            type="date"
+            id="edit-quebrado-data"
+            value="${
+              item.quebradoEm?.data ||
+              ""
+            }"
+            required>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Hora da quebra
+          </label>
+
+          <input
+            type="time"
+            step="1"
+            id="edit-quebrado-hora"
+            value="${
+              item.quebradoEm?.hora ||
+              ""
+            }"
+            required>
+
+        </div>
+
+        <div class="form-group full">
+
+          <label>
+            Observação
+          </label>
+
+          <textarea
+            id="edit-quebrado-observacao"
+          >${escapeHTML(
+            item.observacao ||
+            item.quebradoEm?.observacao ||
+            ""
+          )}</textarea>
+
+        </div>
+
+      </div>
+
+      <div class="actions">
+
+        <button
+          type="submit"
+          class="btn btn-primary">
+
+          Salvar alterações
+
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="fecharModalQuebrado()">
+
+          Cancelar
+
+        </button>
+
+      </div>
+
+    </form>
+
+  `;
+
+  /*
+   * Usa o mesmo modal de edição
+   * caso o HTML não tenha um modal
+   * separado para quebrados.
+   */
+
+  const modal =
+    document.getElementById(
+      "modalEditar"
+    );
+
+  const modalContent =
+    document.getElementById(
+      "modalContent"
+    );
+
+  if (!modal || !modalContent) {
+
+    alert(
+      "Modal de edição não encontrado."
+    );
+
+    return;
+  }
+
+  modalContent.innerHTML =
+    html;
+
+  modal.classList.add(
+    "show"
+  );
+
+  const formulario =
+    document.getElementById(
+      "form-edicao-quebrado"
+    );
+
+  formulario.addEventListener(
+    "submit",
+    async function (event) {
+
+      event.preventDefault();
+
+      const novoCodigo =
+        document.getElementById(
+          "edit-quebrado-codigo"
+        ).value.trim();
+
+      const novoNome =
+        document.getElementById(
+          "edit-quebrado-nome"
+        ).value.trim();
+
+      const novaData =
+        document.getElementById(
+          "edit-quebrado-data"
+        ).value;
+
+      const novaHora =
+        document.getElementById(
+          "edit-quebrado-hora"
+        ).value;
+
+      const novaObservacao =
+        document.getElementById(
+          "edit-quebrado-observacao"
+        ).value.trim();
+
+      if (
+        !novoCodigo ||
+        !novoNome ||
+        !novaData ||
+        !novaHora
+      ) {
+
+        alert(
+          "Preencha todos os campos obrigatórios."
+        );
+
+        return;
+      }
+
+      const {
+        error
+      } =
+        await supabaseClient
+
+          .from("equipamentos")
+
+          .update({
+
+            codigo:
+              novoCodigo,
+
+            nome:
+              novoNome,
+
+            status:
+              "Quebrado",
+
+            observacao:
+              novaObservacao || null,
+
+            quebrado_data:
+              novaData,
+
+            quebrado_hora:
+              novaHora,
+
+            quebrado_observacao:
+              novaObservacao || null
+
+          })
+
+          .eq(
+            "id",
+            item.id
+          );
+
+      if (error) {
+
+        console.error(
+          "Erro ao atualizar quebrado:",
+          error
+        );
+
+        alert(
+          "Não foi possível atualizar o equipamento."
+        );
+
+        return;
+      }
+
+      fecharModal();
+
+      await carregarDados();
+
+      preencherAnos();
+
+      renderBroken();
+
+      atualizarDashboard();
+
+      alert(
+        "Equipamento quebrado atualizado com sucesso!"
+      );
+
+    }
+  );
+}
+
+
+/* =========================================================
+   EXCLUIR EQUIPAMENTO QUEBRADO
+   ========================================================= */
+
+async function excluirQuebrado(
+  tipo,
+  id
+) {
+
+  const item =
+    dados[tipo]?.find(
+      equipamento =>
+        String(
+          equipamento.id
+        ) === String(id)
+    );
+
+  if (!item) {
+
+    alert(
+      "Equipamento não encontrado."
+    );
+
+    return;
+  }
+
+  const confirmou =
+    confirm(
+      `Deseja realmente excluir o registro "${item.nome}" (${item.codigo})?`
+    );
+
+  if (!confirmou) {
+    return;
+  }
+
+  const {
+    error
+  } =
+    await supabaseClient
+
+      .from("equipamentos")
+
+      .delete()
+
+      .eq(
+        "id",
+        item.id
+      );
+
+  if (error) {
+
+    console.error(
+      "Erro ao excluir quebrado:",
+      error
+    );
+
+    alert(
+      "Não foi possível excluir o registro."
+    );
+
+    return;
+  }
+
+  await carregarDados();
+
+  preencherAnos();
+
+  paginas.quebrados = 1;
+
+  renderBroken();
+
+  atualizarDashboard();
+
+  alert(
+    "Registro excluído com sucesso!"
+  );
+}
+
+
+/* =========================================================
+   FILTROS — ATUALIZAÇÃO AUTOMÁTICA
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    const busca =
+      document.getElementById(
+        "busca-quebrados"
+      );
+
+    const data =
+      document.getElementById(
+        "filtro-data"
+      );
+
+    const mes =
+      document.getElementById(
+        "filtro-mes"
+      );
+
+    const ano =
+      document.getElementById(
+        "filtro-ano"
+      );
+
+    if (busca) {
+
+      busca.addEventListener(
+        "input",
+        function () {
+
+          paginas.quebrados =
+            1;
+
+          renderBroken();
+
+        }
+      );
+
+    }
+
+    if (data) {
+
+      data.addEventListener(
+        "change",
+        function () {
+
+          paginas.quebrados =
+            1;
+
+          renderBroken();
+
+        }
+      );
+
+    }
+
+    if (mes) {
+
+      mes.addEventListener(
+        "change",
+        function () {
+
+          paginas.quebrados =
+            1;
+
+          renderBroken();
+
+        }
+      );
+
+    }
+
+    if (ano) {
+
+      ano.addEventListener(
+        "change",
+        function () {
+
+          paginas.quebrados =
+            1;
+
+          renderBroken();
+
+        }
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   LIMPAR FILTROS DOS QUEBRADOS
+   ========================================================= */
+
+function limparFiltrosQuebrados() {
+
+  const busca =
+    document.getElementById(
+      "busca-quebrados"
+    );
+
+  const data =
+    document.getElementById(
+      "filtro-data"
+    );
+
+  const mes =
+    document.getElementById(
+      "filtro-mes"
+    );
+
+  const ano =
+    document.getElementById(
+      "filtro-ano"
+    );
+
+  if (busca) {
+    busca.value = "";
+  }
+
+  if (data) {
+    data.value = "";
+  }
+
+  if (mes) {
+    mes.value = "";
+  }
+
+  if (ano) {
+    ano.value = "";
+  }
+
+  paginas.quebrados =
+    1;
+
+  renderBroken();
+}
+
+
+/* =========================================================
+   FECHAR MODAL DE QUEBRADO
+   ========================================================= */
+
+function fecharModalQuebrado() {
+
+  fecharModal();
+
+}
+
+
+/* =========================================================
+   ATUALIZAÇÃO DOS DADOS AO VOLTAR PARA UMA ABA
+   ========================================================= */
+
+async function atualizarAbaAtual() {
+
+  await carregarDados();
+
+  const paginaAtiva =
+    document.querySelector(
+      ".page.active"
+    );
+
+  if (!paginaAtiva) {
+    return;
+  }
+
+  const id =
+    paginaAtiva.id;
+
+  if (
+    tipos.includes(id)
+  ) {
+
+    renderPage(id);
+
+  }
+
+  if (
+    id === "dashboard"
+  ) {
+
+    atualizarDashboard();
+
+  }
+
+  if (
+    id === "quebrados"
+  ) {
+
+    preencherAnos();
+
+    renderBroken();
+
+  }
+
+}
+
+
+/* =========================================================
+   INICIALIZAÇÃO FINAL
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async function () {
+
+    console.log(
+      "Sistema iniciando..."
+    );
+
+    await carregarDados();
+
+    atualizarDashboard();
+
+    tipos.forEach(
+      function (tipo) {
+
+        renderPage(tipo);
+
+      }
+    );
+
+    preencherAnos();
+
+    renderBroken();
+
+    console.log(
+      "Sistema conectado ao Supabase."
+    );
+
+  }
+);
+
 
 
   
