@@ -56,8 +56,10 @@ let dados = {
   radio: [],
   carregador: [],
   doisD: [],
-  impressora: []
+  impressora: [],
+  quebrados: []
 };
+
 
 let paginas = {
   hh: 1,
@@ -308,6 +310,94 @@ function converterRegistro(row) {
   };
 
 }
+/* =========================================================
+   CONVERSÃO DE REGISTRO DE QUEBRADO
+   ========================================================= */
+
+function converterQuebrado(row) {
+
+  return {
+
+    id:
+      String(row.id),
+
+    nome:
+      row.nome || "",
+
+    quantidade:
+      Number(row.quantidade || 1),
+
+    observacao:
+      row.observacao || "",
+
+    criadoEm: {
+
+      data:
+        row.criado_em
+          ? String(row.criado_em).substring(0, 10)
+          : "",
+
+      hora:
+        row.criado_em
+          ? String(row.criado_em).substring(11, 19)
+          : ""
+
+    }
+
+  };
+
+}
+
+/* =========================================================
+   CARREGAR QUEBRADOS MANUAIS
+   ========================================================= */
+
+async function carregarQuebrados() {
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("quebrados")
+        .select("*")
+        .order(
+          "criado_em",
+          {
+            ascending: false
+          }
+        );
+
+    if (error) {
+      throw error;
+    }
+
+    dados.quebrados =
+      (data || []).map(
+        function (row) {
+
+          return converterQuebrado(row);
+
+        }
+      );
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao carregar registros de quebrados:",
+      error
+    );
+
+    alert(
+      "Não foi possível carregar os registros de quebrados."
+    );
+
+  }
+
+}
+
 
 
 /* =========================================================
@@ -336,16 +426,18 @@ async function carregarDados() {
       throw error;
     }
 
-    dados = {
+  dados = {
 
-      hh: [],
-      notebook: [],
-      radio: [],
-      carregador: [],
-      doisD: [],
-      impressora: []
+  hh: [],
+  notebook: [],
+  radio: [],
+  carregador: [],
+  doisD: [],
+  impressora: [],
+  quebrados: []
 
-    };
+};
+
 
     (data || []).forEach(
       function (row) {
@@ -367,6 +459,7 @@ async function carregarDados() {
 
       }
     );
+await carregarQuebrados();
 
     atualizarDashboard();
 
@@ -954,6 +1047,176 @@ async function adicionarEquipamento(
   }
 
 }
+/* =========================================================
+   CADASTRAR REGISTRO DE QUEBRADO
+   ========================================================= */
+
+async function adicionarQuebrado() {
+
+  const nomeInput =
+    document.getElementById(
+      "quebrado-nome"
+    );
+
+  const quantidadeInput =
+    document.getElementById(
+      "quebrado-quantidade"
+    );
+
+  const observacaoInput =
+    document.getElementById(
+      "quebrado-observacao"
+    );
+
+
+  if (
+    !nomeInput ||
+    !quantidadeInput ||
+    !observacaoInput
+  ) {
+
+    alert(
+      "Não foi possível localizar os campos de quebrados."
+    );
+
+    return;
+
+  }
+
+
+  const nome =
+    nomeInput.value.trim();
+
+
+  const quantidade =
+    Number(
+      quantidadeInput.value
+    );
+
+
+  const observacao =
+    observacaoInput.value.trim();
+
+
+  if (!nome) {
+
+    alert(
+      "Informe o nome do equipamento."
+    );
+
+    nomeInput.focus();
+
+    return;
+
+  }
+
+
+  if (
+    !quantidade ||
+    quantidade < 1
+  ) {
+
+    alert(
+      "Informe uma quantidade válida."
+    );
+
+    quantidadeInput.focus();
+
+    return;
+
+  }
+
+
+  try {
+
+    const registro = {
+
+      nome:
+        nome,
+
+      quantidade:
+        quantidade,
+
+      observacao:
+        observacao || null
+
+    };
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("quebrados")
+        .insert([
+          registro
+        ])
+        .select()
+        .single();
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const novo =
+      converterQuebrado(
+        data
+      );
+
+
+    dados.quebrados.unshift(
+      novo
+    );
+
+
+    const form =
+      document.getElementById(
+        "form-quebrados"
+      );
+
+
+    if (form) {
+      form.reset();
+    }
+
+
+    quantidadeInput.value =
+      "1";
+
+
+    paginas.quebrados =
+      1;
+
+
+    renderBroken();
+
+
+    alert(
+      "Equipamento quebrado registrado com sucesso!"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao cadastrar quebrado:",
+      error
+    );
+
+    alert(
+      "Não foi possível registrar o equipamento quebrado.\n\n" +
+      (
+        error.message ||
+        "Verifique sua conexão com o banco de dados."
+      )
+    );
+
+  }
+
+}
 
 
 /* =========================================================
@@ -991,6 +1254,27 @@ function registrarEventosFormularios() {
   );
 
 }
+  const formQuebrados =
+    document.getElementById(
+      "form-quebrados"
+    );
+
+
+  if (formQuebrados) {
+
+    formQuebrados.addEventListener(
+      "submit",
+      async function (event) {
+
+        event.preventDefault();
+
+        await adicionarQuebrado();
+
+      }
+    );
+
+  }
+
 
 
 /* =========================================================
@@ -2340,6 +2624,10 @@ function obterQuebrados() {
   const resultado = [];
 
 
+  /* =====================================================
+     EQUIPAMENTOS EXISTENTES COM STATUS QUEBRADO
+     ===================================================== */
+
   tipos.forEach(
     function (tipo) {
 
@@ -2364,7 +2652,13 @@ function obterQuebrados() {
               ...item,
 
               tipo:
-                tipo
+                tipo,
+
+              origem:
+                "equipamento",
+
+              quantidade:
+                1
 
             });
 
@@ -2376,6 +2670,57 @@ function obterQuebrados() {
     }
   );
 
+
+  /* =====================================================
+     REGISTROS MANUAIS
+     ===================================================== */
+
+  const manuais =
+    Array.isArray(
+      dados.quebrados
+    )
+      ? dados.quebrados
+      : [];
+
+
+  manuais.forEach(
+    function (item) {
+
+      resultado.push({
+
+        ...item,
+
+        tipo:
+          "quebrado",
+
+        origem:
+          "manual",
+
+        codigo:
+          "",
+
+        quebradoEm: {
+
+          data:
+            item.criadoEm?.data || "",
+
+          hora:
+            item.criadoEm?.hora || "",
+
+          observacao:
+            item.observacao || ""
+
+        }
+
+      });
+
+    }
+  );
+
+
+  /* =====================================================
+     ORDENAÇÃO
+     ===================================================== */
 
   resultado.sort(
     function (a, b) {
@@ -2829,6 +3174,10 @@ function renderBroken() {
             <th>
               Nome
             </th>
+            
+            <th>
+            Quantidade
+            </th>
 
             <th>
               Data da quebra
@@ -2896,6 +3245,12 @@ function renderBroken() {
             )}
 
           </td>
+          <td>
+          ${escapeHTML(
+             item.quantidade || 1
+          )}
+          </td>
+
 
 
           <td>
@@ -2949,11 +3304,9 @@ function renderBroken() {
 
                 class="edit-btn"
 
-                onclick="
-                  editarQuebrado(
-                    '${escapeHTML(tipo)}',
-                    '${escapeHTML(item.id)}'
-                  )
+         
+                item.origem === "manual"
+
                 "
 
               >
@@ -4064,6 +4417,10 @@ window.mudarPagina =
 
 window.limparFiltrosQuebrados =
   limparFiltrosQuebrados;
+
+window.adicionarQuebrado =
+  adicionarQuebrado;
+
 
 
 /* =========================================================
