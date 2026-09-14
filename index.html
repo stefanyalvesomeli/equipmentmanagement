@@ -509,39 +509,118 @@
      EQUIPAMENTOS QUEBRADOS
      =================================================== -->
 <section id="quebrados" class="page">
+
   <div class="page-header">
     <div>
       <h2>Equipamentos quebrados</h2>
-      <p>Histórico dos equipamentos atualmente quebrados.</p>
+      <p>Registre e acompanhe os equipamentos quebrados.</p>
     </div>
   </div>
+
+  <!-- =================================================
+       FORMULÁRIO DE REGISTRO DE QUEBRADOS
+       ================================================= -->
   <div class="card">
+    <h3>Novo equipamento quebrado</h3>
+
+    <form id="form-quebrados">
+
+      <div class="form-grid">
+
+        <!-- NOME -->
+        <div class="form-group">
+          <label for="quebrado-nome">
+            Nome *
+          </label>
+
+          <input
+            id="quebrado-nome"
+            type="text"
+            placeholder="Nome do equipamento"
+            required>
+        </div>
+
+        <!-- QUANTIDADE -->
+        <div class="form-group">
+          <label for="quebrado-quantidade">
+            Quantidade *
+          </label>
+
+          <input
+            id="quebrado-quantidade"
+            type="number"
+            min="1"
+            value="1"
+            required>
+        </div>
+
+        <!-- OBSERVAÇÕES -->
+        <div class="form-group full">
+          <label for="quebrado-observacao">
+            Observações
+          </label>
+
+          <textarea
+            id="quebrado-observacao"
+            placeholder="Informe o problema, motivo da quebra ou outras observações..."></textarea>
+        </div>
+
+      </div>
+
+      <div class="actions">
+
+        <button
+          type="submit"
+          class="btn btn-primary">
+          Registrar quebrado
+        </button>
+
+        <button
+          type="reset"
+          class="btn btn-secondary">
+          Limpar
+        </button>
+
+      </div>
+
+    </form>
+  </div>
+
+  <!-- =================================================
+       FILTROS
+       ================================================= -->
+  <div class="card">
+
     <div class="filters">
+
       <div class="form-group">
         <label for="busca-quebrados">
           Buscar
         </label>
+
         <input
           id="busca-quebrados"
           type="search"
-          placeholder="Código ou nome">
+          placeholder="Nome ou observação">
       </div>
+
       <div class="form-group">
         <label for="filtro-data">
           Data
         </label>
+
         <input
           id="filtro-data"
           type="date">
       </div>
+
       <div class="form-group">
         <label for="filtro-mes">
           Mês
         </label>
+
         <select id="filtro-mes">
-          <option value="">
-            Todos
-          </option>
+          <option value="">Todos</option>
           <option value="01">Janeiro</option>
           <option value="02">Fevereiro</option>
           <option value="03">Março</option>
@@ -556,29 +635,49 @@
           <option value="12">Dezembro</option>
         </select>
       </div>
+
       <div class="form-group">
         <label for="filtro-ano">
           Ano
         </label>
+
         <select id="filtro-ano">
           <option value="">
             Todos os anos
           </option>
         </select>
       </div>
+
       <div class="filter-actions">
         <button
+          type="button"
           class="btn btn-secondary"
           onclick="limparFiltrosQuebrados()">
           Limpar filtros
         </button>
       </div>
+
     </div>
+
   </div>
+
+  <!-- =================================================
+       LISTA DE EQUIPAMENTOS QUEBRADOS
+       ================================================= -->
   <div class="card">
+
+    <div class="section-title">
+      <div>
+        <h3>Registros de equipamentos quebrados</h3>
+      </div>
+    </div>
+
     <div id="tabela-quebrados"></div>
+
   </div>
+
 </section>
+
 </main> <!-- ===================================================== MODAL DE EDIÇÃO ===================================================== --> <div id="modalEditar" class="modal">
 <div class="modal-box">
   <div class="modal-header">
