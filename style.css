@@ -26,21 +26,21 @@
 box-sizing: border-box;
 }
 html {
-scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 body {
-margin: 0;
+  margin: 0;
 
-font-family:
-Inter,
--apple-system,
-BlinkMacSystemFont,
-"Segoe UI",
-sans-serif;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 
-background: var(--background);
-color: var(--text);
+  background: var(--background);
+  color: var(--text);
 }
 
 /* =====================================================
@@ -159,9 +159,12 @@ MAIN
 ===================================================== */
 
 .main {
+  margin-left: 260px;
+  min-height: 100vh;
+}
+
 .main-content {
-  margin-left: 300px;
-  width: calc(100% - 300px);
+  width: 100%;
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -216,6 +219,7 @@ cursor: pointer;
 
 font-size: 20px;
 }
+
 
 /* =====================================================
 PAGES
