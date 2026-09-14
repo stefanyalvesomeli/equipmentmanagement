@@ -1624,10 +1624,12 @@ function renderPage(
 
                 class="edit-btn"
 
-                onclick="editarEquipamento(
-                  '${escapeHTML(tipo)}',
-                  '${escapeHTML(item.id)}'
-                )"
+               onclick="editarEquipamento(
+  '${escapeHTML(tipo)}',
+  '${escapeHTML(item.id)}',
+  false
+)"
+
 
               >
 
@@ -1643,9 +1645,11 @@ function renderPage(
                 class="delete-btn"
 
                 onclick="excluirEquipamento(
-                  '${escapeHTML(tipo)}',
-                  '${escapeHTML(item.id)}'
-                )"
+  '${escapeHTML(tipo)}',
+  '${escapeHTML(item.id)}',
+  false
+)"
+
 
               >
 
@@ -1694,7 +1698,6 @@ function renderPage(
 
 }
 
-
 /* =========================================================
    PAGINAÇÃO
    ========================================================= */
@@ -1706,13 +1709,236 @@ function criarPaginacao(
   modo
 ) {
 
-  if (
-    total <= 1
-  ) {
+  /*
+   * Não mostra paginação quando existe
+   * apenas uma página.
+   */
 
+  if (total <= 1) {
     return "";
+  }
+
+
+  let html =
+    `<div class="pagination">`;
+
+
+  /*
+   * Botão anterior.
+   */
+
+  html += `
+
+    <button
+
+      type="button"
+
+      class="pagination-prev"
+
+      onclick="
+        mudarPagina(
+          '${escapeHTML(tipo)}',
+          ${atual - 1},
+          '${escapeHTML(modo)}'
+        )
+      "
+
+      ${atual === 1
+        ? "disabled"
+        : ""}
+
+    >
+
+      ← Anterior
+
+    </button>
+
+  `;
+
+
+  /*
+   * Calcula quais páginas serão exibidas.
+   */
+
+  const paginasExibir = [];
+
+
+  function adicionarPagina(numero) {
+
+    if (
+      !paginasExibir.includes(numero)
+    ) {
+
+      paginasExibir.push(
+        numero
+      );
+
+    }
 
   }
+
+
+  /*
+   * Sempre mostra a primeira página.
+   */
+
+  adicionarPagina(1);
+
+
+  /*
+   * Páginas próximas da página atual.
+   */
+
+  for (
+    let i = atual - 2;
+    i <= atual + 2;
+    i++
+  ) {
+
+    if (
+      i > 1 &&
+      i < total
+    ) {
+
+      adicionarPagina(i);
+
+    }
+
+  }
+
+
+  /*
+   * Sempre mostra a última página.
+   */
+
+  if (total > 1) {
+
+    adicionarPagina(total);
+
+  }
+
+
+  /*
+   * Ordena as páginas.
+   */
+
+  paginasExibir.sort(
+    function (a, b) {
+
+      return a - b;
+
+    }
+  );
+
+
+  /*
+   * Cria os botões e os "..."
+   */
+
+  let paginaAnterior = null;
+
+
+  paginasExibir.forEach(
+    function (numero) {
+
+      /*
+       * Se houver um intervalo entre
+       * as páginas, coloca "..."
+       */
+
+      if (
+        paginaAnterior !== null &&
+        numero > paginaAnterior + 1
+      ) {
+
+        html += `
+
+          <span class="pagination-dots">
+            ...
+          </span>
+
+        `;
+
+      }
+
+
+      html += `
+
+        <button
+
+          type="button"
+
+          class="${
+            numero === atual
+              ? "active"
+              : ""
+          }"
+
+          onclick="
+            mudarPagina(
+              '${escapeHTML(tipo)}',
+              ${numero},
+              '${escapeHTML(modo)}'
+            )
+          "
+
+        >
+
+          ${numero}
+
+        </button>
+
+      `;
+
+
+      paginaAnterior =
+        numero;
+
+    }
+  );
+
+
+  /*
+   * Botão próxima.
+   */
+
+  html += `
+
+    <button
+
+      type="button"
+
+      class="pagination-next"
+
+      onclick="
+        mudarPagina(
+          '${escapeHTML(tipo)}',
+          ${atual + 1},
+          '${escapeHTML(modo)}'
+        )
+      "
+
+      ${atual === total
+        ? "disabled"
+        : ""}
+
+    >
+
+      Próxima →
+
+    </button>
+
+  `;
+
+
+  html +=
+    `</div>`;
+
+
+  return html;
+
+}
+
 
 
   let html =
@@ -1818,12 +2044,119 @@ function criarPaginacao(
 
 }
 
-
 function mudarPagina(
   tipo,
   pagina,
   modo
 ) {
+
+  /*
+   * Garante que a página seja um número válido.
+   */
+
+  pagina =
+    Number(pagina);
+
+
+  if (
+    !Number.isFinite(pagina)
+  ) {
+
+    pagina = 1;
+
+  }
+
+
+  pagina =
+    Math.floor(pagina);
+
+
+  /*
+   * Paginação dos equipamentos quebrados.
+   */
+
+  if (
+    modo === "broken"
+  ) {
+
+    const lista =
+      filtrarQuebrados();
+
+
+    const totalPaginas =
+      Math.max(
+        1,
+        Math.ceil(
+          lista.length /
+          POR_PAGINA
+        )
+      );
+
+
+    /*
+     * Impede páginas menores que 1
+     * ou maiores que o total.
+     */
+
+    pagina =
+      Math.max(
+        1,
+        Math.min(
+          pagina,
+          totalPaginas
+        )
+      );
+
+
+    paginas.quebrados =
+      pagina;
+
+
+    renderBroken();
+
+    return;
+
+  }
+
+
+  /*
+   * Paginação normal.
+   */
+
+  const lista =
+    filtrarDados(tipo);
+
+
+  const totalPaginas =
+    Math.max(
+      1,
+      Math.ceil(
+        lista.length /
+        POR_PAGINA
+      )
+    );
+
+
+  pagina =
+    Math.max(
+      1,
+      Math.min(
+        pagina,
+        totalPaginas
+      )
+    );
+
+
+  paginas[tipo] =
+    pagina;
+
+
+  renderPage(
+    tipo
+  );
+
+}
+
 
   if (
     modo ===
@@ -1854,24 +2187,16 @@ function mudarPagina(
    EDITAR EQUIPAMENTO
    ========================================================= */
 
-async function editarEquipamento(
-  tipo,
-  id
-) {
+async function editarEquipamento(tipo, id, editarQuebra = false) {
 
-  const item =
-    dados[tipo]?.find(
-      function (equipamento) {
+  const item = dados[tipo]?.find(function (equipamento) {
 
-        return (
-          String(
-            equipamento.id
-          ) ===
-          String(id)
-        );
-
-      }
+    return (
+      String(equipamento.id) ===
+      String(id)
     );
+
+  });
 
 
   if (!item) {
@@ -1883,6 +2208,24 @@ async function editarEquipamento(
     return;
 
   }
+
+
+  /*
+   * Verifica se o equipamento já está quebrado.
+   */
+
+  const estaQuebrado =
+    item.status === "Quebrado";
+
+
+  /*
+   * Se estamos editando pela página
+   * de equipamentos quebrados, exibimos
+   * também os dados da quebra.
+   */
+
+  const mostrarDadosQuebra =
+    estaQuebrado || editarQuebra;
 
 
   let html = `
@@ -1898,15 +2241,9 @@ async function editarEquipamento(
           </label>
 
           <input
-
             id="edit-codigo"
-
-            value="${escapeHTML(
-              item.codigo
-            )}"
-
+            value="${escapeHTML(item.codigo)}"
             required
-
           >
 
         </div>
@@ -1919,15 +2256,9 @@ async function editarEquipamento(
           </label>
 
           <input
-
             id="edit-nome"
-
-            value="${escapeHTML(
-              item.nome
-            )}"
-
+            value="${escapeHTML(item.nome)}"
             required
-
           >
 
         </div>
@@ -1935,10 +2266,11 @@ async function editarEquipamento(
   `;
 
 
-  if (
-    tipo ===
-    "notebook"
-  ) {
+  /*
+   * Função do notebook.
+   */
+
+  if (tipo === "notebook") {
 
     html += `
 
@@ -1949,13 +2281,10 @@ async function editarEquipamento(
         </label>
 
         <input
-
           id="edit-funcao"
-
           value="${escapeHTML(
             item.funcao || ""
           )}"
-
         >
 
       </div>
@@ -1965,6 +2294,10 @@ async function editarEquipamento(
   }
 
 
+  /*
+   * Status.
+   */
+
   html += `
 
         <div class="form-group">
@@ -1973,36 +2306,28 @@ async function editarEquipamento(
             Status
           </label>
 
-          <select
-            id="edit-status">
+          <select id="edit-status">
 
             <option
               value="Funcionando"
               ${
-                item.status ===
-                "Funcionando"
+                item.status === "Funcionando"
                   ? "selected"
                   : ""
               }
             >
-
               Funcionando
-
             </option>
-
 
             <option
               value="Quebrado"
               ${
-                item.status ===
-                "Quebrado"
+                item.status === "Quebrado"
                   ? "selected"
                   : ""
               }
             >
-
               Quebrado
-
             </option>
 
           </select>
@@ -2024,36 +2349,95 @@ async function editarEquipamento(
 
         </div>
 
+  `;
+
+
+  /*
+   * Dados da quebra.
+   */
+
+  if (mostrarDadosQuebra) {
+
+    html += `
+
+        <div class="form-group">
+
+          <label>
+            Data da quebra
+          </label>
+
+          <input
+            type="date"
+            id="edit-quebrado-data"
+            value="${
+              item.quebradoEm?.data || ""
+            }"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Hora da quebra
+          </label>
+
+          <input
+            type="time"
+            id="edit-quebrado-hora"
+            value="${
+              item.quebradoEm?.hora
+                ? item.quebradoEm.hora.substring(0, 5)
+                : ""
+            }"
+          >
+
+        </div>
+
+
+        <div class="form-group full">
+
+          <label>
+            Observação da quebra
+          </label>
+
+          <textarea
+            id="edit-quebrado-observacao"
+          >${escapeHTML(
+            item.quebradoEm?.observacao ||
+            item.observacao ||
+            ""
+          )}</textarea>
+
+        </div>
+
+    `;
+
+  }
+
+
+  html += `
+
       </div>
 
 
       <div class="actions">
 
         <button
-
           type="submit"
-
           class="btn btn-primary"
-
         >
-
           Salvar alterações
-
         </button>
 
 
         <button
-
           type="button"
-
           class="btn btn-secondary"
-
           onclick="fecharModal()"
-
         >
-
           Cancelar
-
         </button>
 
       </div>
@@ -2143,18 +2527,26 @@ async function editarEquipamento(
       let novaFuncao = "";
 
 
-      if (
-        tipo ===
-        "notebook"
-      ) {
+      if (tipo === "notebook") {
 
-        novaFuncao =
+        const campoFuncao =
           document.getElementById(
             "edit-funcao"
-          ).value.trim();
+          );
+
+        if (campoFuncao) {
+
+          novaFuncao =
+            campoFuncao.value.trim();
+
+        }
 
       }
 
+
+      /*
+       * Validação básica.
+       */
 
       if (
         !novoCodigo ||
@@ -2171,8 +2563,7 @@ async function editarEquipamento(
 
 
       /*
-       * Verifica código duplicado
-       * somente se o código mudou.
+       * Verifica código duplicado.
        */
 
       if (
@@ -2180,50 +2571,55 @@ async function editarEquipamento(
         item.codigo
       ) {
 
-        const {
-          data: duplicado,
-          error: erroDuplicado
-        } =
-          await supabaseClient
+        try {
 
-            .from(
-              "equipamentos"
-            )
+          const {
+            data: duplicado,
+            error: erroDuplicado
+          } =
+            await supabaseClient
 
-            .select("id")
+              .from("equipamentos")
 
-            .eq(
-              "codigo",
-              novoCodigo
-            )
+              .select("id")
 
-            .neq(
-              "id",
-              item.id
-            )
+              .eq(
+                "codigo",
+                novoCodigo
+              )
 
-            .maybeSingle();
+              .neq(
+                "id",
+                item.id
+              )
+
+              .maybeSingle();
 
 
-        if (erroDuplicado) {
+          if (erroDuplicado) {
+            throw erroDuplicado;
+          }
+
+
+          if (duplicado) {
+
+            alert(
+              "Outro equipamento já possui este código."
+            );
+
+            return;
+
+          }
+
+        } catch (error) {
 
           console.error(
-            erroDuplicado
+            "Erro ao verificar código:",
+            error
           );
 
           alert(
-            "Não foi possível verificar o código."
-          );
-
-          return;
-
-        }
-
-
-        if (duplicado) {
-
-          alert(
-            "Outro equipamento já possui este código."
+            "Não foi possível verificar o código do equipamento."
           );
 
           return;
@@ -2234,7 +2630,7 @@ async function editarEquipamento(
 
 
       /*
-       * Dados da quebra.
+       * Dados atuais da quebra.
        */
 
       let quebradoData =
@@ -2253,14 +2649,15 @@ async function editarEquipamento(
 
 
       /*
-       * Funcionando → Quebrado.
+       * FUNCIONANDO → QUEBRADO
+       *
+       * Cria automaticamente
+       * a data e hora da quebra.
        */
 
       if (
-        item.status !==
-          "Quebrado" &&
-        novoStatus ===
-          "Quebrado"
+        item.status !== "Quebrado" &&
+        novoStatus === "Quebrado"
       ) {
 
         const agora =
@@ -2283,31 +2680,94 @@ async function editarEquipamento(
 
 
       /*
-       * Se continua quebrado,
-       * mantém a data original.
+       * QUEBRADO → QUEBRADO
+       *
+       * Mantém a data original,
+       * mas permite alterar a observação.
        */
 
-      if (
-        item.status ===
-          "Quebrado" &&
-        novoStatus ===
-          "Quebrado"
+      else if (
+        item.status === "Quebrado" &&
+        novoStatus === "Quebrado"
       ) {
 
-        quebradoObservacao =
-          novaObservacao ||
-          null;
+        /*
+         * Se estiver usando a edição
+         * pela página de quebrados,
+         * permite alterar data/hora.
+         */
+
+        if (editarQuebra) {
+
+          const campoData =
+            document.getElementById(
+              "edit-quebrado-data"
+            );
+
+
+          const campoHora =
+            document.getElementById(
+              "edit-quebrado-hora"
+            );
+
+
+          const campoObservacao =
+            document.getElementById(
+              "edit-quebrado-observacao"
+            );
+
+
+          if (
+            campoData &&
+            campoData.value
+          ) {
+
+            quebradoData =
+              campoData.value;
+
+          }
+
+
+          if (
+            campoHora &&
+            campoHora.value
+          ) {
+
+            quebradoHora =
+              campoHora.value + ":00";
+
+          }
+
+
+          if (campoObservacao) {
+
+            quebradoObservacao =
+              campoObservacao.value.trim() ||
+              null;
+
+          }
+
+        }
+
+        else {
+
+          quebradoObservacao =
+            novaObservacao ||
+            null;
+
+        }
 
       }
 
 
       /*
-       * Quebrado → Funcionando.
+       * QUEBRADO → FUNCIONANDO
+       *
+       * Remove os dados da quebra.
        */
 
       if (
-        novoStatus ===
-        "Funcionando"
+        novoStatus === "Funcionando"
       ) {
 
         quebradoData =
@@ -2321,6 +2781,34 @@ async function editarEquipamento(
 
       }
 
+
+      /*
+       * Se o equipamento foi colocado
+       * como quebrado manualmente, exige
+       * os dados mínimos.
+       */
+
+      if (
+        novoStatus === "Quebrado" &&
+        (
+          !quebradoData ||
+          !quebradoHora
+        )
+      ) {
+
+        alert(
+          "Informe a data e a hora da quebra."
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * Dados que serão enviados
+       * para o Supabase.
+       */
 
       const dadosAtualizados = {
 
@@ -2361,9 +2849,7 @@ async function editarEquipamento(
         } =
           await supabaseClient
 
-            .from(
-              "equipamentos"
-            )
+            .from("equipamentos")
 
             .update(
               dadosAtualizados
@@ -2383,11 +2869,20 @@ async function editarEquipamento(
         }
 
 
+        /*
+         * Converte novamente o registro
+         * vindo do banco.
+         */
+
         const atualizado =
           converterRegistro(
             data
           );
 
+
+        /*
+         * Atualiza o array local.
+         */
 
         const indice =
           dados[tipo].findIndex(
@@ -2414,16 +2909,39 @@ async function editarEquipamento(
         }
 
 
+        /*
+         * Fecha o modal.
+         */
+
         fecharModal();
 
 
+        /*
+         * Atualiza dashboard.
+         */
+
         atualizarDashboard();
+
+
+        /*
+         * Atualiza tabela normal.
+         */
 
         renderPage(
           tipo
         );
 
+
+        /*
+         * Atualiza anos disponíveis.
+         */
+
         preencherAnos();
+
+
+        /*
+         * Atualiza lista de quebrados.
+         */
 
         renderBroken();
 
@@ -2435,7 +2953,7 @@ async function editarEquipamento(
       } catch (error) {
 
         console.error(
-          "Erro ao editar:",
+          "Erro ao editar equipamento:",
           error
         );
 
@@ -2443,7 +2961,7 @@ async function editarEquipamento(
           "Não foi possível salvar as alterações.\n\n" +
           (
             error.message ||
-            ""
+            "Verifique sua conexão com o banco de dados."
           )
         );
 
@@ -2453,8 +2971,6 @@ async function editarEquipamento(
   );
 
 }
-
-
 /* =========================================================
    FECHAR MODAL
    ========================================================= */
@@ -2509,19 +3025,14 @@ window.addEventListener(
    EXCLUIR EQUIPAMENTO
    ========================================================= */
 
-async function excluirEquipamento(
-  tipo,
-  id
-) {
+async function excluirEquipamento(tipo, id, excluirQuebrado = false) {
 
   const item =
     dados[tipo]?.find(
       function (equipamento) {
 
         return (
-          String(
-            equipamento.id
-          ) ===
+          String(equipamento.id) ===
           String(id)
         );
 
@@ -2540,16 +3051,29 @@ async function excluirEquipamento(
   }
 
 
+  /*
+   * Mensagem diferente quando a exclusão
+   * acontece pela página de quebrados.
+   */
+
+  const mensagem =
+    excluirQuebrado
+      ? `Deseja realmente excluir o equipamento quebrado "${item.nome}" (${item.codigo})?`
+      : `Deseja realmente excluir o equipamento "${item.nome}" (${item.codigo})?`;
+
+
   const confirmou =
-    confirm(
-      `Deseja realmente excluir o equipamento "${item.nome}" (${item.codigo})?`
-    );
+    confirm(mensagem);
 
 
   if (!confirmou) {
     return;
   }
 
+
+  /*
+   * Exclusão no Supabase.
+   */
 
   try {
 
@@ -2558,9 +3082,7 @@ async function excluirEquipamento(
     } =
       await supabaseClient
 
-        .from(
-          "equipamentos"
-        )
+        .from("equipamentos")
 
         .delete()
 
@@ -2575,14 +3097,16 @@ async function excluirEquipamento(
     }
 
 
+    /*
+     * Remove do array local.
+     */
+
     dados[tipo] =
       dados[tipo].filter(
         function (equipamento) {
 
           return (
-            String(
-              equipamento.id
-            ) !==
+            String(equipamento.id) !==
             String(item.id)
           );
 
@@ -2590,15 +3114,20 @@ async function excluirEquipamento(
       );
 
 
-    const lista =
+    /*
+     * Corrige a página atual
+     * da tabela normal.
+     */
+
+    const listaNormal =
       filtrarDados(tipo);
 
 
-    const totalPaginas =
+    const totalPaginasNormal =
       Math.max(
         1,
         Math.ceil(
-          lista.length /
+          listaNormal.length /
           POR_PAGINA
         )
       );
@@ -2606,47 +3135,106 @@ async function excluirEquipamento(
 
     if (
       paginas[tipo] >
-      totalPaginas
+      totalPaginasNormal
     ) {
 
       paginas[tipo] =
-        totalPaginas;
+        totalPaginasNormal;
 
     }
 
 
+    /*
+     * Corrige a página atual
+     * dos equipamentos quebrados.
+     */
+
+    const listaQuebrados =
+      filtrarQuebrados();
+
+
+    const totalPaginasQuebrados =
+      Math.max(
+        1,
+        Math.ceil(
+          listaQuebrados.length /
+          POR_PAGINA
+        )
+      );
+
+
+    if (
+      paginas.quebrados >
+      totalPaginasQuebrados
+    ) {
+
+      paginas.quebrados =
+        totalPaginasQuebrados;
+
+    }
+
+
+    /*
+     * Atualiza dashboard.
+     */
+
     atualizarDashboard();
 
-    renderPage(tipo);
+
+    /*
+     * Atualiza tabela normal.
+     */
+
+    renderPage(
+      tipo
+    );
+
+
+    /*
+     * Atualiza anos disponíveis
+     * no filtro de quebrados.
+     */
 
     preencherAnos();
+
+
+    /*
+     * Atualiza tabela de quebrados.
+     */
 
     renderBroken();
 
 
+    /*
+     * Mensagem final.
+     */
+
     alert(
-      "Equipamento excluído com sucesso!"
+      excluirQuebrado
+        ? "Equipamento quebrado excluído com sucesso!"
+        : "Equipamento excluído com sucesso!"
     );
+
 
   } catch (error) {
 
     console.error(
-      "Erro ao excluir:",
+      "Erro ao excluir equipamento:",
       error
     );
+
 
     alert(
       "Não foi possível excluir o equipamento.\n\n" +
       (
         error.message ||
-        ""
+        "Verifique sua conexão com o banco de dados."
       )
     );
 
   }
 
 }
-
 
 /* =========================================================
    EQUIPAMENTOS QUEBRADOS
@@ -3835,6 +4423,7 @@ function editarRegistroQuebrado(
     id
   );
 
+   
 }
 
 
@@ -4585,11 +5174,6 @@ function excluirRegistroQuebrado(
    EXCLUIR EQUIPAMENTO QUEBRADO
    ========================================================= */
 
-async function excluirQuebrado(
-  tipo,
-  id
-) {
-
   const item =
     dados[tipo]?.find(
       function (equipamento) {
@@ -5037,13 +5621,6 @@ window.editarRegistroQuebrado =
 
 window.excluirRegistroQuebrado =
   excluirRegistroQuebrado;
-
-
-window.editarQuebrado =
-  editarQuebrado;
-
-window.excluirQuebrado =
-  excluirQuebrado;
 
 window.fecharModal =
   fecharModal;
