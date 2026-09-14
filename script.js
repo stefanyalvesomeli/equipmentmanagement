@@ -60,7 +60,6 @@ let dados = {
   quebrados: []
 };
 
-
 let paginas = {
   hh: 1,
   notebook: 1,
@@ -70,8 +69,6 @@ let paginas = {
   impressora: 1,
   quebrados: 1
 };
-
-let equipamentoQuebradoEmEdicao = null;
 
 
 /* =========================================================
@@ -191,6 +188,27 @@ function escapeHTML(texto) {
 }
 
 
+function escapeJS(texto) {
+
+  if (
+    texto === null ||
+    texto === undefined
+  ) {
+
+    return "";
+
+  }
+
+  return String(texto)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/\r/g, "\\r")
+    .replace(/\n/g, "\\n");
+
+}
+
+
 function mostrarAlerta(
   tipo,
   mensagem
@@ -249,6 +267,9 @@ function converterRegistro(row) {
     id:
       String(row.id),
 
+    tipo:
+      row.tipo || "",
+
     codigo:
       row.codigo || "",
 
@@ -268,16 +289,12 @@ function converterRegistro(row) {
 
       data:
         row.criado_em
-          ? String(
-              row.criado_em
-            ).substring(0, 10)
+          ? String(row.criado_em).substring(0, 10)
           : "",
 
       hora:
         row.criado_em
-          ? String(
-              row.criado_em
-            ).substring(11, 19)
+          ? String(row.criado_em).substring(11, 19)
           : ""
 
     },
@@ -310,9 +327,7 @@ function converterRegistro(row) {
   };
 
 }
-/* =========================================================
-   CONVERSÃO DE REGISTRO DE QUEBRADO
-   ========================================================= */
+
 
 function converterQuebrado(row) {
 
@@ -334,12 +349,16 @@ function converterQuebrado(row) {
 
       data:
         row.criado_em
-          ? String(row.criado_em).substring(0, 10)
+          ? String(
+              row.criado_em
+            ).substring(0, 10)
           : "",
 
       hora:
         row.criado_em
-          ? String(row.criado_em).substring(11, 19)
+          ? String(
+              row.criado_em
+            ).substring(11, 19)
           : ""
 
     }
@@ -347,6 +366,7 @@ function converterQuebrado(row) {
   };
 
 }
+
 
 /* =========================================================
    CARREGAR QUEBRADOS MANUAIS
@@ -399,7 +419,6 @@ async function carregarQuebrados() {
 }
 
 
-
 /* =========================================================
    CARREGAR DADOS
    ========================================================= */
@@ -426,17 +445,18 @@ async function carregarDados() {
       throw error;
     }
 
-  dados = {
 
-  hh: [],
-  notebook: [],
-  radio: [],
-  carregador: [],
-  doisD: [],
-  impressora: [],
-  quebrados: []
+    dados = {
 
-};
+      hh: [],
+      notebook: [],
+      radio: [],
+      carregador: [],
+      doisD: [],
+      impressora: [],
+      quebrados: []
+
+    };
 
 
     (data || []).forEach(
@@ -459,9 +479,13 @@ async function carregarDados() {
 
       }
     );
-await carregarQuebrados();
+
+
+    await carregarQuebrados();
+
 
     atualizarDashboard();
+
 
     tipos.forEach(
       function (tipo) {
@@ -484,6 +508,7 @@ await carregarQuebrados();
 
       }
     );
+
 
     const paginaQuebrados =
       document.getElementById(
@@ -544,56 +569,46 @@ function atualizarDashboard() {
     dados.impressora.length;
 
 
-let totalQuebrados = 0;
+  let totalQuebrados = 0;
 
 
-/*
- * Equipamentos cadastrados
- * que estão quebrados.
- */
-
-tipos.forEach(
-  function (tipo) {
-
-    totalQuebrados +=
-      dados[tipo].filter(
-        function (item) {
-
-          return (
-            item.status ===
-            "Quebrado"
-          );
-
-        }
-      ).length;
-
-  }
-);
-
-
-/*
- * Registros manuais de quebrados.
- */
-
-if (
-  Array.isArray(
-    dados.quebrados
-  )
-) {
-
-  dados.quebrados.forEach(
-    function (item) {
+  tipos.forEach(
+    function (tipo) {
 
       totalQuebrados +=
-        Number(
-          item.quantidade || 1
-        );
+        dados[tipo].filter(
+          function (item) {
+
+            return (
+              item.status ===
+              "Quebrado"
+            );
+
+          }
+        ).length;
 
     }
   );
 
-}
 
+  if (
+    Array.isArray(
+      dados.quebrados
+    )
+  ) {
+
+    dados.quebrados.forEach(
+      function (item) {
+
+        totalQuebrados +=
+          Number(
+            item.quantidade || 1
+          );
+
+      }
+    );
+
+  }
 
 
   atualizarNumero(
@@ -916,10 +931,6 @@ async function adicionarEquipamento(
 
   try {
 
-    /*
-     * Verifica código duplicado.
-     */
-
     const {
       data: existente,
       error: erroBusca
@@ -951,11 +962,6 @@ async function adicionarEquipamento(
 
     }
 
-
-    /*
-     * Se já entrar como quebrado,
-     * registra data e hora.
-     */
 
     const quebra =
       status === "Quebrado"
@@ -1052,6 +1058,10 @@ async function adicionarEquipamento(
       "Quebrado"
     ) {
 
+      preencherAnos();
+
+      renderBroken();
+
       alert(
         "Equipamento registrado como QUEBRADO.\n\n" +
         "A data e a hora da quebra foram registradas automaticamente."
@@ -1077,8 +1087,10 @@ async function adicionarEquipamento(
   }
 
 }
+
+
 /* =========================================================
-   CADASTRAR REGISTRO DE QUEBRADO
+   CADASTRAR REGISTRO MANUAL DE QUEBRADO
    ========================================================= */
 
 async function adicionarQuebrado() {
@@ -1221,6 +1233,10 @@ async function adicionarQuebrado() {
       1;
 
 
+    atualizarDashboard();
+
+    preencherAnos();
+
     renderBroken();
 
 
@@ -1283,7 +1299,7 @@ function registrarEventosFormularios() {
     }
   );
 
-}
+
   const formQuebrados =
     document.getElementById(
       "form-quebrados"
@@ -1305,6 +1321,7 @@ function registrarEventosFormularios() {
 
   }
 
+}
 
 
 /* =========================================================
@@ -1370,12 +1387,11 @@ function filtrarDados(
         ).toLowerCase();
 
       const observacao =
-  String(
-    item.observacao ||
-    item.quebradoEm?.observacao ||
-    ""
-  ).toLowerCase();
-
+        String(
+          item.observacao ||
+          item.quebradoEm?.observacao ||
+          ""
+        ).toLowerCase();
 
 
       return (
@@ -1545,11 +1561,9 @@ function renderPage(
           <td>
 
             <strong>
-
               ${escapeHTML(
                 item.codigo
               )}
-
             </strong>
 
           </td>
@@ -1588,9 +1602,7 @@ function renderPage(
               class="status ${
                 item.status ===
                 "Quebrado"
-
                   ? "status-broken"
-
                   : "status-ok"
               }">
 
@@ -1619,42 +1631,20 @@ function renderPage(
             <div class="table-actions">
 
               <button
-
                 type="button"
-
                 class="edit-btn"
-
-               onclick="editarEquipamento(
-  '${escapeHTML(tipo)}',
-  '${escapeHTML(item.id)}',
-  false
-)"
-
-
+                onclick="editarEquipamento('${escapeJS(tipo)}','${escapeJS(item.id)}',false)"
               >
-
                 ✏️ Editar
-
               </button>
 
 
               <button
-
                 type="button"
-
                 class="delete-btn"
-
-                onclick="excluirEquipamento(
-  '${escapeHTML(tipo)}',
-  '${escapeHTML(item.id)}',
-  false
-)"
-
-
+                onclick="excluirEquipamento('${escapeJS(tipo)}','${escapeJS(item.id)}',false)"
               >
-
                 🗑️ Excluir
-
               </button>
 
             </div>
@@ -1698,6 +1688,7 @@ function renderPage(
 
 }
 
+
 /* =========================================================
    PAGINAÇÃO
    ========================================================= */
@@ -1709,11 +1700,6 @@ function criarPaginacao(
   modo
 ) {
 
-  /*
-   * Não mostra paginação quando existe
-   * apenas uma página.
-   */
-
   if (total <= 1) {
     return "";
   }
@@ -1722,10 +1708,6 @@ function criarPaginacao(
   let html =
     `<div class="pagination">`;
 
-
-  /*
-   * Botão anterior.
-   */
 
   html += `
 
@@ -1737,9 +1719,9 @@ function criarPaginacao(
 
       onclick="
         mudarPagina(
-          '${escapeHTML(tipo)}',
+          '${escapeJS(tipo)}',
           ${atual - 1},
-          '${escapeHTML(modo)}'
+          '${escapeJS(modo)}'
         )
       "
 
@@ -1755,10 +1737,6 @@ function criarPaginacao(
 
   `;
 
-
-  /*
-   * Calcula quais páginas serão exibidas.
-   */
 
   const paginasExibir = [];
 
@@ -1778,16 +1756,8 @@ function criarPaginacao(
   }
 
 
-  /*
-   * Sempre mostra a primeira página.
-   */
-
   adicionarPagina(1);
 
-
-  /*
-   * Páginas próximas da página atual.
-   */
 
   for (
     let i = atual - 2;
@@ -1807,20 +1777,12 @@ function criarPaginacao(
   }
 
 
-  /*
-   * Sempre mostra a última página.
-   */
-
   if (total > 1) {
 
     adicionarPagina(total);
 
   }
 
-
-  /*
-   * Ordena as páginas.
-   */
 
   paginasExibir.sort(
     function (a, b) {
@@ -1831,20 +1793,11 @@ function criarPaginacao(
   );
 
 
-  /*
-   * Cria os botões e os "..."
-   */
-
   let paginaAnterior = null;
 
 
   paginasExibir.forEach(
     function (numero) {
-
-      /*
-       * Se houver um intervalo entre
-       * as páginas, coloca "..."
-       */
 
       if (
         paginaAnterior !== null &&
@@ -1876,9 +1829,9 @@ function criarPaginacao(
 
           onclick="
             mudarPagina(
-              '${escapeHTML(tipo)}',
+              '${escapeJS(tipo)}',
               ${numero},
-              '${escapeHTML(modo)}'
+              '${escapeJS(modo)}'
             )
           "
 
@@ -1898,10 +1851,6 @@ function criarPaginacao(
   );
 
 
-  /*
-   * Botão próxima.
-   */
-
   html += `
 
     <button
@@ -1912,9 +1861,9 @@ function criarPaginacao(
 
       onclick="
         mudarPagina(
-          '${escapeHTML(tipo)}',
+          '${escapeJS(tipo)}',
           ${atual + 1},
-          '${escapeHTML(modo)}'
+          '${escapeJS(modo)}'
         )
       "
 
@@ -1939,120 +1888,12 @@ function criarPaginacao(
 
 }
 
-
-
-  let html =
-    `<div class="pagination">`;
-
-
-  html += `
-
-    <button
-
-      type="button"
-
-      onclick="
-        mudarPagina(
-          '${escapeHTML(tipo)}',
-          ${atual - 1},
-          '${escapeHTML(modo)}'
-        )
-      "
-
-      ${atual === 1
-        ? "disabled"
-        : ""}
-
-    >
-
-      ← Anterior
-
-    </button>
-
-  `;
-
-
-  for (
-    let i = 1;
-    i <= total;
-    i++
-  ) {
-
-    html += `
-
-      <button
-
-        type="button"
-
-        class="${
-          i === atual
-            ? "active"
-            : ""
-        }"
-
-        onclick="
-          mudarPagina(
-            '${escapeHTML(tipo)}',
-            ${i},
-            '${escapeHTML(modo)}'
-          )
-        "
-
-      >
-
-        ${i}
-
-      </button>
-
-    `;
-
-  }
-
-
-  html += `
-
-    <button
-
-      type="button"
-
-      onclick="
-        mudarPagina(
-          '${escapeHTML(tipo)}',
-          ${atual + 1},
-          '${escapeHTML(modo)}'
-        )
-      "
-
-      ${atual === total
-        ? "disabled"
-        : ""}
-
-    >
-
-      Próxima →
-
-    </button>
-
-  `;
-
-
-  html +=
-    `</div>`;
-
-
-  return html;
-
-}
 
 function mudarPagina(
   tipo,
   pagina,
   modo
 ) {
-
-  /*
-   * Garante que a página seja um número válido.
-   */
 
   pagina =
     Number(pagina);
@@ -2071,12 +1912,9 @@ function mudarPagina(
     Math.floor(pagina);
 
 
-  /*
-   * Paginação dos equipamentos quebrados.
-   */
-
   if (
-    modo === "broken"
+    modo ===
+    "broken"
   ) {
 
     const lista =
@@ -2092,11 +1930,6 @@ function mudarPagina(
         )
       );
 
-
-    /*
-     * Impede páginas menores que 1
-     * ou maiores que o total.
-     */
 
     pagina =
       Math.max(
@@ -2118,10 +1951,6 @@ function mudarPagina(
 
   }
 
-
-  /*
-   * Paginação normal.
-   */
 
   const lista =
     filtrarDados(tipo);
@@ -2158,45 +1987,29 @@ function mudarPagina(
 }
 
 
-  if (
-    modo ===
-    "broken"
-  ) {
-
-    paginas.quebrados =
-      pagina;
-
-    renderBroken();
-
-    return;
-
-  }
-
-
-  paginas[tipo] =
-    pagina;
-
-  renderPage(
-    tipo
-  );
-
-}
-
-
 /* =========================================================
    EDITAR EQUIPAMENTO
    ========================================================= */
 
-async function editarEquipamento(tipo, id, editarQuebra = false) {
+async function editarEquipamento(
+  tipo,
+  id,
+  editarQuebra = false
+) {
 
-  const item = dados[tipo]?.find(function (equipamento) {
+  const item =
+    dados[tipo]?.find(
+      function (equipamento) {
 
-    return (
-      String(equipamento.id) ===
-      String(id)
+        return (
+          String(
+            equipamento.id
+          ) ===
+          String(id)
+        );
+
+      }
     );
-
-  });
 
 
   if (!item) {
@@ -2210,19 +2023,9 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
   }
 
 
-  /*
-   * Verifica se o equipamento já está quebrado.
-   */
-
   const estaQuebrado =
     item.status === "Quebrado";
 
-
-  /*
-   * Se estamos editando pela página
-   * de equipamentos quebrados, exibimos
-   * também os dados da quebra.
-   */
 
   const mostrarDadosQuebra =
     estaQuebrado || editarQuebra;
@@ -2266,11 +2069,9 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
   `;
 
 
-  /*
-   * Função do notebook.
-   */
-
-  if (tipo === "notebook") {
+  if (
+    tipo === "notebook"
+  ) {
 
     html += `
 
@@ -2293,10 +2094,6 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
 
   }
 
-
-  /*
-   * Status.
-   */
 
   html += `
 
@@ -2351,10 +2148,6 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
 
   `;
 
-
-  /*
-   * Dados da quebra.
-   */
 
   if (mostrarDadosQuebra) {
 
@@ -2527,7 +2320,10 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
       let novaFuncao = "";
 
 
-      if (tipo === "notebook") {
+      if (
+        tipo ===
+        "notebook"
+      ) {
 
         const campoFuncao =
           document.getElementById(
@@ -2544,10 +2340,6 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
       }
 
 
-      /*
-       * Validação básica.
-       */
-
       if (
         !novoCodigo ||
         !novoNome
@@ -2562,10 +2354,6 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
       }
 
 
-      /*
-       * Verifica código duplicado.
-       */
-
       if (
         novoCodigo !==
         item.codigo
@@ -2578,21 +2366,16 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
             error: erroDuplicado
           } =
             await supabaseClient
-
               .from("equipamentos")
-
               .select("id")
-
               .eq(
                 "codigo",
                 novoCodigo
               )
-
               .neq(
                 "id",
                 item.id
               )
-
               .maybeSingle();
 
 
@@ -2629,10 +2412,6 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
       }
 
 
-      /*
-       * Dados atuais da quebra.
-       */
-
       let quebradoData =
         item.quebradoEm?.data ||
         null;
@@ -2647,13 +2426,6 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
         item.quebradoEm?.observacao ||
         null;
 
-
-      /*
-       * FUNCIONANDO → QUEBRADO
-       *
-       * Cria automaticamente
-       * a data e hora da quebra.
-       */
 
       if (
         item.status !== "Quebrado" &&
@@ -2679,23 +2451,10 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
       }
 
 
-      /*
-       * QUEBRADO → QUEBRADO
-       *
-       * Mantém a data original,
-       * mas permite alterar a observação.
-       */
-
       else if (
         item.status === "Quebrado" &&
         novoStatus === "Quebrado"
       ) {
-
-        /*
-         * Se estiver usando a edição
-         * pela página de quebrados,
-         * permite alterar data/hora.
-         */
 
         if (editarQuebra) {
 
@@ -2760,12 +2519,6 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
       }
 
 
-      /*
-       * QUEBRADO → FUNCIONANDO
-       *
-       * Remove os dados da quebra.
-       */
-
       if (
         novoStatus === "Funcionando"
       ) {
@@ -2781,12 +2534,6 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
 
       }
 
-
-      /*
-       * Se o equipamento foi colocado
-       * como quebrado manualmente, exige
-       * os dados mínimos.
-       */
 
       if (
         novoStatus === "Quebrado" &&
@@ -2804,11 +2551,6 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
 
       }
 
-
-      /*
-       * Dados que serão enviados
-       * para o Supabase.
-       */
 
       const dadosAtualizados = {
 
@@ -2848,18 +2590,14 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
           error
         } =
           await supabaseClient
-
             .from("equipamentos")
-
             .update(
               dadosAtualizados
             )
-
             .eq(
               "id",
               item.id
             )
-
             .select()
             .single();
 
@@ -2869,20 +2607,11 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
         }
 
 
-        /*
-         * Converte novamente o registro
-         * vindo do banco.
-         */
-
         const atualizado =
           converterRegistro(
             data
           );
 
-
-        /*
-         * Atualiza o array local.
-         */
 
         const indice =
           dados[tipo].findIndex(
@@ -2909,39 +2638,16 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
         }
 
 
-        /*
-         * Fecha o modal.
-         */
-
         fecharModal();
 
 
-        /*
-         * Atualiza dashboard.
-         */
-
         atualizarDashboard();
-
-
-        /*
-         * Atualiza tabela normal.
-         */
 
         renderPage(
           tipo
         );
 
-
-        /*
-         * Atualiza anos disponíveis.
-         */
-
         preencherAnos();
-
-
-        /*
-         * Atualiza lista de quebrados.
-         */
 
         renderBroken();
 
@@ -2971,6 +2677,8 @@ async function editarEquipamento(tipo, id, editarQuebra = false) {
   );
 
 }
+
+
 /* =========================================================
    FECHAR MODAL
    ========================================================= */
@@ -3020,19 +2728,24 @@ window.addEventListener(
   }
 );
 
-
 /* =========================================================
    EXCLUIR EQUIPAMENTO
    ========================================================= */
 
-async function excluirEquipamento(tipo, id, excluirQuebrado = false) {
+async function excluirEquipamento(
+  tipo,
+  id,
+  excluirQuebrado = false
+) {
 
   const item =
     dados[tipo]?.find(
       function (equipamento) {
 
         return (
-          String(equipamento.id) ===
+          String(
+            equipamento.id
+          ) ===
           String(id)
         );
 
@@ -3051,11 +2764,6 @@ async function excluirEquipamento(tipo, id, excluirQuebrado = false) {
   }
 
 
-  /*
-   * Mensagem diferente quando a exclusão
-   * acontece pela página de quebrados.
-   */
-
   const mensagem =
     excluirQuebrado
       ? `Deseja realmente excluir o equipamento quebrado "${item.nome}" (${item.codigo})?`
@@ -3071,21 +2779,14 @@ async function excluirEquipamento(tipo, id, excluirQuebrado = false) {
   }
 
 
-  /*
-   * Exclusão no Supabase.
-   */
-
   try {
 
     const {
       error
     } =
       await supabaseClient
-
         .from("equipamentos")
-
         .delete()
-
         .eq(
           "id",
           item.id
@@ -3097,16 +2798,14 @@ async function excluirEquipamento(tipo, id, excluirQuebrado = false) {
     }
 
 
-    /*
-     * Remove do array local.
-     */
-
     dados[tipo] =
       dados[tipo].filter(
         function (equipamento) {
 
           return (
-            String(equipamento.id) !==
+            String(
+              equipamento.id
+            ) !==
             String(item.id)
           );
 
@@ -3114,12 +2813,7 @@ async function excluirEquipamento(tipo, id, excluirQuebrado = false) {
       );
 
 
-    /*
-     * Corrige a página atual
-     * da tabela normal.
-     */
-
-    const listaNormal =
+const listaNormal =
       filtrarDados(tipo);
 
 
@@ -3236,6 +2930,7 @@ async function excluirEquipamento(tipo, id, excluirQuebrado = false) {
 
 }
 
+
 /* =========================================================
    EQUIPAMENTOS QUEBRADOS
    ========================================================= */
@@ -3245,9 +2940,10 @@ function obterQuebrados() {
   const resultado = [];
 
 
-  /* =====================================================
-     EQUIPAMENTOS EXISTENTES COM STATUS QUEBRADO
-     ===================================================== */
+  /*
+   * Equipamentos cadastrados
+   * com status quebrado.
+   */
 
   tipos.forEach(
     function (tipo) {
@@ -3292,9 +2988,9 @@ function obterQuebrados() {
   );
 
 
-  /* =====================================================
-     REGISTROS MANUAIS
-     ===================================================== */
+  /*
+   * Registros manuais de quebrados.
+   */
 
   const manuais =
     Array.isArray(
@@ -3323,13 +3019,16 @@ function obterQuebrados() {
         quebradoEm: {
 
           data:
-            item.criadoEm?.data || "",
+            item.criadoEm?.data ||
+            "",
 
           hora:
-            item.criadoEm?.hora || "",
+            item.criadoEm?.hora ||
+            "",
 
           observacao:
-            item.observacao || ""
+            item.observacao ||
+            ""
 
         }
 
@@ -3339,26 +3038,23 @@ function obterQuebrados() {
   );
 
 
-  /* =====================================================
-     ORDENAÇÃO
-     ===================================================== */
+  /*
+   * Ordena do mais recente
+   * para o mais antigo.
+   */
 
   resultado.sort(
     function (a, b) {
 
       const dataA =
         a.quebradoEm
-
           ? `${a.quebradoEm.data} ${a.quebradoEm.hora}`
-
           : "";
 
 
       const dataB =
         b.quebradoEm
-
           ? `${b.quebradoEm.data} ${b.quebradoEm.hora}`
-
           : "";
 
 
@@ -3453,7 +3149,9 @@ function filtrarQuebrados() {
 
         const observacao =
           String(
-            item.observacao || ""
+            item.observacao ||
+            item.quebradoEm?.observacao ||
+            ""
           ).toLowerCase();
 
 
@@ -3464,15 +3162,9 @@ function filtrarQuebrados() {
 
         if (
           busca &&
-          !codigo.includes(
-            busca
-          ) &&
-          !nome.includes(
-            busca
-          ) &&
-          !observacao.includes(
-            busca
-          )
+          !codigo.includes(busca) &&
+          !nome.includes(busca) &&
+          !observacao.includes(busca)
         ) {
 
           return false;
@@ -3481,15 +3173,14 @@ function filtrarQuebrados() {
 
 
         /*
-         * Data completa.
+         * Filtro por data completa.
          */
 
         if (
           data &&
           (
             !item.quebradoEm ||
-            item.quebradoEm.data !==
-              data
+            item.quebradoEm.data !== data
           )
         ) {
 
@@ -3499,7 +3190,7 @@ function filtrarQuebrados() {
 
 
         /*
-         * Mês.
+         * Filtro por mês.
          */
 
         if (mes) {
@@ -3535,7 +3226,7 @@ function filtrarQuebrados() {
 
 
         /*
-         * Ano.
+         * Filtro por ano.
          */
 
         if (ano) {
@@ -3784,37 +3475,21 @@ function renderBroken() {
 
           <tr>
 
-            <th>
-              Tipo
-            </th>
+            <th>Tipo</th>
 
-            <th>
-              Código
-            </th>
+            <th>Código</th>
 
-            <th>
-              Nome
-            </th>
+            <th>Nome</th>
 
-            <th>
-              Quantidade
-            </th>
+            <th>Quantidade</th>
 
-            <th>
-              Data
-            </th>
+            <th>Data</th>
 
-            <th>
-              Hora
-            </th>
+            <th>Hora</th>
 
-            <th>
-              Observação
-            </th>
+            <th>Observação</th>
 
-            <th>
-              Ações
-            </th>
+            <th>Ações</th>
 
           </tr>
 
@@ -3854,22 +3529,20 @@ function renderBroken() {
               "-"
             )
           : (
-              item.observacao ||
               item.quebradoEm?.observacao ||
+              item.observacao ||
               "-"
             );
 
 
       const data =
-        item.origem === "manual"
-          ? item.quebradoEm?.data
-          : item.quebradoEm?.data;
+        item.quebradoEm?.data ||
+        "";
 
 
       const hora =
-        item.origem === "manual"
-          ? item.quebradoEm?.hora
-          : item.quebradoEm?.hora;
+        item.quebradoEm?.hora ||
+        "";
 
 
       html += `
@@ -3962,11 +3635,8 @@ function renderBroken() {
             <div class="table-actions">
 
               <button
-
                 type="button"
-
                 class="edit-btn"
-
                 onclick="
                   editarRegistroQuebrado(
                     '${escapeHTML(
@@ -3980,7 +3650,6 @@ function renderBroken() {
                     )}'
                   )
                 "
-
               >
 
                 ✏️ Editar
@@ -3989,11 +3658,8 @@ function renderBroken() {
 
 
               <button
-
                 type="button"
-
                 class="delete-btn"
-
                 onclick="
                   excluirRegistroQuebrado(
                     '${escapeHTML(
@@ -4007,7 +3673,6 @@ function renderBroken() {
                     )}'
                   )
                 "
-
               >
 
                 🗑️ Excluir
@@ -4038,15 +3703,10 @@ function renderBroken() {
 
 
   html += criarPaginacao(
-
     "quebrados",
-
     totalPaginas,
-
     paginas.quebrados,
-
     "broken"
-
   );
 
 
@@ -4057,8 +3717,9 @@ function renderBroken() {
 
 
 /* =========================================================
-   EDITAR EQUIPAMENTO QUEBRADO
+   EDITAR REGISTRO MANUAL DE QUEBRADO
    ========================================================= */
+
 async function editarRegistroManual(
   id
 ) {
@@ -4102,17 +3763,12 @@ async function editarRegistroManual(
           </label>
 
           <input
-
             id="edit-manual-nome"
-
             type="text"
-
             value="${escapeHTML(
               item.nome
             )}"
-
             required
-
           >
 
         </div>
@@ -4125,19 +3781,13 @@ async function editarRegistroManual(
           </label>
 
           <input
-
             id="edit-manual-quantidade"
-
             type="number"
-
             min="1"
-
             value="${Number(
               item.quantidade || 1
             )}"
-
             required
-
           >
 
         </div>
@@ -4150,9 +3800,7 @@ async function editarRegistroManual(
           </label>
 
           <textarea
-
             id="edit-manual-observacao"
-
           >${escapeHTML(
             item.observacao || ""
           )}</textarea>
@@ -4165,11 +3813,8 @@ async function editarRegistroManual(
       <div class="actions">
 
         <button
-
           type="submit"
-
           class="btn btn-primary"
-
         >
 
           Salvar alterações
@@ -4178,13 +3823,9 @@ async function editarRegistroManual(
 
 
         <button
-
           type="button"
-
           class="btn btn-secondary"
-
           onclick="fecharModal()"
-
         >
 
           Cancelar
@@ -4237,6 +3878,11 @@ async function editarRegistroManual(
     document.getElementById(
       "form-edicao-quebrado-manual"
     );
+
+
+  if (!formulario) {
+    return;
+  }
 
 
   formulario.addEventListener(
@@ -4312,20 +3958,14 @@ async function editarRegistroManual(
           error
         } =
           await supabaseClient
-
-            .from(
-              "quebrados"
-            )
-
+            .from("quebrados")
             .update(
               dadosAtualizados
             )
-
             .eq(
               "id",
               item.id
             )
-
             .select()
             .single();
 
@@ -4368,6 +4008,10 @@ async function editarRegistroManual(
 
         fecharModal();
 
+        atualizarDashboard();
+
+        preencherAnos();
+
         renderBroken();
 
 
@@ -4383,6 +4027,7 @@ async function editarRegistroManual(
           error
         );
 
+
         alert(
           "Não foi possível salvar as alterações.\n\n" +
           (
@@ -4397,6 +4042,11 @@ async function editarRegistroManual(
   );
 
 }
+
+
+/* =========================================================
+   EDITAR REGISTRO DE QUEBRADO
+   ========================================================= */
 
 function editarRegistroQuebrado(
   origem,
@@ -4423,9 +4073,12 @@ function editarRegistroQuebrado(
     id
   );
 
-   
 }
 
+
+/* =========================================================
+   EDITAR EQUIPAMENTO QUEBRADO
+   ========================================================= */
 
 async function editarQuebrado(
   tipo,
@@ -4471,15 +4124,11 @@ async function editarQuebrado(
           </label>
 
           <input
-
             id="edit-quebrado-codigo"
-
             value="${escapeHTML(
               item.codigo
             )}"
-
             required
-
           >
 
         </div>
@@ -4492,15 +4141,11 @@ async function editarQuebrado(
           </label>
 
           <input
-
             id="edit-quebrado-nome"
-
             value="${escapeHTML(
               item.nome
             )}"
-
             required
-
           >
 
         </div>
@@ -4513,17 +4158,12 @@ async function editarQuebrado(
           </label>
 
           <input
-
             type="date"
-
             id="edit-quebrado-data"
-
-                        value="${
+            value="${
               item.quebradoEm?.data || ""
             }"
-
             required
-
           >
 
         </div>
@@ -4536,19 +4176,14 @@ async function editarQuebrado(
           </label>
 
           <input
-
             type="time"
-
             id="edit-quebrado-hora"
-
             value="${
               item.quebradoEm?.hora
                 ? item.quebradoEm.hora.substring(0, 5)
                 : ""
             }"
-
             required
-
           >
 
         </div>
@@ -4565,13 +4200,10 @@ async function editarQuebrado(
                 </label>
 
                 <input
-
                   id="edit-quebrado-funcao"
-
                   value="${escapeHTML(
                     item.funcao || ""
                   )}"
-
                 >
 
               </div>
@@ -4604,11 +4236,8 @@ async function editarQuebrado(
       <div class="actions">
 
         <button
-
           type="submit"
-
           class="btn btn-primary"
-
         >
 
           Salvar alterações
@@ -4617,13 +4246,9 @@ async function editarQuebrado(
 
 
         <button
-
           type="button"
-
           class="btn btn-secondary"
-
           onclick="fecharModal()"
-
         >
 
           Cancelar
@@ -4733,6 +4358,7 @@ async function editarQuebrado(
             "edit-quebrado-funcao"
           );
 
+
         if (campoFuncao) {
 
           novaFuncao =
@@ -4783,8 +4409,7 @@ async function editarQuebrado(
 
 
       /*
-       * Verifica código duplicado
-       * somente se o código mudou.
+       * Verifica código duplicado.
        */
 
       if (
@@ -4799,30 +4424,21 @@ async function editarQuebrado(
             error: erroDuplicado
           } =
             await supabaseClient
-
-              .from(
-                "equipamentos"
-              )
-
+              .from("equipamentos")
               .select("id")
-
               .eq(
                 "codigo",
                 novoCodigo
               )
-
               .neq(
                 "id",
                 item.id
               )
-
               .maybeSingle();
 
 
           if (erroDuplicado) {
-
             throw erroDuplicado;
-
           }
 
 
@@ -4842,6 +4458,7 @@ async function editarQuebrado(
             "Erro ao verificar código:",
             error
           );
+
 
           alert(
             "Não foi possível verificar o código do equipamento."
@@ -4866,10 +4483,6 @@ async function editarQuebrado(
           tipo === "notebook"
             ? novaFuncao || null
             : null,
-
-        /*
-         * Continua quebrado.
-         */
 
         status:
           "Quebrado",
@@ -4896,20 +4509,14 @@ async function editarQuebrado(
           error
         } =
           await supabaseClient
-
-            .from(
-              "equipamentos"
-            )
-
+            .from("equipamentos")
             .update(
               dadosAtualizados
             )
-
             .eq(
               "id",
               item.id
             )
-
             .select()
             .single();
 
@@ -4956,20 +4563,10 @@ async function editarQuebrado(
         atualizarDashboard();
 
 
-        /*
-         * Atualiza a página
-         * do equipamento.
-         */
-
         renderPage(
           tipo
         );
 
-
-        /*
-         * Atualiza a lista
-         * de equipamentos quebrados.
-         */
 
         preencherAnos();
 
@@ -4980,12 +4577,14 @@ async function editarQuebrado(
           "Equipamento quebrado atualizado com sucesso!"
         );
 
+
       } catch (error) {
 
         console.error(
           "Erro ao editar equipamento quebrado:",
           error
         );
+
 
         alert(
           "Não foi possível salvar as alterações.\n\n" +
@@ -5001,6 +4600,7 @@ async function editarQuebrado(
   );
 
 }
+
 
 /* =========================================================
    EXCLUIR REGISTRO MANUAL
@@ -5053,13 +4653,8 @@ async function excluirRegistroManual(
       error
     } =
       await supabaseClient
-
-        .from(
-          "quebrados"
-        )
-
+        .from("quebrados")
         .delete()
-
         .eq(
           "id",
           item.id
@@ -5111,6 +4706,10 @@ async function excluirRegistroManual(
     }
 
 
+    atualizarDashboard();
+
+    preencherAnos();
+
     renderBroken();
 
 
@@ -5126,6 +4725,7 @@ async function excluirRegistroManual(
       error
     );
 
+
     alert(
       "Não foi possível excluir o registro.\n\n" +
       (
@@ -5137,6 +4737,7 @@ async function excluirRegistroManual(
   }
 
 }
+
 
 /* =========================================================
    EXCLUIR REGISTRO DE QUEBRADO
@@ -5173,6 +4774,11 @@ function excluirRegistroQuebrado(
 /* =========================================================
    EXCLUIR EQUIPAMENTO QUEBRADO
    ========================================================= */
+
+async function excluirQuebrado(
+  tipo,
+  id
+) {
 
   const item =
     dados[tipo]?.find(
@@ -5217,13 +4823,8 @@ function excluirRegistroQuebrado(
       error
     } =
       await supabaseClient
-
-        .from(
-          "equipamentos"
-        )
-
+        .from("equipamentos")
         .delete()
-
         .eq(
           "id",
           item.id
@@ -5278,31 +4879,16 @@ function excluirRegistroQuebrado(
     atualizarDashboard();
 
 
-    /*
-     * Atualiza a página normal
-     * do equipamento.
-     */
-
     renderPage(
       tipo
     );
 
 
-    /*
-     * Atualiza os filtros de ano.
-     */
-
     preencherAnos();
 
 
-    /*
-     * Atualiza a lista de quebrados.
-     */
-
     renderBroken();
-
-
-    alert(
+alert(
       "Equipamento quebrado excluído com sucesso!"
     );
 
@@ -5575,7 +5161,7 @@ document.addEventListener(
      * seja atualizado.
      */
 
-     await carregarQuebrados();
+    await carregarQuebrados();
 
     atualizarDashboard();
 
@@ -5630,10 +5216,6 @@ window.mudarPagina =
 
 window.limparFiltrosQuebrados =
   limparFiltrosQuebrados;
-
-window.adicionarQuebrado =
-  adicionarQuebrado;
-
 
 
 /* =========================================================
