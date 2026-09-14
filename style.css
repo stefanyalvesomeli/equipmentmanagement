@@ -159,10 +159,13 @@ MAIN
 ===================================================== */
 
 .main {
-margin-left: 260px;
-
-min-height: 100vh;
+.main-content {
+  margin-left: 300px;
+  width: calc(100% - 300px);
+  min-height: 100vh;
+  box-sizing: border-box;
 }
+
 
 .topbar {
 height: 78px;
