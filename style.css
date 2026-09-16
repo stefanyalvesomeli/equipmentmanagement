@@ -160,14 +160,17 @@ MAIN
 
 .main {
   margin-left: 260px;
+  width: calc(100% - 260px);
   min-height: 100vh;
 }
+
 
 .main-content {
   width: 100%;
   min-height: 100vh;
   box-sizing: border-box;
 }
+
 
 
 .topbar {
