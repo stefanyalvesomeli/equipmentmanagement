@@ -529,6 +529,9 @@ async function carregarDados() {
 
   try {
 
+     await atualizarAbaQuebrados();
+
+
     await carregarEquipamentos();
 
     await carregarQuebrados();
