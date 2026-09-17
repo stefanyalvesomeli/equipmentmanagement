@@ -173,9 +173,7 @@ function escapeHTML(texto) {
     texto === null ||
     texto === undefined
   ) {
-
     return "";
-
   }
 
   return String(texto)
@@ -184,7 +182,6 @@ function escapeHTML(texto) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
-
 }
 
 
@@ -194,9 +191,7 @@ function escapeJS(texto) {
     texto === null ||
     texto === undefined
   ) {
-
     return "";
-
   }
 
   return String(texto)
@@ -205,7 +200,6 @@ function escapeJS(texto) {
     .replace(/"/g, '\\"')
     .replace(/\r/g, "\\r")
     .replace(/\n/g, "\\n");
-
 }
 
 
@@ -403,6 +397,8 @@ async function carregarQuebrados() {
         }
       );
 
+    return dados.quebrados;
+
   } catch (error) {
 
     console.error(
@@ -410,8 +406,114 @@ async function carregarQuebrados() {
       error
     );
 
-    alert(
-      "Não foi possível carregar os registros de quebrados."
+    dados.quebrados = [];
+
+    throw error;
+
+  }
+
+}
+
+
+/* =========================================================
+   CARREGAR EQUIPAMENTOS
+   ========================================================= */
+
+async function carregarEquipamentos() {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("equipamentos")
+      .select("*")
+      .order(
+        "criado_em",
+        {
+          ascending: false
+        }
+      );
+
+  if (error) {
+    throw error;
+  }
+
+  const novasDados = {
+
+    hh: [],
+    notebook: [],
+    radio: [],
+    carregador: [],
+    doisD: [],
+    impressora: []
+
+  };
+
+  (data || []).forEach(
+    function (row) {
+
+      if (
+        tipos.includes(
+          row.tipo
+        )
+      ) {
+
+        novasDados[row.tipo].push(
+          converterRegistro(row)
+        );
+
+      }
+
+    }
+  );
+
+  dados.hh =
+    novasDados.hh;
+
+  dados.notebook =
+    novasDados.notebook;
+
+  dados.radio =
+    novasDados.radio;
+
+  dados.carregador =
+    novasDados.carregador;
+
+  dados.doisD =
+    novasDados.doisD;
+
+  dados.impressora =
+    novasDados.impressora;
+
+}
+
+
+/* =========================================================
+   ATUALIZAR ABA DE QUEBRADOS
+   ========================================================= */
+
+async function atualizarAbaQuebrados() {
+
+  try {
+
+    await carregarEquipamentos();
+
+    await carregarQuebrados();
+
+    paginas.quebrados = 1;
+
+    preencherAnos();
+
+    atualizarDashboard();
+
+    renderBroken();
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao atualizar aba de quebrados:",
+      error
     );
 
   }
@@ -420,72 +522,18 @@ async function carregarQuebrados() {
 
 
 /* =========================================================
-   CARREGAR DADOS
+   CARREGAR TODOS OS DADOS
    ========================================================= */
 
 async function carregarDados() {
 
   try {
 
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("equipamentos")
-        .select("*")
-        .order(
-          "criado_em",
-          {
-            ascending: false
-          }
-        );
-
-    if (error) {
-      throw error;
-    }
-
-
-    dados = {
-
-      hh: [],
-      notebook: [],
-      radio: [],
-      carregador: [],
-      doisD: [],
-      impressora: [],
-      quebrados: []
-
-    };
-
-
-    (data || []).forEach(
-      function (row) {
-
-        const equipamento =
-          converterRegistro(row);
-
-        if (
-          tipos.includes(
-            row.tipo
-          )
-        ) {
-
-          dados[row.tipo].push(
-            equipamento
-          );
-
-        }
-
-      }
-    );
-
+    await carregarEquipamentos();
 
     await carregarQuebrados();
 
-
     atualizarDashboard();
-
 
     tipos.forEach(
       function (tipo) {
@@ -509,7 +557,6 @@ async function carregarDados() {
       }
     );
 
-
     const paginaQuebrados =
       document.getElementById(
         "quebrados"
@@ -524,73 +571,6 @@ async function carregarDados() {
 
       preencherAnos();
 
-       async function atualizarAbaQuebrados() {
-
-  // Busca novamente os equipamentos no Supabase
-  const {
-    data,
-    error
-  } = await supabaseClient
-    .from("equipamentos")
-    .select("*")
-    .order("criado_em", {
-      ascending: false
-    });
-
-  if (error) {
-
-    console.error(
-      "Erro ao atualizar equipamentos quebrados:",
-      error
-    );
-
-    return;
-
-  }
-
-
-  // Reconstrói as listas dos equipamentos
-  dados.hh = [];
-  dados.notebook = [];
-  dados.radio = [];
-  dados.carregador = [];
-  dados.doisD = [];
-  dados.impressora = [];
-
-
-  (data || []).forEach(function(row) {
-
-    const equipamento =
-      converterRegistro(row);
-
-    if (
-      tipos.includes(row.tipo)
-    ) {
-
-      dados[row.tipo].push(
-        equipamento
-      );
-
-    }
-
-  });
-
-
-  // Atualiza também os registros manuais
-  await carregarQuebrados();
-
-
-  // Atualiza a aba
-  paginas.quebrados = 1;
-
-  preencherAnos();
-
-  renderBroken();
-
-  atualizarDashboard();
-
-}
-
       renderBroken();
 
     }
@@ -603,7 +583,11 @@ async function carregarDados() {
     );
 
     alert(
-      "Não foi possível carregar os equipamentos do banco de dados."
+      "Não foi possível carregar os equipamentos do banco de dados.\n\n" +
+      (
+        error.message ||
+        "Verifique sua conexão."
+      )
     );
 
   }
@@ -729,14 +713,7 @@ function atualizarDashboard() {
   );
 
 
-  /*
-   * Atualiza os cards da aba Quebrados.
-   */
-
   atualizarDashboardQuebrados();
-
-}
-
 
 }
 
@@ -758,8 +735,9 @@ function atualizarNumero(
 
 }
 
+
 /* =========================================================
-   CONTAGEM DE EQUIPAMENTOS QUEBRADOS POR TIPO
+   CONTAGEM DE QUEBRADOS POR TIPO
    ========================================================= */
 
 function atualizarDashboardQuebrados() {
@@ -780,11 +758,6 @@ function atualizarDashboardQuebrados() {
 
   };
 
-
-  /*
-   * Conta os equipamentos cadastrados
-   * normalmente e que estão com status "Quebrado".
-   */
 
   tipos.forEach(
     function (tipo) {
@@ -813,17 +786,10 @@ function atualizarDashboardQuebrados() {
   );
 
 
-  /*
-   * Conta também os registros adicionados
-   * manualmente na tabela "quebrados".
-   *
-   * Como esses registros atualmente possuem
-   * apenas o campo "nome", identificamos
-   * o tipo pelo nome informado.
-   */
-
   if (
-    Array.isArray(dados.quebrados)
+    Array.isArray(
+      dados.quebrados
+    )
   ) {
 
     dados.quebrados.forEach(
@@ -902,10 +868,6 @@ function atualizarDashboardQuebrados() {
 
   }
 
-
-  /*
-   * Atualiza os cards da página Quebrados.
-   */
 
   atualizarNumero(
     "quebradosHH",
@@ -1088,6 +1050,19 @@ async function adicionarEquipamento(
   tipo
 ) {
 
+  if (
+    !tipos.includes(tipo)
+  ) {
+
+    alert(
+      "Tipo de equipamento inválido."
+    );
+
+    return;
+
+  }
+
+
   const codigoInput =
     document.getElementById(
       tipo + "-codigo"
@@ -1268,16 +1243,13 @@ async function adicionarEquipamento(
 
 
     const {
-      data,
       error
     } =
       await supabaseClient
         .from("equipamentos")
         .insert([
           registro
-        ])
-        .select()
-        .single();
+        ]);
 
 
     if (error) {
@@ -1285,27 +1257,12 @@ async function adicionarEquipamento(
     }
 
 
-    const novo =
-      converterRegistro(
-        data
-      );
+    limparForm(tipo);
+
+    paginas[tipo] = 1;
 
 
-dados[tipo].unshift(novo);
-
-limparForm(tipo);
-
-paginas[tipo] = 1;
-
-
-     await carregarDados();
-
-atualizarDashboard();
-
-preencherAnos();
-
-renderBroken();
-
+    await carregarDados();
 
 
     mostrarAlerta(
@@ -1318,10 +1275,6 @@ renderBroken();
       status ===
       "Quebrado"
     ) {
-
-      preencherAnos();
-
-      renderBroken();
 
       alert(
         "Equipamento registrado como QUEBRADO.\n\n" +
@@ -1415,7 +1368,7 @@ async function adicionarQuebrado() {
 
 
   if (
-    !quantidade ||
+    !Number.isFinite(quantidade) ||
     quantidade < 1
   ) {
 
@@ -1447,32 +1400,18 @@ async function adicionarQuebrado() {
 
 
     const {
-      data,
       error
     } =
       await supabaseClient
         .from("quebrados")
         .insert([
           registro
-        ])
-        .select()
-        .single();
+        ]);
 
 
     if (error) {
       throw error;
     }
-
-
-    const novo =
-      converterQuebrado(
-        data
-      );
-
-
-    dados.quebrados.unshift(
-      novo
-    );
 
 
     const form =
@@ -1494,12 +1433,12 @@ async function adicionarQuebrado() {
       1;
 
 
-await carregarDados();
+    await carregarDados();
 
-atualizarDashboard();
 
-preencherAnos();
+    preencherAnos();
 
+    renderBroken();
 
 
     alert(
@@ -2755,7 +2694,9 @@ async function editarEquipamento(
           ) {
 
             quebradoHora =
-              campoHora.value + ":00";
+              campoHora.value.length === 5
+                ? campoHora.value + ":00"
+                : campoHora.value;
 
           }
 
@@ -2848,7 +2789,6 @@ async function editarEquipamento(
       try {
 
         const {
-          data,
           error
         } =
           await supabaseClient
@@ -2859,9 +2799,7 @@ async function editarEquipamento(
             .eq(
               "id",
               item.id
-            )
-            .select()
-            .single();
+            );
 
 
         if (error) {
@@ -2869,41 +2807,11 @@ async function editarEquipamento(
         }
 
 
-        const atualizado =
-          converterRegistro(
-            data
-          );
-
-
-        const indice =
-          dados[tipo].findIndex(
-            function (equipamento) {
-
-              return (
-                String(
-                  equipamento.id
-                ) ===
-                String(item.id)
-              );
-
-            }
-          );
-
-
-        if (
-          indice !== -1
-        ) {
-
-          dados[tipo][indice] =
-            atualizado;
-
-        }
-
-
         fecharModal();
 
 
-        atualizarDashboard();
+        await carregarDados();
+
 
         renderPage(
           tipo
@@ -2990,6 +2898,7 @@ window.addEventListener(
   }
 );
 
+
 /* =========================================================
    EXCLUIR EQUIPAMENTO
    ========================================================= */
@@ -3041,620 +2950,38 @@ async function excluirEquipamento(
   }
 
 
-  try {
+try {
 
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("equipamentos")
-        .delete()
-        .eq(
-          "id",
-          item.id
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("equipamentos")
+      .delete()
+      .eq(
+        "id",
+        item.id
+      );
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  dados[tipo] =
+    dados[tipo].filter(
+      function (equipamento) {
+
+        return (
+          String(
+            equipamento.id
+          ) !==
+          String(item.id)
         );
 
-
-    if (error) {
-      throw error;
-    }
-
-
-    dados[tipo] =
-      dados[tipo].filter(
-        function (equipamento) {
-
-          return (
-            String(
-              equipamento.id
-            ) !==
-            String(item.id)
-          );
-
-        }
-      );
-
-
-const listaNormal =
-      filtrarDados(tipo);
-
-
-    const totalPaginasNormal =
-      Math.max(
-        1,
-        Math.ceil(
-          listaNormal.length /
-          POR_PAGINA
-        )
-      );
-
-
-    if (
-      paginas[tipo] >
-      totalPaginasNormal
-    ) {
-
-      paginas[tipo] =
-        totalPaginasNormal;
-
-    }
-
-
-    /*
-     * Corrige a página atual
-     * dos equipamentos quebrados.
-     */
-
-    const listaQuebrados =
-      filtrarQuebrados();
-
-
-    const totalPaginasQuebrados =
-      Math.max(
-        1,
-        Math.ceil(
-          listaQuebrados.length /
-          POR_PAGINA
-        )
-      );
-
-
-    if (
-      paginas.quebrados >
-      totalPaginasQuebrados
-    ) {
-
-      paginas.quebrados =
-        totalPaginasQuebrados;
-
-    }
-
-
-    /*
-     * Atualiza dashboard.
-     */
-
-    atualizarDashboard();
-
-
-    /*
-     * Atualiza tabela normal.
-     */
-
-    renderPage(
-      tipo
-    );
-
-
-    /*
-     * Atualiza anos disponíveis
-     * no filtro de quebrados.
-     */
-
-    preencherAnos();
-
-
-    /*
-     * Atualiza tabela de quebrados.
-     */
-
-    renderBroken();
-
-
-    /*
-     * Mensagem final.
-     */
-
-    alert(
-      excluirQuebrado
-        ? "Equipamento quebrado excluído com sucesso!"
-        : "Equipamento excluído com sucesso!"
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao excluir equipamento:",
-      error
-    );
-
-
-    alert(
-      "Não foi possível excluir o equipamento.\n\n" +
-      (
-        error.message ||
-        "Verifique sua conexão com o banco de dados."
-      )
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   EQUIPAMENTOS QUEBRADOS
-   ========================================================= */
-
-function obterQuebrados() {
-
-  const resultado = [];
-
-
-  /*
-   * Equipamentos cadastrados
-   * com status quebrado.
-   */
-
-  tipos.forEach(
-    function (tipo) {
-
-      const lista =
-        Array.isArray(
-          dados[tipo]
-        )
-          ? dados[tipo]
-          : [];
-
-
-      lista.forEach(
-        function (item) {
-
-          if (
-            item.status ===
-            "Quebrado"
-          ) {
-
-            resultado.push({
-
-              ...item,
-
-              tipo:
-                tipo,
-
-              origem:
-                "equipamento",
-
-              quantidade:
-                1
-
-            });
-
-          }
-
-        }
-      );
-
-    }
-  );
-
-
-  /*
-   * Registros manuais de quebrados.
-   */
-
-  const manuais =
-    Array.isArray(
-      dados.quebrados
-    )
-      ? dados.quebrados
-      : [];
-
-
-  manuais.forEach(
-    function (item) {
-
-      resultado.push({
-
-        ...item,
-
-        tipo:
-          "quebrado",
-
-        origem:
-          "manual",
-
-        codigo:
-          "",
-
-        quebradoEm: {
-
-          data:
-            item.criadoEm?.data ||
-            "",
-
-          hora:
-            item.criadoEm?.hora ||
-            "",
-
-          observacao:
-            item.observacao ||
-            ""
-
-        }
-
-      });
-
-    }
-  );
-
-
-  /*
-   * Ordena do mais recente
-   * para o mais antigo.
-   */
-
-  resultado.sort(
-    function (a, b) {
-
-      const dataA =
-        a.quebradoEm
-          ? `${a.quebradoEm.data} ${a.quebradoEm.hora}`
-          : "";
-
-
-      const dataB =
-        b.quebradoEm
-          ? `${b.quebradoEm.data} ${b.quebradoEm.hora}`
-          : "";
-
-
-      return dataB.localeCompare(
-        dataA
-      );
-
-    }
-  );
-
-
-  return resultado;
-
-}
-
-
-/* =========================================================
-   FILTRAR QUEBRADOS
-   ========================================================= */
-
-function filtrarQuebrados() {
-
-  const buscaElemento =
-    document.getElementById(
-      "busca-quebrados"
-    );
-
-
-  const dataElemento =
-    document.getElementById(
-      "filtro-data"
-    );
-
-
-  const mesElemento =
-    document.getElementById(
-      "filtro-mes"
-    );
-
-
-  const anoElemento =
-    document.getElementById(
-      "filtro-ano"
-    );
-
-
-  const busca =
-    buscaElemento
-      ? buscaElemento.value
-          .trim()
-          .toLowerCase()
-      : "";
-
-
-  const data =
-    dataElemento
-      ? dataElemento.value
-      : "";
-
-
-  const mes =
-    mesElemento
-      ? mesElemento.value
-      : "";
-
-
-  const ano =
-    anoElemento
-      ? anoElemento.value
-      : "";
-
-
-  let lista =
-    obterQuebrados();
-
-
-  lista =
-    lista.filter(
-      function (item) {
-
-        const codigo =
-          String(
-            item.codigo || ""
-          ).toLowerCase();
-
-
-        const nome =
-          String(
-            item.nome || ""
-          ).toLowerCase();
-
-
-        const observacao =
-          String(
-            item.observacao ||
-            item.quebradoEm?.observacao ||
-            ""
-          ).toLowerCase();
-
-
-        /*
-         * Busca por código,
-         * nome ou observação.
-         */
-
-        if (
-          busca &&
-          !codigo.includes(busca) &&
-          !nome.includes(busca) &&
-          !observacao.includes(busca)
-        ) {
-
-          return false;
-
-        }
-
-
-        /*
-         * Filtro por data completa.
-         */
-
-        if (
-          data &&
-          (
-            !item.quebradoEm ||
-            item.quebradoEm.data !== data
-          )
-        ) {
-
-          return false;
-
-        }
-
-
-        /*
-         * Filtro por mês.
-         */
-
-        if (mes) {
-
-          if (
-            !item.quebradoEm ||
-            !item.quebradoEm.data
-          ) {
-
-            return false;
-
-          }
-
-
-          const mesQuebra =
-            item.quebradoEm.data
-              .split("-")[1];
-
-
-          if (
-            mesQuebra !==
-            String(mes).padStart(
-              2,
-              "0"
-            )
-          ) {
-
-            return false;
-
-          }
-
-        }
-
-
-        /*
-         * Filtro por ano.
-         */
-
-        if (ano) {
-
-          if (
-            !item.quebradoEm ||
-            !item.quebradoEm.data
-          ) {
-
-            return false;
-
-          }
-
-
-          const anoQuebra =
-            item.quebradoEm.data
-              .split("-")[0];
-
-
-          if (
-            anoQuebra !==
-            String(ano)
-          ) {
-
-            return false;
-
-          }
-
-        }
-
-
-        return true;
-
       }
     );
-
-
-  return lista;
-
-}
-
-
-/* =========================================================
-   PREENCHER ANOS
-   ========================================================= */
-
-function preencherAnos() {
-
-  const select =
-    document.getElementById(
-      "filtro-ano"
-    );
-
-
-  if (!select) {
-    return;
-  }
-
-
-  const anoSelecionado =
-    select.value;
-
-
-  const anos =
-    new Set();
-
-
-  obterQuebrados().forEach(
-    function (item) {
-
-      if (
-        item.quebradoEm &&
-        item.quebradoEm.data
-      ) {
-
-        const ano =
-          item.quebradoEm.data
-            .split("-")[0];
-
-
-        if (ano) {
-          anos.add(ano);
-        }
-
-      }
-
-    }
-  );
-
-
-  const listaAnos =
-    Array.from(anos)
-      .sort(
-        function (a, b) {
-
-          return (
-            Number(b) -
-            Number(a)
-          );
-
-        }
-      );
-
-
-  select.innerHTML = `
-
-    <option value="">
-      Todos os anos
-    </option>
-
-  `;
-
-
-  listaAnos.forEach(
-    function (ano) {
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-
-      option.value =
-        ano;
-
-
-      option.textContent =
-        ano;
-
-
-      if (
-        ano ===
-        anoSelecionado
-      ) {
-
-        option.selected =
-          true;
-
-      }
-
-
-      select.appendChild(
-        option
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   RENDERIZAR QUEBRADOS
-   ========================================================= */
-
-function renderBroken() {
-
-  const container =
-    document.getElementById(
-      "tabela-quebrados"
-    );
-
-
-  if (!container) {
-    return;
-  }
 
 
   const lista =
@@ -3682,1492 +3009,40 @@ function renderBroken() {
   }
 
 
-  if (
-    paginas.quebrados < 1
-  ) {
-
-    paginas.quebrados =
-      1;
-
-  }
+  atualizarDashboard();
 
 
-  const inicio =
+  renderPage(
+    tipo
+  );
+
+
+  preencherAnos();
+
+
+  renderBroken();
+
+
+  alert(
+    "Equipamento quebrado excluído com sucesso!"
+  );
+
+
+} catch (error) {
+
+  console.error(
+    "Erro ao excluir equipamento quebrado:",
+    error
+  );
+
+
+  alert(
+    "Não foi possível excluir o equipamento.\n\n" +
     (
-      paginas.quebrados - 1
-    ) *
-    POR_PAGINA;
-
-
-  const pagina =
-    lista.slice(
-      inicio,
-      inicio + POR_PAGINA
-    );
-
-
-  if (
-    pagina.length === 0
-  ) {
-
-    container.innerHTML = `
-
-      <div class="empty">
-
-        Nenhum equipamento quebrado
-        encontrado com os filtros
-        selecionados.
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  let html = `
-
-    <div class="table-container">
-
-      <table>
-
-        <thead>
-
-          <tr>
-
-            <th>Tipo</th>
-
-            <th>Código</th>
-
-            <th>Nome</th>
-
-            <th>Quantidade</th>
-
-            <th>Data</th>
-
-            <th>Hora</th>
-
-            <th>Observação</th>
-
-            <th>Ações</th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-  `;
-
-
-  pagina.forEach(
-    function (item) {
-
-      const tipo =
-        item.tipo;
-
-
-      const nomeTipo =
-        item.origem === "manual"
-          ? "Registro manual"
-          : (
-              nomesTipos[tipo] ||
-              tipo
-            );
-
-
-      const quantidade =
-        Number(
-          item.quantidade || 1
-        );
-
-
-      const observacao =
-        item.origem === "manual"
-          ? (
-              item.observacao ||
-              "-"
-            )
-          : (
-              item.quebradoEm?.observacao ||
-              item.observacao ||
-              "-"
-            );
-
-
-      const data =
-        item.quebradoEm?.data ||
-        "";
-
-
-      const hora =
-        item.quebradoEm?.hora ||
-        "";
-
-
-      html += `
-
-        <tr>
-
-          <td>
-
-            <strong>
-
-              ${escapeHTML(
-                nomeTipo
-              )}
-
-            </strong>
-
-          </td>
-
-
-          <td>
-
-            ${
-              item.codigo
-                ? escapeHTML(
-                    item.codigo
-                  )
-                : "-"
-            }
-
-          </td>
-
-
-          <td>
-
-            ${escapeHTML(
-              item.nome
-            )}
-
-          </td>
-
-
-          <td>
-
-            <strong>
-
-              ${quantidade}
-
-            </strong>
-
-          </td>
-
-
-          <td>
-
-            ${
-              data
-                ? formatarDataExibicao(
-                    data
-                  )
-                : "-"
-            }
-
-          </td>
-
-
-          <td>
-
-            ${
-              hora
-                ? escapeHTML(
-                    hora
-                  )
-                : "-"
-            }
-
-          </td>
-
-
-          <td>
-
-            ${escapeHTML(
-              observacao
-            )}
-
-          </td>
-
-
-          <td>
-
-            <div class="table-actions">
-
-              <button
-                type="button"
-                class="edit-btn"
-                onclick="
-                  editarRegistroQuebrado(
-                    '${escapeHTML(
-                      item.origem || "equipamento"
-                    )}',
-                    '${escapeHTML(
-                      item.tipo || ""
-                    )}',
-                    '${escapeHTML(
-                      item.id
-                    )}'
-                  )
-                "
-              >
-
-                ✏️ Editar
-
-              </button>
-
-
-              <button
-                type="button"
-                class="delete-btn"
-                onclick="
-                  excluirRegistroQuebrado(
-                    '${escapeHTML(
-                      item.origem || "equipamento"
-                    )}',
-                    '${escapeHTML(
-                      item.tipo || ""
-                    )}',
-                    '${escapeHTML(
-                      item.id
-                    )}'
-                  )
-                "
-              >
-
-                🗑️ Excluir
-
-              </button>
-
-            </div>
-
-          </td>
-
-        </tr>
-
-      `;
-
-    }
+      error.message ||
+      "Verifique sua conexão com o banco de dados."
+    )
   );
-
-
-  html += `
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  `;
-
-
-  html += criarPaginacao(
-    "quebrados",
-    totalPaginas,
-    paginas.quebrados,
-    "broken"
-  );
-
-
-  container.innerHTML =
-    html;
-
-}
-
-
-/* =========================================================
-   EDITAR REGISTRO MANUAL DE QUEBRADO
-   ========================================================= */
-
-async function editarRegistroManual(
-  id
-) {
-
-  const item =
-    dados.quebrados?.find(
-      function (registro) {
-
-        return (
-          String(
-            registro.id
-          ) ===
-          String(id)
-        );
-
-      }
-    );
-
-
-  if (!item) {
-
-    alert(
-      "Registro de quebrado não encontrado."
-    );
-
-    return;
-
-  }
-
-
-  const html = `
-
-    <form id="form-edicao-quebrado-manual">
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label for="edit-manual-nome">
-            Nome *
-          </label>
-
-          <input
-            id="edit-manual-nome"
-            type="text"
-            value="${escapeHTML(
-              item.nome
-            )}"
-            required
-          >
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label for="edit-manual-quantidade">
-            Quantidade *
-          </label>
-
-          <input
-            id="edit-manual-quantidade"
-            type="number"
-            min="1"
-            value="${Number(
-              item.quantidade || 1
-            )}"
-            required
-          >
-
-        </div>
-
-
-        <div class="form-group full">
-
-          <label for="edit-manual-observacao">
-            Observações
-          </label>
-
-          <textarea
-            id="edit-manual-observacao"
-          >${escapeHTML(
-            item.observacao || ""
-          )}</textarea>
-
-        </div>
-
-      </div>
-
-
-      <div class="actions">
-
-        <button
-          type="submit"
-          class="btn btn-primary"
-        >
-
-          Salvar alterações
-
-        </button>
-
-
-        <button
-          type="button"
-          class="btn btn-secondary"
-          onclick="fecharModal()"
-        >
-
-          Cancelar
-
-        </button>
-
-      </div>
-
-    </form>
-
-  `;
-
-
-  const modalContent =
-    document.getElementById(
-      "modalContent"
-    );
-
-
-  const modal =
-    document.getElementById(
-      "modalEditar"
-    );
-
-
-  if (
-    !modalContent ||
-    !modal
-  ) {
-
-    alert(
-      "Modal de edição não encontrado."
-    );
-
-    return;
-
-  }
-
-
-  modalContent.innerHTML =
-    html;
-
-
-  modal.classList.add(
-    "show"
-  );
-
-
-  const formulario =
-    document.getElementById(
-      "form-edicao-quebrado-manual"
-    );
-
-
-  if (!formulario) {
-    return;
-  }
-
-
-  formulario.addEventListener(
-    "submit",
-    async function (event) {
-
-      event.preventDefault();
-
-
-      const nome =
-        document.getElementById(
-          "edit-manual-nome"
-        ).value.trim();
-
-
-      const quantidade =
-        Number(
-          document.getElementById(
-            "edit-manual-quantidade"
-          ).value
-        );
-
-
-      const observacao =
-        document.getElementById(
-          "edit-manual-observacao"
-        ).value.trim();
-
-
-      if (!nome) {
-
-        alert(
-          "Informe o nome do equipamento."
-        );
-
-        return;
-
-      }
-
-
-      if (
-        !quantidade ||
-        quantidade < 1
-      ) {
-
-        alert(
-          "Informe uma quantidade válida."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        const dadosAtualizados = {
-
-          nome:
-            nome,
-
-          quantidade:
-            quantidade,
-
-          observacao:
-            observacao || null
-
-        };
-
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("quebrados")
-            .update(
-              dadosAtualizados
-            )
-            .eq(
-              "id",
-              item.id
-            )
-            .select()
-            .single();
-
-
-        if (error) {
-          throw error;
-        }
-
-
-        const atualizado =
-          converterQuebrado(
-            data
-          );
-
-
-        const indice =
-          dados.quebrados.findIndex(
-            function (registro) {
-
-              return (
-                String(
-                  registro.id
-                ) ===
-                String(item.id)
-              );
-
-            }
-          );
-
-
-        if (
-          indice !== -1
-        ) {
-
-          dados.quebrados[indice] =
-            atualizado;
-
-        }
-
-
-        fecharModal();
-
-        atualizarDashboard();
-
-        preencherAnos();
-
-        renderBroken();
-
-
-        alert(
-          "Registro atualizado com sucesso!"
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "Erro ao editar registro manual:",
-          error
-        );
-
-
-        alert(
-          "Não foi possível salvar as alterações.\n\n" +
-          (
-            error.message ||
-            "Verifique sua conexão com o banco de dados."
-          )
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   EDITAR REGISTRO DE QUEBRADO
-   ========================================================= */
-
-function editarRegistroQuebrado(
-  origem,
-  tipo,
-  id
-) {
-
-  if (
-    origem ===
-    "manual"
-  ) {
-
-    editarRegistroManual(
-      id
-    );
-
-    return;
-
-  }
-
-
-  editarQuebrado(
-    tipo,
-    id
-  );
-
-}
-
-
-/* =========================================================
-   EDITAR EQUIPAMENTO QUEBRADO
-   ========================================================= */
-
-async function editarQuebrado(
-  tipo,
-  id
-) {
-
-  const item =
-    dados[tipo]?.find(
-      function (equipamento) {
-
-        return (
-          String(
-            equipamento.id
-          ) ===
-          String(id)
-        );
-
-      }
-    );
-
-
-  if (!item) {
-
-    alert(
-      "Equipamento não encontrado."
-    );
-
-    return;
-
-  }
-
-
-  let html = `
-
-    <form id="form-edicao-quebrado">
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label>
-            Código
-          </label>
-
-          <input
-            id="edit-quebrado-codigo"
-            value="${escapeHTML(
-              item.codigo
-            )}"
-            required
-          >
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Nome
-          </label>
-
-          <input
-            id="edit-quebrado-nome"
-            value="${escapeHTML(
-              item.nome
-            )}"
-            required
-          >
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Data da quebra
-          </label>
-
-          <input
-            type="date"
-            id="edit-quebrado-data"
-            value="${
-              item.quebradoEm?.data || ""
-            }"
-            required
-          >
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Hora da quebra
-          </label>
-
-          <input
-            type="time"
-            id="edit-quebrado-hora"
-            value="${
-              item.quebradoEm?.hora
-                ? item.quebradoEm.hora.substring(0, 5)
-                : ""
-            }"
-            required
-          >
-
-        </div>
-
-
-        ${
-          tipo === "notebook"
-            ? `
-
-              <div class="form-group">
-
-                <label>
-                  Função
-                </label>
-
-                <input
-                  id="edit-quebrado-funcao"
-                  value="${escapeHTML(
-                    item.funcao || ""
-                  )}"
-                >
-
-              </div>
-
-            `
-            : ""
-        }
-
-
-        <div class="form-group full">
-
-          <label>
-            Observação da quebra
-          </label>
-
-          <textarea
-            id="edit-quebrado-observacao"
-            required
-          >${escapeHTML(
-            item.quebradoEm?.observacao ||
-            item.observacao ||
-            ""
-          )}</textarea>
-
-        </div>
-
-      </div>
-
-
-      <div class="actions">
-
-        <button
-          type="submit"
-          class="btn btn-primary"
-        >
-
-          Salvar alterações
-
-        </button>
-
-
-        <button
-          type="button"
-          class="btn btn-secondary"
-          onclick="fecharModal()"
-        >
-
-          Cancelar
-
-        </button>
-
-      </div>
-
-    </form>
-
-  `;
-
-
-  const modalContent =
-    document.getElementById(
-      "modalContent"
-    );
-
-
-  const modal =
-    document.getElementById(
-      "modalEditar"
-    );
-
-
-  if (
-    !modalContent ||
-    !modal
-  ) {
-
-    alert(
-      "Modal de edição não encontrado no HTML."
-    );
-
-    return;
-
-  }
-
-
-  modalContent.innerHTML =
-    html;
-
-
-  modal.classList.add(
-    "show"
-  );
-
-
-  const formulario =
-    document.getElementById(
-      "form-edicao-quebrado"
-    );
-
-
-  if (!formulario) {
-    return;
-  }
-
-
-  formulario.addEventListener(
-    "submit",
-    async function (event) {
-
-      event.preventDefault();
-
-
-      const novoCodigo =
-        document.getElementById(
-          "edit-quebrado-codigo"
-        ).value.trim();
-
-
-      const novoNome =
-        document.getElementById(
-          "edit-quebrado-nome"
-        ).value.trim();
-
-
-      const novaData =
-        document.getElementById(
-          "edit-quebrado-data"
-        ).value;
-
-
-      const novaHora =
-        document.getElementById(
-          "edit-quebrado-hora"
-        ).value;
-
-
-      const novaObservacao =
-        document.getElementById(
-          "edit-quebrado-observacao"
-        ).value.trim();
-
-
-      let novaFuncao = "";
-
-
-      if (
-        tipo ===
-        "notebook"
-      ) {
-
-        const campoFuncao =
-          document.getElementById(
-            "edit-quebrado-funcao"
-          );
-
-
-        if (campoFuncao) {
-
-          novaFuncao =
-            campoFuncao.value.trim();
-
-        }
-
-      }
-
-
-      if (
-        !novoCodigo ||
-        !novoNome
-      ) {
-
-        alert(
-          "Preencha o código e o nome."
-        );
-
-        return;
-
-      }
-
-
-      if (
-        !novaData ||
-        !novaHora
-      ) {
-
-        alert(
-          "Informe a data e a hora da quebra."
-        );
-
-        return;
-
-      }
-
-
-      if (!novaObservacao) {
-
-        alert(
-          "Informe a observação da quebra."
-        );
-
-        return;
-
-      }
-
-
-      /*
-       * Verifica código duplicado.
-       */
-
-      if (
-        novoCodigo !==
-        item.codigo
-      ) {
-
-        try {
-
-          const {
-            data: duplicado,
-            error: erroDuplicado
-          } =
-            await supabaseClient
-              .from("equipamentos")
-              .select("id")
-              .eq(
-                "codigo",
-                novoCodigo
-              )
-              .neq(
-                "id",
-                item.id
-              )
-              .maybeSingle();
-
-
-          if (erroDuplicado) {
-            throw erroDuplicado;
-          }
-
-
-          if (duplicado) {
-
-            alert(
-              "Outro equipamento já possui este código."
-            );
-
-            return;
-
-          }
-
-        } catch (error) {
-
-          console.error(
-            "Erro ao verificar código:",
-            error
-          );
-
-
-          alert(
-            "Não foi possível verificar o código do equipamento."
-          );
-
-          return;
-
-        }
-
-      }
-
-
-      const dadosAtualizados = {
-
-        codigo:
-          novoCodigo,
-
-        nome:
-          novoNome,
-
-        funcao:
-          tipo === "notebook"
-            ? novaFuncao || null
-            : null,
-
-        status:
-          "Quebrado",
-
-        observacao:
-          novaObservacao || null,
-
-        quebrado_data:
-          novaData,
-
-        quebrado_hora:
-          novaHora,
-
-        quebrado_observacao:
-          novaObservacao || null
-
-      };
-
-
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("equipamentos")
-            .update(
-              dadosAtualizados
-            )
-            .eq(
-              "id",
-              item.id
-            )
-            .select()
-            .single();
-
-
-        if (error) {
-          throw error;
-        }
-
-
-        const atualizado =
-          converterRegistro(
-            data
-          );
-
-
-        const indice =
-          dados[tipo].findIndex(
-            function (equipamento) {
-
-              return (
-                String(
-                  equipamento.id
-                ) ===
-                String(item.id)
-              );
-
-            }
-          );
-
-
-        if (
-          indice !== -1
-        ) {
-
-          dados[tipo][indice] =
-            atualizado;
-
-        }
-
-
-        fecharModal();
-
-
-        atualizarDashboard();
-
-
-        renderPage(
-          tipo
-        );
-
-
-        preencherAnos();
-
-        renderBroken();
-
-
-        alert(
-          "Equipamento quebrado atualizado com sucesso!"
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "Erro ao editar equipamento quebrado:",
-          error
-        );
-
-
-        alert(
-          "Não foi possível salvar as alterações.\n\n" +
-          (
-            error.message ||
-            "Verifique sua conexão com o banco de dados."
-          )
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   EXCLUIR REGISTRO MANUAL
-   ========================================================= */
-
-async function excluirRegistroManual(
-  id
-) {
-
-  const item =
-    dados.quebrados?.find(
-      function (registro) {
-
-        return (
-          String(
-            registro.id
-          ) ===
-          String(id)
-        );
-
-      }
-    );
-
-
-  if (!item) {
-
-    alert(
-      "Registro de quebrado não encontrado."
-    );
-
-    return;
-
-  }
-
-
-  const confirmou =
-    confirm(
-      `Deseja realmente excluir o registro "${item.nome}"?`
-    );
-
-
-  if (!confirmou) {
-    return;
-  }
-
-
-  try {
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("quebrados")
-        .delete()
-        .eq(
-          "id",
-          item.id
-        );
-
-
-    if (error) {
-      throw error;
-    }
-
-
-    dados.quebrados =
-      dados.quebrados.filter(
-        function (registro) {
-
-          return (
-            String(
-              registro.id
-            ) !==
-            String(item.id)
-          );
-
-        }
-      );
-
-
-    const lista =
-      filtrarQuebrados();
-
-
-    const totalPaginas =
-      Math.max(
-        1,
-        Math.ceil(
-          lista.length /
-          POR_PAGINA
-        )
-      );
-
-
-    if (
-      paginas.quebrados >
-      totalPaginas
-    ) {
-
-      paginas.quebrados =
-        totalPaginas;
-
-    }
-
-
-    atualizarDashboard();
-
-    preencherAnos();
-
-    renderBroken();
-
-
-    alert(
-      "Registro excluído com sucesso!"
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao excluir registro manual:",
-      error
-    );
-
-
-    alert(
-      "Não foi possível excluir o registro.\n\n" +
-      (
-        error.message ||
-        "Verifique sua conexão com o banco de dados."
-      )
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   EXCLUIR REGISTRO DE QUEBRADO
-   ========================================================= */
-
-function excluirRegistroQuebrado(
-  origem,
-  tipo,
-  id
-) {
-
-  if (
-    origem ===
-    "manual"
-  ) {
-
-    excluirRegistroManual(
-      id
-    );
-
-    return;
-
-  }
-
-
-  excluirQuebrado(
-    tipo,
-    id
-  );
-
-}
-
-
-/* =========================================================
-   EXCLUIR EQUIPAMENTO QUEBRADO
-   ========================================================= */
-
-async function excluirQuebrado(
-  tipo,
-  id
-) {
-
-  const item =
-    dados[tipo]?.find(
-      function (equipamento) {
-
-        return (
-          String(
-            equipamento.id
-          ) ===
-          String(id)
-        );
-
-      }
-    );
-
-
-  if (!item) {
-
-    alert(
-      "Equipamento não encontrado."
-    );
-
-    return;
-
-  }
-
-
-  const confirmou =
-    confirm(
-      `Deseja realmente excluir o equipamento quebrado "${item.nome}" (${item.codigo})?`
-    );
-
-
-  if (!confirmou) {
-    return;
-  }
-
-
-  try {
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("equipamentos")
-        .delete()
-        .eq(
-          "id",
-          item.id
-        );
-
-
-    if (error) {
-      throw error;
-    }
-
-
-    dados[tipo] =
-      dados[tipo].filter(
-        function (equipamento) {
-
-          return (
-            String(
-              equipamento.id
-            ) !==
-            String(item.id)
-          );
-
-        }
-      );
-
-
-    const lista =
-      filtrarQuebrados();
-
-
-    const totalPaginas =
-      Math.max(
-        1,
-        Math.ceil(
-          lista.length /
-          POR_PAGINA
-        )
-      );
-
-
-    if (
-      paginas.quebrados >
-      totalPaginas
-    ) {
-
-      paginas.quebrados =
-        totalPaginas;
-
-    }
-
-
-    atualizarDashboard();
-
-
-    renderPage(
-      tipo
-    );
-
-
-    preencherAnos();
-
-
-    renderBroken();
-alert(
-      "Equipamento quebrado excluído com sucesso!"
-    );
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao excluir equipamento quebrado:",
-      error
-    );
-
-    alert(
-      "Não foi possível excluir o equipamento.\n\n" +
-      (
-        error.message ||
-        "Verifique sua conexão com o banco de dados."
-      )
-    );
 
   }
 
@@ -5386,52 +3261,23 @@ document.addEventListener(
     );
 
 
-    /*
-     * Registra os eventos
-     * dos formulários.
-     */
-
     registrarEventosFormularios();
 
-
-    /*
-     * Registra as buscas
-     * dos equipamentos.
-     */
 
     registrarEventosBusca();
 
 
-    /*
-     * Registra os filtros
-     * da página de quebrados.
-     */
-
     registrarEventosFiltrosQuebrados();
 
-
-    /*
-     * Carrega os dados
-     * do Supabase.
-     */
 
     await carregarDados();
 
 
-    /*
-     * Garante que o dashboard
-     * seja atualizado.
-     */
-
     await carregarQuebrados();
+
 
     atualizarDashboard();
 
-
-    /*
-     * Preenche o filtro
-     * de anos.
-     */
 
     preencherAnos();
 
@@ -5441,9 +3287,6 @@ document.addEventListener(
 
 /* =========================================================
    EXPOSIÇÃO DAS FUNÇÕES NO WINDOW
-   =========================================================
-   Necessário quando o HTML usa
-   onclick="..."
    ========================================================= */
 
 window.showPage =
@@ -5483,3 +3326,5 @@ window.limparFiltrosQuebrados =
 /* =========================================================
    FIM DO SCRIPT
    ========================================================= */
+
+              
