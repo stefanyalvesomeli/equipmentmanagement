@@ -524,6 +524,73 @@ async function carregarDados() {
 
       preencherAnos();
 
+       async function atualizarAbaQuebrados() {
+
+  // Busca novamente os equipamentos no Supabase
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("equipamentos")
+    .select("*")
+    .order("criado_em", {
+      ascending: false
+    });
+
+  if (error) {
+
+    console.error(
+      "Erro ao atualizar equipamentos quebrados:",
+      error
+    );
+
+    return;
+
+  }
+
+
+  // Reconstrói as listas dos equipamentos
+  dados.hh = [];
+  dados.notebook = [];
+  dados.radio = [];
+  dados.carregador = [];
+  dados.doisD = [];
+  dados.impressora = [];
+
+
+  (data || []).forEach(function(row) {
+
+    const equipamento =
+      converterRegistro(row);
+
+    if (
+      tipos.includes(row.tipo)
+    ) {
+
+      dados[row.tipo].push(
+        equipamento
+      );
+
+    }
+
+  });
+
+
+  // Atualiza também os registros manuais
+  await carregarQuebrados();
+
+
+  // Atualiza a aba
+  paginas.quebrados = 1;
+
+  preencherAnos();
+
+  renderBroken();
+
+  atualizarDashboard();
+
+}
+
       renderBroken();
 
     }
