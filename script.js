@@ -1224,18 +1224,18 @@ async function adicionarEquipamento(
       );
 
 
-    dados[tipo].unshift(
-      novo
-    );
+dados[tipo].unshift(novo);
 
+limparForm(tipo);
 
-    atualizarDashboard();
+paginas[tipo] = 1;
 
-    limparForm(tipo);
+await carregarDados();
 
-    paginas[tipo] = 1;
+atualizarDashboard();
 
-    renderPage(tipo);
+renderPage(tipo);
+
 
 
     mostrarAlerta(
