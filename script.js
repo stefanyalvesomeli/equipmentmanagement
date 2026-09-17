@@ -661,6 +661,16 @@ function atualizarDashboard() {
     totalImpressora
   );
 
+
+  /*
+   * Atualiza os cards da aba Quebrados.
+   */
+
+  atualizarDashboardQuebrados();
+
+}
+
+
 }
 
 
@@ -678,6 +688,187 @@ function atualizarNumero(
       valor;
 
   }
+
+}
+
+/* =========================================================
+   CONTAGEM DE EQUIPAMENTOS QUEBRADOS POR TIPO
+   ========================================================= */
+
+function atualizarDashboardQuebrados() {
+
+  const contagens = {
+
+    hh: 0,
+
+    notebook: 0,
+
+    radio: 0,
+
+    carregador: 0,
+
+    doisD: 0,
+
+    impressora: 0
+
+  };
+
+
+  /*
+   * Conta os equipamentos cadastrados
+   * normalmente e que estão com status "Quebrado".
+   */
+
+  tipos.forEach(
+    function (tipo) {
+
+      const lista =
+        Array.isArray(dados[tipo])
+          ? dados[tipo]
+          : [];
+
+
+      lista.forEach(
+        function (item) {
+
+          if (
+            item.status === "Quebrado"
+          ) {
+
+            contagens[tipo]++;
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  /*
+   * Conta também os registros adicionados
+   * manualmente na tabela "quebrados".
+   *
+   * Como esses registros atualmente possuem
+   * apenas o campo "nome", identificamos
+   * o tipo pelo nome informado.
+   */
+
+  if (
+    Array.isArray(dados.quebrados)
+  ) {
+
+    dados.quebrados.forEach(
+      function (item) {
+
+        const nome =
+          String(
+            item.nome || ""
+          )
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(
+            /[\u0300-\u036f]/g,
+            ""
+          );
+
+
+        const quantidade =
+          Number(
+            item.quantidade || 1
+          );
+
+
+        if (
+          nome.includes("hh") ||
+          nome.includes("handheld")
+        ) {
+
+          contagens.hh += quantidade;
+
+        }
+
+        else if (
+          nome.includes("notebook")
+        ) {
+
+          contagens.notebook += quantidade;
+
+        }
+
+        else if (
+          nome.includes("radio")
+        ) {
+
+          contagens.radio += quantidade;
+
+        }
+
+        else if (
+          nome.includes("carregador")
+        ) {
+
+          contagens.carregador += quantidade;
+
+        }
+
+        else if (
+          nome === "2d" ||
+          nome.includes("2d")
+        ) {
+
+          contagens.doisD += quantidade;
+
+        }
+
+        else if (
+          nome.includes("impressora")
+        ) {
+
+          contagens.impressora += quantidade;
+
+        }
+
+      }
+    );
+
+  }
+
+
+  /*
+   * Atualiza os cards da página Quebrados.
+   */
+
+  atualizarNumero(
+    "quebradosHH",
+    contagens.hh
+  );
+
+  atualizarNumero(
+    "quebradosNotebook",
+    contagens.notebook
+  );
+
+  atualizarNumero(
+    "quebradosRadio",
+    contagens.radio
+  );
+
+  atualizarNumero(
+    "quebradosCarregador",
+    contagens.carregador
+  );
+
+  atualizarNumero(
+    "quebrados2D",
+    contagens.doisD
+  );
+
+  atualizarNumero(
+    "quebradosImpressora",
+    contagens.impressora
+  );
 
 }
 
