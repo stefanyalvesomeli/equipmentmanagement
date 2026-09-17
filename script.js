@@ -1230,11 +1230,14 @@ limparForm(tipo);
 
 paginas[tipo] = 1;
 
-await carregarDados();
+
+     await carregarDados();
 
 atualizarDashboard();
 
-renderPage(tipo);
+preencherAnos();
+
+renderBroken();
 
 
 
