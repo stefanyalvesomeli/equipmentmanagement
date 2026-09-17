@@ -1424,11 +1424,12 @@ async function adicionarQuebrado() {
       1;
 
 
-    atualizarDashboard();
+await carregarDados();
 
-    preencherAnos();
+atualizarDashboard();
 
-    renderBroken();
+preencherAnos();
+
 
 
     alert(
