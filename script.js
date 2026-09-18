@@ -558,44 +558,9 @@ function atualizarDashboard() {
     dados.impressora.length;
 
 
-  let totalQuebrados = 0;
+const totalQuebrados =
+  obterTotalQuebrados();
 
-
-  tipos.forEach(
-    function (tipo) {
-
-      totalQuebrados +=
-        dados[tipo].filter(
-          function (item) {
-
-            return (
-              item.status ===
-              "Quebrado"
-            );
-
-          }
-        ).length;
-
-    }
-  );
-
-
-  if (
-    Array.isArray(
-      dados.quebrados
-    )
-  ) {
-
-    dados.quebrados.forEach(
-      function (item) {
-
-        totalQuebrados +=
-          Number(
-            item.quantidade || 1
-          );
-
-      }
-    );
 
   }
 
@@ -844,6 +809,68 @@ function atualizarDashboardQuebrados() {
     contagens.impressora
   );
 
+
+}
+
+
+/* =========================================================
+   TOTAL DE EQUIPAMENTOS QUEBRADOS
+   ========================================================= */
+
+function obterTotalQuebrados() {
+
+  let total = 0;
+
+
+  /* =====================================================
+     EQUIPAMENTOS CADASTRADOS NA TABELA EQUIPAMENTOS
+     ===================================================== */
+
+  tipos.forEach(function (tipo) {
+
+    const lista =
+      Array.isArray(dados[tipo])
+        ? dados[tipo]
+        : [];
+
+
+    lista.forEach(function (item) {
+
+      if (
+        item.status === "Quebrado"
+      ) {
+
+        total += 1;
+
+      }
+
+    });
+
+  });
+
+
+  /* =====================================================
+     REGISTROS MANUAIS DA ABA "QUEBRADO"
+     ===================================================== */
+
+  if (
+    Array.isArray(dados.quebrados)
+  ) {
+
+    dados.quebrados.forEach(
+      function (item) {
+
+        total += Number(
+          item.quantidade || 1
+        );
+
+      }
+    );
+
+  }
+
+
+  return total;
 
 }
 
