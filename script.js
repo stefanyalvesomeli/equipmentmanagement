@@ -808,16 +808,7 @@ function atualizarDashboardQuebrados() {
 
         }
 
-        else if (
-          nome.includes("gatilho")
-        ) {
-
-          contagens.gatilhos +=
-            quantidade;
-
-        }
-
-      }
+     
     );
 
   }
