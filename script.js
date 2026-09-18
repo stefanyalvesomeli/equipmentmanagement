@@ -823,16 +823,18 @@ function atualizarNumero(
 
 function atualizarDashboardQuebrados() {
 
-  const contagens = {
+   const contagens = {
 
-    hh: 0,
-    notebook: 0,
-    radio: 0,
-    carregador: 0,
-    doisD: 0,
-    impressora: 0
+  hh: 0,
+  notebook: 0,
+  radio: 0,
+  carregador: 0,
+  doisD: 0,
+  impressora: 0,
+  gatilhos: 0
 
-  };
+};
+
 
 
   tipos.forEach(
@@ -953,6 +955,14 @@ function atualizarDashboardQuebrados() {
             quantidade;
 
         }
+else if (
+  nome.includes("gatilho")
+) {
+
+  contagens.gatilhos +=
+    quantidade;
+
+}
 
       }
     );
@@ -989,6 +999,10 @@ function atualizarDashboardQuebrados() {
     "quebradosImpressora",
     contagens.impressora
   );
+atualizarNumero(
+  "quebradosGatilhos",
+  contagens.gatilhos
+);
 
 }
 
@@ -6196,4 +6210,3 @@ window.limparFiltrosQuebrados =
    FIM DO SCRIPT
    ========================================================= */
 
-    pagina
