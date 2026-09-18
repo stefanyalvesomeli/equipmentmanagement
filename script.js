@@ -844,10 +844,6 @@ function atualizarDashboardQuebrados() {
     contagens.impressora
   );
 
-  atualizarNumero(
-    "quebradosGatilhos",
-    contagens.gatilhos
-  );
 
 }
 
