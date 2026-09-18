@@ -551,6 +551,7 @@ function atualizarDashboard() {
     totalHH
   );
 
+   
   atualizarNumero(
     "totalNotebook",
     totalNotebook
@@ -585,6 +586,12 @@ function atualizarDashboard() {
     "totalQuebrados",
     totalQuebrados
   );
+
+   atualizarNumero(
+  "totalQuebradosAba",
+  totalQuebrados
+);
+
 
   atualizarNumero(
     "totalEquipamentos",
