@@ -3249,7 +3249,457 @@ function limparFiltrosQuebrados() {
   renderBroken();
 
 }
+/* =========================================================
+   FUNÇÕES DA ABA QUEBRADOS
+   ========================================================= */
 
+function preencherAnos() {
+    const selectAno = document.getElementById("filtro-ano");
+
+    if (!selectAno) {
+        return;
+    }
+
+    const anos = new Set();
+
+    // Equipamentos que estão quebrados
+    tipos.forEach(function (tipo) {
+        const lista = dados[tipo] || [];
+
+        lista.forEach(function (item) {
+            if (
+                item.status === "Quebrado" &&
+                item.quebradoEm?.data
+            ) {
+                const ano = String(item.quebradoEm.data).substring(0, 4);
+
+                if (ano) {
+                    anos.add(ano);
+                }
+            }
+        });
+    });
+
+    // Quebrados cadastrados manualmente
+    (dados.quebrados || []).forEach(function (item) {
+        if (item.criadoEm?.data) {
+            const ano = String(item.criadoEm.data).substring(0, 4);
+
+            if (ano) {
+                anos.add(ano);
+            }
+        }
+    });
+
+    const anoAtual = new Date().getFullYear();
+    anos.add(String(anoAtual));
+
+    const valorAtual = selectAno.value;
+
+    selectAno.innerHTML = '<option value="">Todos os anos</option>';
+
+    Array.from(anos)
+        .sort((a, b) => Number(b) - Number(a))
+        .forEach(function (ano) {
+            const option = document.createElement("option");
+
+            option.value = ano;
+            option.textContent = ano;
+
+            selectAno.appendChild(option);
+        });
+
+    if (Array.from(anos).includes(valorAtual)) {
+        selectAno.value = valorAtual;
+    }
+}
+
+
+function filtrarQuebrados() {
+
+    let lista = [];
+
+    // Equipamentos cadastrados normalmente e marcados como quebrados
+    tipos.forEach(function (tipo) {
+
+        const equipamentos = dados[tipo] || [];
+
+        equipamentos.forEach(function (item) {
+
+            if (item.status === "Quebrado") {
+
+                lista.push({
+                    ...item,
+                    origem: "equipamento",
+                    dataQuebra: item.quebradoEm?.data || "",
+                    horaQuebra: item.quebradoEm?.hora || "",
+                    observacaoQuebra:
+                        item.quebradoEm?.observacao ||
+                        item.observacao ||
+                        ""
+                });
+
+            }
+
+        });
+
+    });
+
+    // Registros manuais
+    (dados.quebrados || []).forEach(function (item) {
+
+        lista.push({
+            ...item,
+            origem: "manual",
+            dataQuebra: item.criadoEm?.data || "",
+            horaQuebra: item.criadoEm?.hora || "",
+            observacaoQuebra: item.observacao || ""
+        });
+
+    });
+
+
+    const busca =
+        document.getElementById("busca-quebrados")?.value
+            ?.trim()
+            .toLowerCase() || "";
+
+    const filtroData =
+        document.getElementById("filtro-data")?.value || "";
+
+    const filtroMes =
+        document.getElementById("filtro-mes")?.value || "";
+
+    const filtroAno =
+        document.getElementById("filtro-ano")?.value || "";
+
+
+    lista = lista.filter(function (item) {
+
+        const texto = (
+            String(item.nome || "") +
+            " " +
+            String(item.codigo || "") +
+            " " +
+            String(item.observacaoQuebra || "")
+        ).toLowerCase();
+
+        if (busca && !texto.includes(busca)) {
+            return false;
+        }
+
+        if (filtroData && item.dataQuebra !== filtroData) {
+            return false;
+        }
+
+        if (filtroMes) {
+
+            const mes = String(item.dataQuebra || "").substring(5, 7);
+
+            if (mes !== filtroMes) {
+                return false;
+            }
+        }
+
+        if (filtroAno) {
+
+            const ano = String(item.dataQuebra || "").substring(0, 4);
+
+            if (ano !== filtroAno) {
+                return false;
+            }
+        }
+
+        return true;
+
+    });
+
+
+    return lista;
+}
+
+
+function renderBroken() {
+
+    const container =
+        document.getElementById("tabela-quebrados");
+
+    if (!container) {
+        return;
+    }
+
+    const lista = filtrarQuebrados();
+
+    const totalPaginas = Math.max(
+        1,
+        Math.ceil(lista.length / POR_PAGINA)
+    );
+
+    if (paginas.quebrados > totalPaginas) {
+        paginas.quebrados = totalPaginas;
+    }
+
+    const inicio =
+        (paginas.quebrados - 1) * POR_PAGINA;
+
+    const pagina =
+        lista.slice(inicio, inicio + POR_PAGINA);
+
+
+    if (pagina.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty">
+                Nenhum equipamento quebrado encontrado.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    let html = `
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nome</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Observação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+    `;
+
+
+    pagina.forEach(function (item) {
+
+        html += `
+            <tr>
+
+                <td>
+                    <strong>
+                        ${escapeHTML(item.codigo || "-")}
+                    </strong>
+                </td>
+
+                <td>
+                    ${escapeHTML(item.nome || "-")}
+                </td>
+
+                <td>
+                    ${formatarData(item.dataQuebra)}
+                </td>
+
+                <td>
+                    ${escapeHTML(item.horaQuebra || "-")}
+                </td>
+
+                <td>
+                    ${escapeHTML(item.observacaoQuebra || "-")}
+                </td>
+
+                <td>
+                    <div class="table-actions">
+
+                        <button
+                            type="button"
+                            class="edit-btn"
+                            onclick="editarRegistroQuebrado('${escapeJS(item.id)}','${escapeJS(item.origem)}')"
+                        >
+                            ✏️ Editar
+                        </button>
+
+                        <button
+                            type="button"
+                            class="delete-btn"
+                            onclick="excluirRegistroQuebrado('${escapeJS(item.id)}','${escapeJS(item.origem)}')"
+                        >
+                            🗑️ Excluir
+                        </button>
+
+                    </div>
+                </td>
+
+            </tr>
+        `;
+
+    });
+
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    html += criarPaginacao(
+        "quebrados",
+        totalPaginas,
+        paginas.quebrados,
+        "broken"
+    );
+
+    container.innerHTML = html;
+}
+
+
+async function excluirRegistroQuebrado(id, origem) {
+
+    if (!confirm("Deseja realmente excluir este registro?")) {
+        return;
+    }
+
+    try {
+
+        const tabela =
+            origem === "manual"
+                ? "quebrados"
+                : "equipamentos";
+
+        const { error } =
+            await supabaseClient
+                .from(tabela)
+                .delete()
+                .eq("id", id);
+
+        if (error) {
+            throw error;
+        }
+
+        await carregarDados();
+
+        preencherAnos();
+        renderBroken();
+
+        alert("Registro excluído com sucesso!");
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao excluir registro quebrado:",
+            error
+        );
+
+        alert(
+            "Não foi possível excluir o registro.\n\n" +
+            (error.message || "Erro desconhecido.")
+        );
+    }
+}
+
+
+function editarRegistroQuebrado(id, origem) {
+
+    if (origem === "manual") {
+
+        const item =
+            dados.quebrados.find(function (registro) {
+                return String(registro.id) === String(id);
+            });
+
+        if (!item) {
+            alert("Registro não encontrado.");
+            return;
+        }
+
+        const novoNome =
+            prompt("Nome do equipamento:", item.nome);
+
+        if (novoNome === null) {
+            return;
+        }
+
+        const novaQuantidade =
+            prompt(
+                "Quantidade:",
+                item.quantidade
+            );
+
+        if (novaQuantidade === null) {
+            return;
+        }
+
+        const novaObservacao =
+            prompt(
+                "Observação:",
+                item.observacao || ""
+            );
+
+        if (novaObservacao === null) {
+            return;
+        }
+
+        salvarEdicaoQuebradoManual(
+            id,
+            novoNome,
+            novaQuantidade,
+            novaObservacao
+        );
+
+        return;
+    }
+
+    // Equipamento normal marcado como quebrado
+    editarEquipamento(
+        dados[
+            Object.keys(dados).find(function (tipo) {
+                return tipo !== "quebrados" &&
+                    dados[tipo]?.some(function (item) {
+                        return String(item.id) === String(id);
+                    });
+            })
+        ],
+        id,
+        true
+    );
+}
+
+
+async function salvarEdicaoQuebradoManual(
+    id,
+    nome,
+    quantidade,
+    observacao
+) {
+
+    try {
+
+        const { error } =
+            await supabaseClient
+                .from("quebrados")
+                .update({
+                    nome: nome.trim(),
+                    quantidade: Number(quantidade),
+                    observacao: observacao.trim() || null
+                })
+                .eq("id", id);
+
+        if (error) {
+            throw error;
+        }
+
+        await carregarDados();
+
+        preencherAnos();
+        renderBroken();
+
+        alert("Registro alterado com sucesso!");
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Não foi possível alterar o registro.\n\n" +
+            (error.message || "Erro desconhecido.")
+        );
+    }
+}
 
 /* =========================================================
    INICIALIZAÇÃO
