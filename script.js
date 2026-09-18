@@ -148,11 +148,8 @@ function dataHoraAtual() {
     ).padStart(2, "0");
 
   return {
-    data:
-      `${ano}-${mes}-${dia}`,
-
-    hora:
-      `${hora}:${minuto}:${segundo}`
+    data: `${ano}-${mes}-${dia}`,
+    hora: `${hora}:${minuto}:${segundo}`
   };
 }
 
@@ -173,9 +170,7 @@ function formatarData(data) {
     return data;
   }
 
-  return (
-    `${partes[2]}/${partes[1]}/${partes[0]}`
-  );
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
 
@@ -296,26 +291,19 @@ function limparForm(tipo) {
 
 function converterRegistro(row) {
   return {
-    id:
-      String(row.id),
+    id: String(row.id),
 
-    tipo:
-      row.tipo || "",
+    tipo: row.tipo || "",
 
-    codigo:
-      row.codigo || "",
+    codigo: row.codigo || "",
 
-    nome:
-      row.nome || "",
+    nome: row.nome || "",
 
-    funcao:
-      row.funcao || "",
+    funcao: row.funcao || "",
 
-    status:
-      row.status || "Funcionando",
+    status: row.status || "Funcionando",
 
-    observacao:
-      row.observacao || "",
+    observacao: row.observacao || "",
 
     criadoEm: {
       data:
@@ -356,11 +344,9 @@ function converterRegistro(row) {
 
 function converterQuebrado(row) {
   return {
-    id:
-      String(row.id),
+    id: String(row.id),
 
-    nome:
-      row.nome || "",
+    nome: row.nome || "",
 
     quantidade:
       Number(row.quantidade || 1),
@@ -489,6 +475,7 @@ async function carregarDados(
     if (id === "quebrados") {
       renderBroken();
     }
+
   } catch (error) {
     console.error(
       "Erro ao carregar dados:",
@@ -671,27 +658,33 @@ function atualizarDashboardQuebrados() {
         nome.includes("handheld")
       ) {
         contagens.hh += quantidade;
+
       } else if (
         nome.includes("notebook")
       ) {
         contagens.notebook += quantidade;
+
       } else if (
         nome.includes("radio")
       ) {
         contagens.radio += quantidade;
+
       } else if (
         nome.includes("carregador")
       ) {
         contagens.carregador += quantidade;
+
       } else if (
         nome === "2d" ||
         nome.includes("2d")
       ) {
         contagens.doisD += quantidade;
+
       } else if (
         nome.includes("impressora")
       ) {
         contagens.impressora += quantidade;
+
       } else if (
         nome.includes("gatilho")
       ) {
@@ -969,7 +962,9 @@ async function adicionarEquipamento(tipo) {
 
     const registro = {
       tipo: tipo,
+
       codigo: codigo,
+
       nome: nome,
 
       funcao:
@@ -1028,6 +1023,7 @@ async function adicionarEquipamento(tipo) {
         "A data e a hora da quebra foram registradas automaticamente."
       );
     }
+
   } catch (error) {
     console.error(
       "Erro ao cadastrar equipamento:",
@@ -1116,7 +1112,8 @@ async function adicionarQuebrado() {
           {
             nome: nome,
             quantidade: quantidade,
-            observacao: observacao || null
+            observacao:
+              observacao || null
           }
         ]);
 
@@ -1134,6 +1131,7 @@ async function adicionarQuebrado() {
     }
 
     quantidadeInput.value = "1";
+
     paginas.quebrados = 1;
 
     await atualizarDepoisDeAlteracao();
@@ -1141,6 +1139,7 @@ async function adicionarQuebrado() {
     alert(
       "Equipamento quebrado registrado com sucesso!"
     );
+
   } catch (error) {
     console.error(
       "Erro ao cadastrar quebrado:",
@@ -1215,7 +1214,9 @@ function obterBusca(tipo) {
     return "";
   }
 
-  return normalizarTexto(input.value);
+  return normalizarTexto(
+    input.value
+  );
 }
 
 
@@ -1238,10 +1239,14 @@ function filtrarDados(tipo) {
 
   return lista.filter(function (item) {
     const codigo =
-      normalizarTexto(item.codigo);
+      normalizarTexto(
+        item.codigo
+      );
 
     const nome =
-      normalizarTexto(item.nome);
+      normalizarTexto(
+        item.nome
+      );
 
     const observacao =
       normalizarTexto(
@@ -1329,12 +1334,14 @@ function renderPage(tipo) {
             <th>Ações</th>
           </tr>
         </thead>
+
         <tbody>
   `;
 
   pagina.forEach(function (item) {
     html += `
       <tr>
+
         <td>
           <strong>
             ${escapeHTML(item.codigo)}
@@ -1377,6 +1384,7 @@ function renderPage(tipo) {
 
         <td>
           <div class="table-actions">
+
             <button
               type="button"
               class="edit-btn"
@@ -1400,8 +1408,10 @@ function renderPage(tipo) {
             >
               🗑️ Excluir
             </button>
+
           </div>
         </td>
+
       </tr>
     `;
   });
@@ -1485,44 +1495,48 @@ function criarPaginacao(
     adicionarPagina(total);
   }
 
-  paginasExibir.sort(function (a, b) {
-    return a - b;
-  });
+  paginasExibir.sort(
+    function (a, b) {
+      return a - b;
+    }
+  );
 
   let paginaAnterior = null;
 
-  paginasExibir.forEach(function (numero) {
-    if (
-      paginaAnterior !== null &&
-      numero > paginaAnterior + 1
-    ) {
+  paginasExibir.forEach(
+    function (numero) {
+      if (
+        paginaAnterior !== null &&
+        numero > paginaAnterior + 1
+      ) {
+        html += `
+          <span class="pagination-dots">
+            ...
+          </span>
+        `;
+      }
+
       html += `
-        <span class="pagination-dots">
-          ...
-        </span>
+        <button
+          type="button"
+          class="${
+            numero === atual
+              ? "active"
+              : ""
+          }"
+          onclick="mudarPagina(
+            '${escapeJS(tipo)}',
+            ${numero},
+            '${escapeJS(modo)}'
+          )"
+        >
+          ${numero}
+        </button>
       `;
+
+      paginaAnterior = numero;
     }
-
-    html += `
-      <button
-        type="button"
-        class="${
-          numero === atual
-            ? "active"
-            : ""
-        }"
-        onclick="mudarPagina(
-          '${escapeJS(tipo)}',
-          ${numero},
-          '${escapeJS(modo)}'
-        )"
-      >
-        ${numero}
-      </button>
-    `;
-
-    paginaAnterior = numero;
-  });
+  );
 
   html += `
     <button
@@ -1549,7 +1563,11 @@ function criarPaginacao(
    MUDAR PÁGINA
    ========================================================= */
 
-function mudarPagina(tipo, pagina, modo) {
+function mudarPagina(
+  tipo,
+  pagina,
+  modo
+) {
   pagina = Number(pagina);
 
   if (!Number.isFinite(pagina)) {
@@ -1580,6 +1598,7 @@ function mudarPagina(tipo, pagina, modo) {
       );
 
     renderBroken();
+
     return;
   }
 
@@ -1621,15 +1640,19 @@ async function editarEquipamento(
   editarQuebra = false
 ) {
   const item =
-    dados[tipo]?.find(function (equipamento) {
-      return (
-        String(equipamento.id) ===
-        String(id)
-      );
-    });
+    dados[tipo]?.find(
+      function (equipamento) {
+        return (
+          String(equipamento.id) ===
+          String(id)
+        );
+      }
+    );
 
   if (!item) {
-    alert("Equipamento não encontrado.");
+    alert(
+      "Equipamento não encontrado."
+    );
     return;
   }
 
@@ -1637,10 +1660,12 @@ async function editarEquipamento(
     item.status === "Quebrado";
 
   const mostrarDadosQuebra =
-    estaQuebrado || editarQuebra;
+    estaQuebrado ||
+    editarQuebra;
 
   let html = `
     <form id="form-edicao">
+
       <div class="form-grid">
 
         <div class="form-group">
@@ -1666,24 +1691,26 @@ async function editarEquipamento(
 
   if (tipo === "notebook") {
     html += `
-      <div class="form-group">
-        <label>Função</label>
+        <div class="form-group">
+          <label>Função</label>
 
-        <input
-          id="edit-funcao"
-          value="${escapeHTML(
-            item.funcao || ""
-          )}"
-        >
-      </div>
+          <input
+            id="edit-funcao"
+            value="${escapeHTML(
+              item.funcao || ""
+            )}"
+          >
+        </div>
     `;
   }
 
   html += `
         <div class="form-group">
+
           <label>Status</label>
 
           <select id="edit-status">
+
             <option
               value="Funcionando"
               ${
@@ -1705,10 +1732,13 @@ async function editarEquipamento(
             >
               Quebrado
             </option>
+
           </select>
+
         </div>
 
         <div class="form-group full">
+
           <label>Observação</label>
 
           <textarea
@@ -1716,13 +1746,17 @@ async function editarEquipamento(
           >${escapeHTML(
             item.observacao || ""
           )}</textarea>
+
         </div>
   `;
 
   if (mostrarDadosQuebra) {
     html += `
         <div class="form-group">
-          <label>Data da quebra</label>
+
+          <label>
+            Data da quebra
+          </label>
 
           <input
             type="date"
@@ -1731,10 +1765,14 @@ async function editarEquipamento(
               item.quebradoEm?.data || ""
             }"
           >
+
         </div>
 
         <div class="form-group">
-          <label>Hora da quebra</label>
+
+          <label>
+            Hora da quebra
+          </label>
 
           <input
             type="time"
@@ -1748,9 +1786,11 @@ async function editarEquipamento(
                 : ""
             }"
           >
+
         </div>
 
         <div class="form-group full">
+
           <label>
             Observação da quebra
           </label>
@@ -1762,6 +1802,7 @@ async function editarEquipamento(
             item.observacao ||
             ""
           )}</textarea>
+
         </div>
     `;
   }
@@ -1770,6 +1811,7 @@ async function editarEquipamento(
       </div>
 
       <div class="actions">
+
         <button
           type="submit"
           class="btn btn-primary"
@@ -1784,7 +1826,9 @@ async function editarEquipamento(
         >
           Cancelar
         </button>
+
       </div>
+
     </form>
   `;
 
@@ -1883,6 +1927,7 @@ async function editarEquipamento(
         return;
       }
 
+
       /* =====================================================
          VERIFICAR CÓDIGO DUPLICADO
          ===================================================== */
@@ -1915,6 +1960,7 @@ async function editarEquipamento(
             );
             return;
           }
+
         } catch (error) {
           console.error(
             "Erro ao verificar código:",
@@ -1928,6 +1974,7 @@ async function editarEquipamento(
           return;
         }
       }
+
 
       /* =====================================================
          DADOS ATUAIS DA QUEBRA
@@ -1945,8 +1992,9 @@ async function editarEquipamento(
         item.quebradoEm?.observacao ||
         null;
 
+
       /* =====================================================
-         MUDOU DE FUNCIONANDO PARA QUEBRADO
+         FUNCIONANDO → QUEBRADO
          ===================================================== */
 
       if (
@@ -1966,8 +2014,9 @@ async function editarEquipamento(
           novaObservacao || null;
       }
 
+
       /* =====================================================
-         CONTINUA OU JÁ ESTÁ QUEBRADO
+         CONTINUA QUEBRADO
          ===================================================== */
 
       else if (
@@ -2013,8 +2062,9 @@ async function editarEquipamento(
         }
       }
 
+
       /* =====================================================
-         VOLTOU A FUNCIONAR
+         QUEBRADO → FUNCIONANDO
          ===================================================== */
 
       if (
@@ -2024,6 +2074,7 @@ async function editarEquipamento(
         quebradoHora = null;
         quebradoObservacao = null;
       }
+
 
       /* =====================================================
          VALIDAR DATA E HORA
@@ -2039,72 +2090,82 @@ async function editarEquipamento(
         alert(
           "Informe a data e a hora da quebra."
         );
+
         return;
       }
 
+
       /* =====================================================
-   DADOS ATUALIZADOS
-   ===================================================== */
+         DADOS ATUALIZADOS
+         ===================================================== */
 
-const dadosAtualizados = {
-  codigo: novoCodigo,
+      const dadosAtualizados = {
+        codigo: novoCodigo,
 
-  nome: novoNome,
+        nome: novoNome,
 
-  funcao:
-    tipo === "notebook"
-      ? novaFuncao || null
-      : null,
+        funcao:
+          tipo === "notebook"
+            ? novaFuncao || null
+            : null,
 
-  status: novoStatus,
+        status: novoStatus,
 
-  observacao:
-    novaObservacao || null,
+        observacao:
+          novaObservacao || null,
 
-  quebrado_data: quebradoData,
+        quebrado_data:
+          quebradoData,
 
-  quebrado_hora: quebradoHora,
+        quebrado_hora:
+          quebradoHora,
 
-  quebrado_observacao:
-    quebradoObservacao
-};
+        quebrado_observacao:
+          quebradoObservacao
+      };
 
 
-/* =====================================================
-   SALVAR ALTERAÇÕES NO SUPABASE
-   ===================================================== */
+      /* =====================================================
+         SALVAR
+         ===================================================== */
 
-try {
-  const { error } = await supabaseClient
-    .from("equipamentos")
-    .update(dadosAtualizados)
-    .eq("id", item.id);
+      try {
+        const {
+          error
+        } =
+          await supabaseClient
+            .from("equipamentos")
+            .update(dadosAtualizados)
+            .eq("id", item.id);
 
-  if (error) {
-    throw error;
-  }
+        if (error) {
+          throw error;
+        }
 
-  fecharModal();
+        fecharModal();
 
-  await atualizarDepoisDeAlteracao(tipo);
+        await atualizarDepoisDeAlteracao(
+          tipo
+        );
 
-  alert("Alterações salvas com sucesso!");
+        alert(
+          "Alterações salvas com sucesso!"
+        );
 
-} catch (error) {
-  console.error(
-    "Erro ao editar equipamento:",
-    error
-  );
+      } catch (error) {
+        console.error(
+          "Erro ao editar equipamento:",
+          error
+        );
 
-  alert(
-    "Não foi possível salvar as alterações.\n\n" +
-    (
-      error.message ||
-      "Verifique sua conexão com o banco de dados."
-    )
-  );
-}
-
+        alert(
+          "Não foi possível salvar as alterações.\n\n" +
+          obterMensagemErro(
+            error,
+            "Verifique sua conexão com o banco de dados."
+          )
+        );
+      }
     }
   );
 }
@@ -2116,7 +2177,9 @@ try {
 
 function fecharModal() {
   const modal =
-    document.getElementById("modalEditar");
+    document.getElementById(
+      "modalEditar"
+    );
 
   if (modal) {
     modal.classList.remove("show");
@@ -2132,7 +2195,9 @@ window.addEventListener(
   "click",
   function (event) {
     const modal =
-      document.getElementById("modalEditar");
+      document.getElementById(
+        "modalEditar"
+      );
 
     if (
       modal &&
@@ -2164,7 +2229,9 @@ async function excluirEquipamento(
     );
 
   if (!item) {
-    alert("Equipamento não encontrado.");
+    alert(
+      "Equipamento não encontrado."
+    );
     return;
   }
 
@@ -2181,7 +2248,9 @@ async function excluirEquipamento(
   }
 
   try {
-    const { error } =
+    const {
+      error
+    } =
       await supabaseClient
         .from("equipamentos")
         .delete()
@@ -2191,7 +2260,9 @@ async function excluirEquipamento(
       throw error;
     }
 
-    await atualizarDepoisDeAlteracao(tipo);
+    await atualizarDepoisDeAlteracao(
+      tipo
+    );
 
     alert(
       excluirQuebrado
@@ -2207,8 +2278,8 @@ async function excluirEquipamento(
 
     alert(
       "Não foi possível excluir o equipamento.\n\n" +
-      (
-        error.message ||
+      obterMensagemErro(
+        error,
         "Verifique sua conexão com o banco de dados."
       )
     );
@@ -2239,7 +2310,9 @@ async function editarRegistroQuebrado(
     );
 
   if (!item) {
-    alert("Registro quebrado não encontrado.");
+    alert(
+      "Registro quebrado não encontrado."
+    );
     return;
   }
 
@@ -2259,15 +2332,21 @@ async function editarRegistroQuebrado(
       item.quantidade || 1
     );
 
-  if (novaQuantidadeTexto === null) {
+  if (
+    novaQuantidadeTexto === null
+  ) {
     return;
   }
 
   const novaQuantidade =
-    Number(novaQuantidadeTexto);
+    Number(
+      novaQuantidadeTexto
+    );
 
   if (
-    !Number.isInteger(novaQuantidade) ||
+    !Number.isInteger(
+      novaQuantidade
+    ) ||
     novaQuantidade < 1
   ) {
     alert(
@@ -2296,16 +2375,21 @@ async function editarRegistroQuebrado(
   }
 
   try {
-    const { error } =
+    const {
+      error
+    } =
       await supabaseClient
         .from("quebrados")
         .update({
-          nome: novoNome.trim(),
+          nome:
+            novoNome.trim(),
 
-          quantidade: novaQuantidade,
+          quantidade:
+            novaQuantidade,
 
           observacao:
-            novaObservacao.trim() || null
+            novaObservacao.trim() ||
+            null
         })
         .eq("id", item.id);
 
@@ -2333,8 +2417,8 @@ async function editarRegistroQuebrado(
 
     alert(
       "Não foi possível editar o registro.\n\n" +
-      (
-        error.message ||
+      obterMensagemErro(
+        error,
         "Verifique o banco de dados."
       )
     );
@@ -2365,7 +2449,9 @@ async function excluirRegistroQuebrado(
     );
 
   if (!item) {
-    alert("Registro quebrado não encontrado.");
+    alert(
+      "Registro quebrado não encontrado."
+    );
     return;
   }
 
@@ -2379,7 +2465,9 @@ async function excluirRegistroQuebrado(
   }
 
   try {
-    const { error } =
+    const {
+      error
+    } =
       await supabaseClient
         .from("quebrados")
         .delete()
@@ -2409,8 +2497,8 @@ async function excluirRegistroQuebrado(
 
     alert(
       "Não foi possível excluir o registro.\n\n" +
-      (
-        error.message ||
+      obterMensagemErro(
+        error,
         "Verifique o banco de dados."
       )
     );
@@ -2418,9 +2506,569 @@ async function excluirRegistroQuebrado(
 }
 
 
-/* =====================================================
+/* =========================================================
+   OBTER TODOS OS REGISTROS QUEBRADOS
+   ========================================================= */
+
+function obterRegistrosQuebrados() {
+  const registros = [];
+
+
+  /* =====================================================
+     EQUIPAMENTOS NORMAIS MARCADOS COMO QUEBRADOS
+     ===================================================== */
+
+  tipos.forEach(function (tipo) {
+    const lista =
+      Array.isArray(dados[tipo])
+        ? dados[tipo]
+        : [];
+
+    lista.forEach(function (item) {
+      if (
+        item.status !== "Quebrado"
+      ) {
+        return;
+      }
+
+      registros.push({
+        id: String(item.id),
+
+        tipo: tipo,
+
+        codigo:
+          item.codigo || "",
+
+        nome:
+          item.nome || "",
+
+        quantidade: 1,
+
+        dataQuebra:
+          item.quebradoEm?.data ||
+          item.criadoEm?.data ||
+          "",
+
+        horaQuebra:
+          item.quebradoEm?.hora ||
+          item.criadoEm?.hora ||
+          "",
+
+        observacaoQuebra:
+          item.quebradoEm?.observacao ||
+          item.observacao ||
+          "",
+
+        origem:
+          "equipamento"
+      });
+    });
+  });
+
+
+  /* =====================================================
+     REGISTROS MANUAIS
+     ===================================================== */
+
+  if (
+    Array.isArray(
+      dados.quebrados
+    )
+  ) {
+    dados.quebrados.forEach(
+      function (item) {
+        registros.push({
+          id:
+            String(item.id),
+
+          tipo:
+            "",
+
+          codigo:
+            "",
+
+          nome:
+            item.nome || "",
+
+          quantidade:
+            Number(
+              item.quantidade || 1
+            ),
+
+          dataQuebra:
+            item.criadoEm?.data ||
+            "",
+
+          horaQuebra:
+            item.criadoEm?.hora ||
+            "",
+
+          observacaoQuebra:
+            item.observacao ||
+            "",
+
+          origem:
+            "manual"
+        });
+      }
+    );
+  }
+
+
+  /* =====================================================
+     ORDENAR POR DATA/HORA
+     MAIS RECENTE PRIMEIRO
+     ===================================================== */
+
+  registros.sort(
+    function (a, b) {
+      const dataA =
+        `${a.dataQuebra || ""} ${a.horaQuebra || ""}`;
+
+      const dataB =
+        `${b.dataQuebra || ""} ${b.horaQuebra || ""}`;
+
+      return dataB.localeCompare(
+        dataA
+      );
+    }
+  );
+
+  return registros;
+}
+
+
+/* =========================================================
+   FILTRAR QUEBRADOS
+   ========================================================= */
+
+function filtrarQuebrados() {
+  let lista =
+    obterRegistrosQuebrados();
+
+
+  const buscaElement =
+    document.getElementById(
+      "busca-quebrados"
+    );
+
+  const dataElement =
+    document.getElementById(
+      "filtro-data"
+    );
+
+  const mesElement =
+    document.getElementById(
+      "filtro-mes"
+    );
+
+  const anoElement =
+    document.getElementById(
+      "filtro-ano"
+    );
+
+
+  const busca =
+    normalizarTexto(
+      buscaElement?.value || ""
+    );
+
+  const data =
+    dataElement?.value || "";
+
+  const mes =
+    mesElement?.value || "";
+
+  const ano =
+    anoElement?.value || "";
+
+
+  /* =====================================================
+     BUSCA
+     ===================================================== */
+
+  if (busca) {
+    lista =
+      lista.filter(
+        function (item) {
+          const nome =
+            normalizarTexto(
+              item.nome
+            );
+
+          const observacao =
+            normalizarTexto(
+              item.observacaoQuebra
+            );
+
+          const codigo =
+            normalizarTexto(
+              item.codigo
+            );
+
+          return (
+            nome.includes(busca) ||
+            observacao.includes(busca) ||
+            codigo.includes(busca)
+          );
+        }
+      );
+  }
+
+
+  /* =====================================================
+     FILTRO POR DATA
+     ===================================================== */
+
+  if (data) {
+    lista =
+      lista.filter(
+        function (item) {
+          return (
+            item.dataQuebra ===
+            data
+          );
+        }
+      );
+  }
+
+
+  /* =====================================================
+     FILTRO POR MÊS
+     ===================================================== */
+
+  if (mes) {
+    lista =
+      lista.filter(
+        function (item) {
+          if (
+            !item.dataQuebra
+          ) {
+            return false;
+          }
+
+          const partes =
+            item.dataQuebra.split(
+              "-"
+            );
+
+          return (
+            partes.length === 3 &&
+            partes[1] === mes
+          );
+        }
+      );
+  }
+
+
+  /* =====================================================
+     FILTRO POR ANO
+     ===================================================== */
+
+  if (ano) {
+    lista =
+      lista.filter(
+        function (item) {
+          if (
+            !item.dataQuebra
+          ) {
+            return false;
+          }
+
+          return (
+            item.dataQuebra.substring(
+              0,
+              4
+            ) === ano
+          );
+        }
+      );
+  }
+
+
+  return lista;
+}
+
+
+/* =========================================================
+   PREENCHER ANOS
+   ========================================================= */
+
+function preencherAnos() {
+  const select =
+    document.getElementById(
+      "filtro-ano"
+    );
+
+  if (!select) {
+    return;
+  }
+
+  const anoAtual =
+    new Date().getFullYear();
+
+  const anos =
+    new Set();
+
+
+  /* =====================================================
+     ANOS DOS EQUIPAMENTOS QUEBRADOS
+     ===================================================== */
+
+  tipos.forEach(function (tipo) {
+    const lista =
+      Array.isArray(dados[tipo])
+        ? dados[tipo]
+        : [];
+
+    lista.forEach(
+      function (item) {
+        if (
+          item.status === "Quebrado" &&
+          item.quebradoEm?.data
+        ) {
+          anos.add(
+            item.quebradoEm.data.substring(
+              0,
+              4
+            )
+          );
+        }
+      }
+    );
+  });
+
+
+  /* =====================================================
+     ANOS DOS REGISTROS MANUAIS
+     ===================================================== */
+
+  if (
+    Array.isArray(
+      dados.quebrados
+    )
+  ) {
+    dados.quebrados.forEach(
+      function (item) {
+        if (
+          item.criadoEm?.data
+        ) {
+          anos.add(
+            item.criadoEm.data.substring(
+              0,
+              4
+            )
+          );
+        }
+      }
+    );
+  }
+
+
+  /* =====================================================
+     SEMPRE INCLUIR ANO ATUAL
+     ===================================================== */
+
+  anos.add(
+    String(anoAtual)
+  );
+
+
+  const anosOrdenados =
+    Array.from(anos).sort(
+      function (a, b) {
+        return (
+          Number(b) -
+          Number(a)
+        );
+      }
+    );
+
+
+  const valorAtual =
+    select.value;
+
+
+  select.innerHTML = `
+    <option value="">
+      Todos os anos
+    </option>
+  `;
+
+
+  anosOrdenados.forEach(
+    function (ano) {
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        ano;
+
+      option.textContent =
+        ano;
+
+      select.appendChild(
+        option
+      );
+    }
+  );
+
+
+  if (
+    anos.has(valorAtual)
+  ) {
+    select.value =
+      valorAtual;
+  }
+}
+
+
+/* =========================================================
+   EVENTOS DE BUSCA
+   ========================================================= */
+
+function registrarEventosBusca() {
+
+  /* =====================================================
+     BUSCA DAS PÁGINAS NORMAIS
+     ===================================================== */
+
+  tipos.forEach(
+    function (tipo) {
+      const input =
+        document.getElementById(
+          "busca-" + tipo
+        );
+
+      if (!input) {
+        return;
+      }
+
+      input.addEventListener(
+        "input",
+        function () {
+          paginas[tipo] = 1;
+
+          renderPage(
+            tipo
+          );
+        }
+      );
+    }
+  );
+
+
+  /* =====================================================
+     BUSCA DA ABA QUEBRADOS
+     ===================================================== */
+
+  const buscaQuebrados =
+    document.getElementById(
+      "busca-quebrados"
+    );
+
+  if (buscaQuebrados) {
+    buscaQuebrados.addEventListener(
+      "input",
+      function () {
+        paginas.quebrados = 1;
+
+        renderBroken();
+      }
+    );
+  }
+}
+
+
+/* =========================================================
+   EVENTOS DOS FILTROS DE QUEBRADOS
+   ========================================================= */
+
+function registrarEventosFiltrosQuebrados() {
+  const ids = [
+    "filtro-data",
+    "filtro-mes",
+    "filtro-ano"
+  ];
+
+  ids.forEach(
+    function (id) {
+      const elemento =
+        document.getElementById(
+          id
+        );
+
+      if (!elemento) {
+        return;
+      }
+
+      elemento.addEventListener(
+        "change",
+        function () {
+          paginas.quebrados = 1;
+
+          renderBroken();
+        }
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   LIMPAR FILTROS DE QUEBRADOS
+   ========================================================= */
+
+function limparFiltrosQuebrados() {
+  const busca =
+    document.getElementById(
+      "busca-quebrados"
+    );
+
+  const data =
+    document.getElementById(
+      "filtro-data"
+    );
+
+  const mes =
+    document.getElementById(
+      "filtro-mes"
+    );
+
+  const ano =
+    document.getElementById(
+      "filtro-ano"
+    );
+
+
+  if (busca) {
+    busca.value = "";
+  }
+
+  if (data) {
+    data.value = "";
+  }
+
+  if (mes) {
+    mes.value = "";
+  }
+
+  if (ano) {
+    ano.value = "";
+  }
+
+
+  paginas.quebrados = 1;
+
+  renderBroken();
+}
+
+
+/* =========================================================
    RENDERIZAR ABA DE QUEBRADOS
-   ===================================================== */
+   ========================================================= */
 
 function renderBroken() {
   const container =
@@ -2439,7 +3087,8 @@ function renderBroken() {
     Math.max(
       1,
       Math.ceil(
-        lista.length / POR_PAGINA
+        lista.length /
+        POR_PAGINA
       )
     );
 
@@ -2455,13 +3104,15 @@ function renderBroken() {
   const inicio =
     (
       paginas.quebrados - 1
-    ) * POR_PAGINA;
+    ) *
+    POR_PAGINA;
 
   const pagina =
     lista.slice(
       inicio,
       inicio + POR_PAGINA
     );
+
 
   if (pagina.length === 0) {
     container.innerHTML = `
@@ -2473,10 +3124,14 @@ function renderBroken() {
     return;
   }
 
+
   let html = `
     <div class="table-container">
+
       <table>
+
         <thead>
+
           <tr>
             <th>Código</th>
             <th>Nome</th>
@@ -2487,23 +3142,30 @@ function renderBroken() {
             <th>Origem</th>
             <th>Ações</th>
           </tr>
+
         </thead>
 
         <tbody>
   `;
 
+
   pagina.forEach(
     function (item) {
+
       const quantidade =
-        Number(item.quantidade || 1);
+        Number(
+          item.quantidade || 1
+        );
 
       const origem =
         item.origem === "manual"
           ? "Manual"
           : "Equipamento";
 
+
       html += `
         <tr>
+
           <td>
             <strong>
               ${escapeHTML(
@@ -2542,27 +3204,40 @@ function renderBroken() {
 
           <td>
             ${escapeHTML(
-              item.observacaoQuebra || "-"
+              item.observacaoQuebra ||
+              "-"
             )}
           </td>
 
           <td>
+
             <span class="status ${
               item.origem === "manual"
                 ? "status-broken"
                 : "status-ok"
             }">
+
               ${origem}
+
             </span>
+
           </td>
 
           <td>
+
             <div class="table-actions">
       `;
 
+
+      /* =====================================================
+         EQUIPAMENTO NORMAL
+         ===================================================== */
+
       if (
-        item.origem === "equipamento"
+        item.origem ===
+        "equipamento"
       ) {
+
         html += `
           <button
             type="button"
@@ -2588,7 +3263,16 @@ function renderBroken() {
             🗑️ Excluir
           </button>
         `;
-      } else {
+
+      }
+
+
+      /* =====================================================
+         REGISTRO MANUAL
+         ===================================================== */
+
+      else {
+
         html += `
           <button
             type="button"
@@ -2614,19 +3298,26 @@ function renderBroken() {
         `;
       }
 
+
       html += `
             </div>
+
           </td>
+
         </tr>
       `;
     }
   );
 
+
   html += `
         </tbody>
+
       </table>
+
     </div>
   `;
+
 
   html += criarPaginacao(
     "quebrados",
@@ -2635,21 +3326,24 @@ function renderBroken() {
     "broken"
   );
 
+
   container.innerHTML =
     html;
 }
 
 
-/* =====================================================
+/* =========================================================
    INICIALIZAÇÃO
-   ===================================================== */
+   ========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
   async function () {
+
     console.log(
       "Sistema de Controle de Equipamentos iniciado."
     );
+
 
     registrarEventosFormularios();
 
@@ -2657,7 +3351,9 @@ document.addEventListener(
 
     registrarEventosFiltrosQuebrados();
 
+
     try {
+
       await carregarDados();
 
       preencherAnos();
@@ -2665,18 +3361,20 @@ document.addEventListener(
       atualizarDashboard();
 
     } catch (error) {
+
       console.error(
         "Falha na inicialização:",
         error
       );
+
     }
   }
 );
 
 
-/* =====================================================
+/* =========================================================
    EXPOSIÇÃO DAS FUNÇÕES NO WINDOW
-   ===================================================== */
+   ========================================================= */
 
 window.showPage =
   showPage;
@@ -2712,6 +3410,6 @@ window.limparFiltrosQuebrados =
   limparFiltrosQuebrados;
 
 
-/* =====================================================
+/* =========================================================
    FIM DO SCRIPT
-   ===================================================== */
+   ========================================================= */
