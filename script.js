@@ -777,7 +777,7 @@ function atualizarDashboardQuebrados() {
     );
 
   }
-
+}
 
   atualizarNumero(
     "quebradosHH",
