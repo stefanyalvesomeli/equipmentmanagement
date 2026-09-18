@@ -12,7 +12,7 @@ const SUPABASE_URL =
   "https://ytnvsoodbzmjsaxkqqcg.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_zLb9jjLBuyhZFwCVZZGz9Q_kplzXoYd";
+  "COLE_AQUI_A_CHAVE_COPIADA_DO_SUPABASE";
 
 
 if (
