@@ -745,7 +745,7 @@ function atualizarNumero(
 
 function atualizarDashboardQuebrados() {
 
-  const contagens = {
+   const contagens = {
 
     hh: 0,
 
@@ -757,9 +757,12 @@ function atualizarDashboardQuebrados() {
 
     doisD: 0,
 
-    impressora: 0
+    impressora: 0,
+
+    gatilhos: 0
 
   };
+
 
 
   tipos.forEach(
@@ -866,6 +869,15 @@ function atualizarDashboardQuebrados() {
 
         }
 
+                 else if (
+          nome.includes("gatilho") ||
+          nome.includes("gatilhos")
+        ) {
+
+          contagens.gatilhos += quantidade;
+
+        }
+
       }
     );
 
@@ -897,10 +909,17 @@ function atualizarDashboardQuebrados() {
     contagens.doisD
   );
 
-  atualizarNumero(
+   atualizarNumero(
     "quebradosImpressora",
     contagens.impressora
   );
+
+  atualizarNumero(
+    "quebradosGatilhos",
+    contagens.gatilhos
+  );
+
+}
 
 }
 
