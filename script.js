@@ -3331,6 +3331,359 @@ function renderBroken() {
     html;
 }
 
+/* =====================================================
+   FILTROS E EVENTOS
+   ===================================================== */
+
+function obterRegistrosQuebrados() {
+  const registros = [];
+
+  tipos.forEach(function (tipo) {
+    const lista = Array.isArray(dados[tipo])
+      ? dados[tipo]
+      : [];
+
+    lista.forEach(function (item) {
+      if (item.status !== "Quebrado") {
+        return;
+      }
+
+      registros.push({
+        id: String(item.id),
+        tipo: tipo,
+        codigo: item.codigo || "",
+        nome: item.nome || "",
+        quantidade: 1,
+
+        dataQuebra:
+          item.quebradoEm?.data ||
+          item.criadoEm?.data ||
+          "",
+
+        horaQuebra:
+          item.quebradoEm?.hora ||
+          item.criadoEm?.hora ||
+          "",
+
+        observacaoQuebra:
+          item.quebradoEm?.observacao ||
+          item.observacao ||
+          "",
+
+        origem: "equipamento"
+      });
+    });
+  });
+
+  if (Array.isArray(dados.quebrados)) {
+    dados.quebrados.forEach(function (item) {
+      registros.push({
+        id: String(item.id),
+        tipo: "",
+        codigo: "",
+        nome: item.nome || "",
+        quantidade: Number(item.quantidade || 1),
+
+        dataQuebra:
+          item.criadoEm?.data || "",
+
+        horaQuebra:
+          item.criadoEm?.hora || "",
+
+        observacaoQuebra:
+          item.observacao || "",
+
+        origem: "manual"
+      });
+    });
+  }
+
+  registros.sort(function (a, b) {
+    const dataA =
+      `${a.dataQuebra || ""} ${a.horaQuebra || ""}`;
+
+    const dataB =
+      `${b.dataQuebra || ""} ${b.horaQuebra || ""}`;
+
+    return dataB.localeCompare(dataA);
+  });
+
+  return registros;
+}
+
+
+function filtrarQuebrados() {
+  let lista = obterRegistrosQuebrados();
+
+  const buscaElement =
+    document.getElementById("busca-quebrados");
+
+  const dataElement =
+    document.getElementById("filtro-data");
+
+  const mesElement =
+    document.getElementById("filtro-mes");
+
+  const anoElement =
+    document.getElementById("filtro-ano");
+
+  const busca =
+    normalizarTexto(
+      buscaElement?.value || ""
+    );
+
+  const data =
+    dataElement?.value || "";
+
+  const mes =
+    mesElement?.value || "";
+
+  const ano =
+    anoElement?.value || "";
+
+
+  if (busca) {
+    lista = lista.filter(function (item) {
+      const nome =
+        normalizarTexto(item.nome);
+
+      const observacao =
+        normalizarTexto(
+          item.observacaoQuebra
+        );
+
+      const codigo =
+        normalizarTexto(item.codigo);
+
+      return (
+        nome.includes(busca) ||
+        observacao.includes(busca) ||
+        codigo.includes(busca)
+      );
+    });
+  }
+
+
+  if (data) {
+    lista = lista.filter(function (item) {
+      return item.dataQuebra === data;
+    });
+  }
+
+
+  if (mes) {
+    lista = lista.filter(function (item) {
+      if (!item.dataQuebra) {
+        return false;
+      }
+
+      const partes =
+        item.dataQuebra.split("-");
+
+      return (
+        partes.length === 3 &&
+        partes[1] === mes
+      );
+    });
+  }
+
+
+  if (ano) {
+    lista = lista.filter(function (item) {
+      if (!item.dataQuebra) {
+        return false;
+      }
+
+      return (
+        item.dataQuebra.substring(0, 4) ===
+        ano
+      );
+    });
+  }
+
+  return lista;
+}
+
+
+function preencherAnos() {
+  const select =
+    document.getElementById("filtro-ano");
+
+  if (!select) {
+    return;
+  }
+
+  const anos = new Set();
+
+  tipos.forEach(function (tipo) {
+    const lista =
+      Array.isArray(dados[tipo])
+        ? dados[tipo]
+        : [];
+
+    lista.forEach(function (item) {
+      if (
+        item.status === "Quebrado" &&
+        item.quebradoEm?.data
+      ) {
+        anos.add(
+          item.quebradoEm.data.substring(0, 4)
+        );
+      }
+    });
+  });
+
+
+  if (Array.isArray(dados.quebrados)) {
+    dados.quebrados.forEach(function (item) {
+      if (item.criadoEm?.data) {
+        anos.add(
+          item.criadoEm.data.substring(0, 4)
+        );
+      }
+    });
+  }
+
+
+  const anoAtual =
+    new Date().getFullYear();
+
+  anos.add(String(anoAtual));
+
+
+  const anosOrdenados =
+    Array.from(anos).sort(function (a, b) {
+      return Number(b) - Number(a);
+    });
+
+
+  select.innerHTML =
+    `<option value="">Todos os anos</option>`;
+
+
+  anosOrdenados.forEach(function (ano) {
+    const option =
+      document.createElement("option");
+
+    option.value = ano;
+    option.textContent = ano;
+
+    select.appendChild(option);
+  });
+}
+
+
+function registrarEventosBusca() {
+
+  tipos.forEach(function (tipo) {
+    const input =
+      document.getElementById(
+        "busca-" + tipo
+      );
+
+    if (!input) {
+      return;
+    }
+
+    input.addEventListener(
+      "input",
+      function () {
+        paginas[tipo] = 1;
+        renderPage(tipo);
+      }
+    );
+  });
+
+
+  const buscaQuebrados =
+    document.getElementById(
+      "busca-quebrados"
+    );
+
+  if (buscaQuebrados) {
+    buscaQuebrados.addEventListener(
+      "input",
+      function () {
+        paginas.quebrados = 1;
+        renderBroken();
+      }
+    );
+  }
+}
+
+
+function registrarEventosFiltrosQuebrados() {
+
+  const ids = [
+    "filtro-data",
+    "filtro-mes",
+    "filtro-ano"
+  ];
+
+  ids.forEach(function (id) {
+
+    const elemento =
+      document.getElementById(id);
+
+    if (!elemento) {
+      return;
+    }
+
+    elemento.addEventListener(
+      "change",
+      function () {
+        paginas.quebrados = 1;
+        renderBroken();
+      }
+    );
+  });
+}
+
+
+function limparFiltrosQuebrados() {
+
+  const busca =
+    document.getElementById(
+      "busca-quebrados"
+    );
+
+  const data =
+    document.getElementById(
+      "filtro-data"
+    );
+
+  const mes =
+    document.getElementById(
+      "filtro-mes"
+    );
+
+  const ano =
+    document.getElementById(
+      "filtro-ano"
+    );
+
+
+  if (busca) {
+    busca.value = "";
+  }
+
+  if (data) {
+    data.value = "";
+  }
+
+  if (mes) {
+    mes.value = "";
+  }
+
+  if (ano) {
+    ano.value = "";
+  }
+
+
+  paginas.quebrados = 1;
+
+  renderBroken();
+}
 
 /* =========================================================
    INICIALIZAÇÃO
