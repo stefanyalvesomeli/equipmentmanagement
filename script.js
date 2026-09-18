@@ -644,9 +644,7 @@ function atualizarDashboardQuebrados() {
         : [];
 
     lista.forEach(function (item) {
-      if (
-        item.status === "Quebrado"
-      ) {
+      if (item.status === "Quebrado") {
         contagens[tipo]++;
       }
     });
@@ -734,7 +732,17 @@ function atualizarDashboardQuebrados() {
     "quebradosGatilhos",
     contagens.gatilhos
   );
+
+  // TOTAL GERAL DA ABA QUEBRADOS
+  const total =
+    obterTotalQuebrados();
+
+  atualizarNumero(
+    "totalQuebradosAba",
+    total
+  );
 }
+
 
 
 /* =========================================================
