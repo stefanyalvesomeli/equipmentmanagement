@@ -497,6 +497,7 @@ async function carregarEquipamentos() {
 async function carregarDados() {
 
   try {
+     await atualizarAbaQuebrados();
 
     await carregarEquipamentos();
 
