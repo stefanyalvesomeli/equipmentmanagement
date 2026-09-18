@@ -562,8 +562,6 @@ const totalQuebrados =
   obterTotalQuebrados();
 
 
-  }
-
 
   atualizarNumero(
     "totalHH",
@@ -643,7 +641,6 @@ function atualizarNumero(
 /* =========================================================
    CONTAGEM DE QUEBRADOS POR TIPO
    ========================================================= */
-
 function atualizarDashboardQuebrados() {
 
   const contagens = {
@@ -773,11 +770,11 @@ function atualizarDashboardQuebrados() {
 
         }
 
-     
+      }
     );
 
   }
-}
+
 
   atualizarNumero(
     "quebradosHH",
@@ -808,7 +805,6 @@ function atualizarDashboardQuebrados() {
     "quebradosImpressora",
     contagens.impressora
   );
-
 
 }
 
