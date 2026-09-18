@@ -3701,6 +3701,47 @@ async function salvarEdicaoQuebradoManual(
     }
 }
 
+function preencherAnos() {
+    const selectAno = document.getElementById("filtro-ano");
+
+    if (!selectAno) {
+        return;
+    }
+
+    const anos = new Set();
+
+    tipos.forEach(function(tipo) {
+        (dados[tipo] || []).forEach(function(item) {
+            if (item.status === "Quebrado" && item.quebradoEm?.data) {
+                anos.add(String(item.quebradoEm.data).substring(0, 4));
+            }
+        });
+    });
+
+    (dados.quebrados || []).forEach(function(item) {
+        if (item.criadoEm?.data) {
+            anos.add(String(item.criadoEm.data).substring(0, 4));
+        }
+    });
+
+    const valor = selectAno.value;
+
+    selectAno.innerHTML = '<option value="">Todos os anos</option>';
+
+    Array.from(anos)
+        .sort((a, b) => Number(b) - Number(a))
+        .forEach(function(ano) {
+            const option = document.createElement("option");
+            option.value = ano;
+            option.textContent = ano;
+            selectAno.appendChild(option);
+        });
+
+    if (valor) {
+        selectAno.value = valor;
+    }
+}
+
 /* =========================================================
    INICIALIZAÇÃO
    ========================================================= */
