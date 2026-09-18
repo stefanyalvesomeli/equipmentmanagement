@@ -3763,6 +3763,8 @@ window.limparFiltrosQuebrados =
   limparFiltrosQuebrados;
 
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1"></script>
+
 /* =========================================================
    FIM DO SCRIPT
    ========================================================= */
