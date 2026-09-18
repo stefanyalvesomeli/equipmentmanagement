@@ -528,51 +528,33 @@ async function carregarDados() {
 
   try {
 
-     await atualizarAbaQuebrados();
-
-
     await carregarEquipamentos();
-
     await carregarQuebrados();
 
     atualizarDashboard();
 
-    tipos.forEach(
-      function (tipo) {
+    tipos.forEach(function (tipo) {
 
-        const pagina =
-          document.getElementById(
-            tipo
-          );
+      const pagina = document.getElementById(tipo);
 
-        if (
-          pagina &&
-          pagina.classList.contains(
-            "active"
-          )
-        ) {
-
-          renderPage(tipo);
-
-        }
-
+      if (
+        pagina &&
+        pagina.classList.contains("active")
+      ) {
+        renderPage(tipo);
       }
-    );
+
+    });
 
     const paginaQuebrados =
-      document.getElementById(
-        "quebrados"
-      );
+      document.getElementById("quebrados");
 
     if (
       paginaQuebrados &&
-      paginaQuebrados.classList.contains(
-        "active"
-      )
+      paginaQuebrados.classList.contains("active")
     ) {
 
       preencherAnos();
-
       renderBroken();
 
     }
@@ -586,10 +568,7 @@ async function carregarDados() {
 
     alert(
       "Não foi possível carregar os equipamentos do banco de dados.\n\n" +
-      (
-        error.message ||
-        "Verifique sua conexão."
-      )
+      (error.message || "Verifique sua conexão.")
     );
 
   }
@@ -3041,8 +3020,11 @@ try {
 
 
   alert(
-    "Equipamento quebrado excluído com sucesso!"
-  );
+  excluirQuebrado
+    ? "Equipamento quebrado excluído com sucesso!"
+    : "Equipamento excluído com sucesso!"
+);
+
 
 
 } catch (error) {
@@ -3663,16 +3645,12 @@ document.addEventListener(
     registrarEventosFiltrosQuebrados();
 
 
-    await carregarDados();
+   await carregarDados();
 
+preencherAnos();
 
-    await carregarQuebrados();
+atualizarDashboard();
 
-
-    atualizarDashboard();
-
-
-    preencherAnos();
 
   }
 );
@@ -3700,11 +3678,9 @@ window.excluirEquipamento =
 window.adicionarQuebrado =
   adicionarQuebrado;
 
-window.editarRegistroQuebrado =
-  editarRegistroQuebrado;
+// window.editarRegistroQuebrado = editarRegistroQuebrado;
+// window.excluirRegistroQuebrado = excluirRegistroQuebrado;
 
-window.excluirRegistroQuebrado =
-  excluirRegistroQuebrado;
 
 window.fecharModal =
   fecharModal;
