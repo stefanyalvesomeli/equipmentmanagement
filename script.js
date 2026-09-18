@@ -493,18 +493,17 @@ async function carregarEquipamentos() {
    ATUALIZAR ABA DE QUEBRADOS
    ========================================================= */
 
+
 async function carregarDados() {
 
   try {
-
-     await atualizarAbaQuebrados();
-
 
     await carregarEquipamentos();
 
     await carregarQuebrados();
 
     atualizarDashboard();
+
 
 
     renderBroken();
