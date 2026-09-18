@@ -525,30 +525,47 @@ async function carregarDados() {
    CARREGAR TODOS OS DADOS
    ========================================================= */
 
+/* =========================================================
+   CARREGAR TODOS OS DADOS
+   ========================================================= */
+
 async function carregarDados() {
 
   try {
 
-    await carregarEquipamentos();
-    await carregarQuebrados();
+    // Sempre busca novamente os dados atuais do Supabase
+    await Promise.all([
+      carregarEquipamentos(),
+      carregarQuebrados()
+    ]);
 
+
+    // Atualiza os números do dashboard
     atualizarDashboard();
 
+
+    // Atualiza as tabelas das abas
     tipos.forEach(function (tipo) {
 
-      const pagina = document.getElementById(tipo);
+      const pagina =
+        document.getElementById(tipo);
 
       if (
         pagina &&
         pagina.classList.contains("active")
       ) {
+
         renderPage(tipo);
+
       }
 
     });
 
+
+    // Atualiza a aba de quebrados
     const paginaQuebrados =
       document.getElementById("quebrados");
+
 
     if (
       paginaQuebrados &&
@@ -556,9 +573,16 @@ async function carregarDados() {
     ) {
 
       preencherAnos();
+
       renderBroken();
 
     }
+
+
+    // Garante que os filtros/listas de anos
+    // também sejam atualizados mesmo fora da aba
+    preencherAnos();
+
 
   } catch (error) {
 
@@ -569,13 +593,15 @@ async function carregarDados() {
 
     alert(
       "Não foi possível carregar os equipamentos do banco de dados.\n\n" +
-      (error.message || "Verifique sua conexão.")
+      (
+        error.message ||
+        "Verifique sua conexão."
+      )
     );
 
   }
 
 }
-
 
 /* =========================================================
    DASHBOARD
@@ -2806,17 +2832,15 @@ async function editarEquipamento(
 
         fecharModal();
 
+await carregarDados();
 
-        await carregarDados();
+paginas[tipo] = Math.max(
+  1,
+  paginas[tipo] || 1
+);
 
+renderPage(tipo);
 
-        renderPage(
-          tipo
-        );
-
-        preencherAnos();
-
-        renderBroken();
 
 
         alert(
@@ -2966,58 +2990,21 @@ try {
   }
 
 
-  dados[tipo] =
-    dados[tipo].filter(
-      function (equipamento) {
+    // Recarrega TUDO diretamente do Supabase
+  // para manter dashboard, tabelas e quebrados sincronizados
+  await carregarDados();
 
-        return (
-          String(
-            equipamento.id
-          ) !==
-          String(item.id)
-        );
-
-      }
-    );
-
-
-  const lista =
-    filtrarQuebrados();
-
-
-  const totalPaginas =
-    Math.max(
-      1,
-      Math.ceil(
-        lista.length /
-        POR_PAGINA
-      )
-    );
-
-
-  if (
-    paginas.quebrados >
-    totalPaginas
-  ) {
-
-    paginas.quebrados =
-      totalPaginas;
-
-  }
-
-
-  atualizarDashboard();
-
-
-  renderPage(
-    tipo
+  // Garante que a página atual continue correta
+  paginas[tipo] = Math.max(
+    1,
+    paginas[tipo] || 1
   );
 
+  renderPage(tipo);
 
   preencherAnos();
-
-
   renderBroken();
+
 
 
   alert(
