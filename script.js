@@ -52,7 +52,7 @@ const nomesTipos = {
   radio: "Rádio",
   carregador: "Carregador",
   doisD: "2D",
-  impressora: "Impressora portátil"
+  impressora: "Impressora "
 };
 
 
