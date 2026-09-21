@@ -243,8 +243,12 @@ function normalizarTexto(texto) {
 /* =========================================================
    CONTAGEM DE HH POR MODELO
    ========================================================= */
+/* =========================================================
+   CONTAGEM DE HH POR MODELO
+   ========================================================= */
 
 function obterContagemHHPorModelo() {
+
   const contagens = {
     tc22: 0,
     tc210k: 0,
@@ -258,27 +262,39 @@ function obterContagemHHPorModelo() {
 
   lista.forEach(function (item) {
 
-    const texto = normalizarTexto(
-      `${item.nome || ""} ${item.codigo || ""}`
-    );
+    const nome =
+      normalizarTexto(item.nome);
 
+    /*
+     * ZEBRA TC22
+     */
     if (
-      texto.includes("tc210k") ||
-      texto.includes("tc 210k")
-    ) {
-      contagens.tc210k++;
-
-    } else if (
-      texto.includes("tc22") ||
-      texto.includes("tc 22")
+      nome.includes("tc22")
     ) {
       contagens.tc22++;
+      return;
+    }
 
-    } else if (
-      texto.includes("honeywell")
+    /*
+     * ZEBRA TC210K
+     */
+    if (
+      nome.includes("tc210k")
+    ) {
+      contagens.tc210k++;
+      return;
+    }
+
+    /*
+     * HONEYWELL
+     */
+    if (
+      nome.includes("honeywell")
     ) {
       contagens.honeywell++;
+      return;
     }
+
   });
 
   return contagens;
