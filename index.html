@@ -162,6 +162,28 @@
       <p>Cadastro de Handhelds.</p>
     </div>
   </div>
+
+  <!-- =================================================
+     RESUMO DOS HH POR MODELO
+     ================================================= -->
+<div class="card">
+  <div class="section-title">
+    <div>
+      <h3>HH por modelo</h3>
+      <p>Selecione um modelo para filtrar os equipamentos.</p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-secondary"
+      onclick="limparFiltroModeloHH()">
+      Todos os modelos
+    </button>
+  </div>
+
+  <div id="cards-modelos-hh" class="modelos-hh-grid"></div>
+</div>
+
   <div id="alert-hh" class="alert"></div>
   <div class="card">
     <h3>Novo equipamento</h3>
