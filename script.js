@@ -84,6 +84,106 @@ let paginas = {
   quebrados: 1
 };
 
+/* =========================================================
+   CARDS DE HH POR MODELO
+   ========================================================= */
+
+function renderCardsModelosHH() {
+  const container =
+    document.getElementById("cards-modelos-hh");
+
+  if (!container) {
+    return;
+  }
+
+  const lista =
+    Array.isArray(dados.hh)
+      ? dados.hh
+      : [];
+
+  const modelos = {};
+
+  lista.forEach(function (item) {
+    const modelo =
+      String(item.modelo || "").trim() ||
+      "Sem modelo";
+
+    if (!modelos[modelo]) {
+      modelos[modelo] = 0;
+    }
+
+    modelos[modelo]++;
+  });
+
+  const modelosOrdenados =
+    Object.entries(modelos).sort(
+      function (a, b) {
+        return a[0].localeCompare(
+          b[0],
+          "pt-BR",
+          {
+            sensitivity: "base"
+          }
+        );
+      }
+    );
+
+  if (modelosOrdenados.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        Nenhum HH cadastrado.
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML =
+    modelosOrdenados
+      .map(function ([modelo, quantidade]) {
+
+        const selecionado =
+          normalizarTexto(filtroModeloHH) ===
+          normalizarTexto(modelo);
+
+        return `
+          <button
+            type="button"
+            class="modelo-hh-card ${
+              selecionado
+                ? "selecionado"
+                : ""
+            }"
+            onclick="filtrarPorModeloHH('${escapeJS(modelo)}')">
+
+            <span class="modelo-hh-icon">
+              📱
+            </span>
+
+            <div class="modelo-hh-info">
+
+              <span class="modelo-hh-label">
+                ${escapeHTML(modelo)}
+              </span>
+
+              <strong>
+                ${quantidade}
+              </strong>
+
+              <small>
+                ${quantidade === 1
+                  ? "equipamento"
+                  : "equipamentos"}
+              </small>
+
+            </div>
+
+          </button>
+        `;
+      })
+      .join("");
+}
+
 
 /* =========================================================
    UTILIDADES
