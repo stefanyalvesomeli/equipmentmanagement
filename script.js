@@ -582,10 +582,30 @@ function atualizarDashboard() {
   const totalQuebrados =
     obterTotalQuebrados();
 
-  atualizarNumero(
-    "totalHH",
-    totalHH
-  );
+  // =====================================================
+// CARDS EXCLUSIVOS DO HH
+// =====================================================
+
+atualizarNumero(
+  "totalHH",
+  totalHH
+);
+
+atualizarNumero(
+  "totalTC210K",
+  contagemHH.tc210k
+);
+
+atualizarNumero(
+  "totalTC22",
+  contagemHH.tc22
+);
+
+atualizarNumero(
+  "totalHoneywell",
+  contagemHH.honeywell
+);
+
 
    
   atualizarNumero(
