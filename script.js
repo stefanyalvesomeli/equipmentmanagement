@@ -105,7 +105,7 @@ function renderCardsModelosHH() {
 
   lista.forEach(function (item) {
     const modelo =
-      String(item.modelo || "").trim() ||
+      String(item.nome || "").trim() ||
       "Sem modelo";
 
     if (!modelos[modelo]) {
@@ -142,47 +142,29 @@ function renderCardsModelosHH() {
     modelosOrdenados
       .map(function ([modelo, quantidade]) {
 
-        const selecionado =
-          normalizarTexto(filtroModeloHH) ===
-          normalizarTexto(modelo);
-
         return `
-          <button
-            type="button"
-            class="modelo-hh-card ${
-              selecionado
-                ? "selecionado"
-                : ""
-            }"
-            onclick="filtrarPorModeloHH('${escapeJS(modelo)}')">
+          <div class="stat-card green">
 
-            <span class="modelo-hh-icon">
+            <span class="stat-icon">
               📱
             </span>
 
-            <div class="modelo-hh-info">
-
-              <span class="modelo-hh-label">
+            <div>
+              <span class="stat-label">
                 ${escapeHTML(modelo)}
               </span>
 
               <strong>
                 ${quantidade}
               </strong>
-
-              <small>
-                ${quantidade === 1
-                  ? "equipamento"
-                  : "equipamentos"}
-              </small>
-
             </div>
 
-          </button>
+          </div>
         `;
       })
       .join("");
 }
+
 
 
 /* =========================================================
@@ -925,11 +907,15 @@ function showPage(pageId, button) {
   }
 
   if (tipos.includes(pageId)) {
-    paginas[pageId] =
-      paginas[pageId] || 1;
+  paginas[pageId] =
+    paginas[pageId] || 1;
 
-    renderPage(pageId);
+  renderPage(pageId);
+
+  if (pageId === "hh") {
+    renderCardsModelosHH();
   }
+}
 
   if (pageId === "quebrados") {
     paginas.quebrados = 1;
