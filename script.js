@@ -3803,11 +3803,7 @@ document.addEventListener(
 
       atualizarDashboard();
 
-       // Garante que somente a página inicial fique visível
-showPage(
-  "dashboard",
-  document.querySelector(".nav-btn")
-);
+   
 
     } catch (error) {
 
