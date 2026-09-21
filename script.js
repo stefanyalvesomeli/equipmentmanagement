@@ -441,11 +441,28 @@ async function carregarEquipamentos() {
       row.nome
     );
 
-    if (tipos.includes(row.tipo)) {
-      novosDados[row.tipo].push(
-        converterRegistro(row)
-      );
-    }
+   const tipoBanco =
+  normalizarTexto(row.tipo);
+
+const mapaTipos = {
+  hh: "hh",
+  notebook: "notebook",
+  radio: "radio",
+  carregador: "carregador",
+  "2d": "doisD",
+  doisd: "doisD",
+  impressora: "impressora"
+};
+
+const tipo =
+  mapaTipos[tipoBanco];
+
+if (tipo) {
+  novosDados[tipo].push(
+    converterRegistro(row)
+  );
+}
+
   });
 
   tipos.forEach(function (tipo) {
