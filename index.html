@@ -162,37 +162,38 @@
       <p>Cadastro de Handhelds.</p>
     </div>
   </div>
-<!-- RESUMO DOS MODELOS HH -->
-<div class="stats-grid">
 
-  <div class="stat-card green">
-    <span class="stat-icon">📱</span>
-    <div>
-      <span class="stat-label">ZEBRA TC22</span>
-      <strong id="hh-tc22">0</strong>
+  <!-- RESUMO DOS MODELOS HH -->
+  <div class="stats-grid">
+
+    <div class="stat-card green">
+      <span class="stat-icon">📱</span>
+      <div>
+        <span class="stat-label">ZEBRA TC22</span>
+        <strong id="hh-tc22">0</strong>
+      </div>
     </div>
-  </div>
 
-  <div class="stat-card green">
-    <span class="stat-icon">📱</span>
-    <div>
-      <span class="stat-label">ZEBRA TC210K</span>
-      <strong id="hh-tc210k">0</strong>
+    <div class="stat-card green">
+      <span class="stat-icon">📱</span>
+      <div>
+        <span class="stat-label">ZEBRA TC210K</span>
+        <strong id="hh-tc210k">0</strong>
+      </div>
     </div>
-  </div>
 
-  <div class="stat-card green">
-    <span class="stat-icon">📱</span>
-    <div>
-      <span class="stat-label">Honeywell</span>
-      <strong id="hh-Honeywell">0</strong>
+    <div class="stat-card green">
+      <span class="stat-icon">📱</span>
+      <div>
+        <span class="stat-label">Honeywell</span>
+        <strong id="hh-honeywell">0</strong>
+      </div>
     </div>
+
   </div>
-
-</div>
-
 
   <div id="alert-hh" class="alert"></div>
+
   <div class="card">
     <h3>Novo equipamento</h3>
     <form id="form-hh">
@@ -201,10 +202,12 @@
           <label for="hh-codigo">Código *</label>
           <input id="hh-codigo" type="text" required>
         </div>
+
         <div class="form-group">
           <label for="hh-nome">Nome *</label>
           <input id="hh-nome" type="text" required>
         </div>
+
         <div class="form-group">
           <label for="hh-status">Status</label>
           <select id="hh-status">
@@ -212,15 +215,18 @@
             <option value="Quebrado">Quebrado</option>
           </select>
         </div>
+
         <div class="form-group full">
           <label for="hh-observacao">Observação</label>
           <textarea id="hh-observacao"></textarea>
         </div>
       </div>
+
       <div class="actions">
         <button type="submit" class="btn btn-primary">
           Cadastrar HH
         </button>
+
         <button
           type="reset"
           class="btn btn-secondary">
@@ -229,11 +235,13 @@
       </div>
     </form>
   </div>
+
   <div class="card">
     <div class="section-title">
       <div>
         <h3>Equipamentos cadastrados</h3>
       </div>
+
       <input
         id="busca-hh"
         class="search-input"
@@ -241,9 +249,11 @@
         placeholder="🔎 Buscar por código, nome ou observação..."
         oninput="paginas.hh = 1; renderPage('hh')">
     </div>
+
     <div id="tabela-hh"></div>
   </div>
 </section>
+
 <!-- ===================================================
      NOTEBOOK
      =================================================== -->
