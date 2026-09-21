@@ -653,10 +653,9 @@ function atualizarDashboard() {
     totalImpressora
   );
 
-  atualizarDashboardQuebrados();
-}
+ atualizarDashboardQuebrados();
 
- // Atualiza os contadores dos modelos de HH
+  // Atualiza os contadores dos modelos de HH
   renderCardsModelosHH();
 }
 
