@@ -119,17 +119,17 @@ function renderCardsModelosHH() {
   });
 
   atualizarNumero(
-    "tc22",
+    "hh-tc22",
     tc22
   );
 
   atualizarNumero(
-    "tc210k",
+    "hh-tc210k",
     tc210k
   );
 
   atualizarNumero(
-    "honeywell",
+    "hh-honeywell",
     honeywell
   );
 }
