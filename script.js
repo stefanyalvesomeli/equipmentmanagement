@@ -240,9 +240,7 @@ function normalizarTexto(texto) {
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 }
-/* =========================================================
-   CONTAGEM DE HH POR MODELO
-   ========================================================= */
+
 /* =========================================================
    CONTAGEM DE HH POR MODELO
    ========================================================= */
@@ -265,40 +263,31 @@ function obterContagemHHPorModelo() {
     const nome =
       normalizarTexto(item.nome);
 
-    /*
-     * ZEBRA TC22
-     */
-    if (
-      nome.includes("tc22")
-    ) {
-      contagens.tc22++;
-      return;
-    }
-
-    /*
-     * ZEBRA TC210K
-     */
-    if (
-      nome.includes("tc210k")
-    ) {
+    if (nome.includes("tc210k")) {
       contagens.tc210k++;
       return;
     }
 
-    /*
-     * HONEYWELL
-     */
-    if (
-      nome.includes("honeywell")
-    ) {
+    if (nome.includes("tc22")) {
+      contagens.tc22++;
+      return;
+    }
+
+    if (nome.includes("honeywell")) {
       contagens.honeywell++;
       return;
     }
 
   });
 
+  console.log(
+    "Contagem dos HH:",
+    contagens
+  );
+
   return contagens;
 }
+
 
 
 /* =========================================================
@@ -433,6 +422,7 @@ function converterQuebrado(row) {
    ========================================================= */
 
 async function carregarEquipamentos() {
+
   const {
     data,
     error
@@ -447,8 +437,6 @@ async function carregarEquipamentos() {
     throw error;
   }
 
-  console.log("TODOS OS EQUIPAMENTOS DO BANCO:", data);
-
   const novosDados = {
     hh: [],
     notebook: [],
@@ -460,43 +448,41 @@ async function carregarEquipamentos() {
 
   (data || []).forEach(function (row) {
 
-    console.log(
-      "TIPO ENCONTRADO:",
-      row.tipo,
-      "NOME:",
-      row.nome
-    );
+    // Normaliza o tipo que veio do Supabase
+    const tipoBanco =
+      normalizarTexto(row.tipo);
 
-   const tipoBanco =
-  normalizarTexto(row.tipo);
+    let tipo = tipoBanco;
 
-const mapaTipos = {
-  hh: "hh",
-  notebook: "notebook",
-  radio: "radio",
-  carregador: "carregador",
-  "2d": "doisD",
-  doisd: "doisD",
-  impressora: "impressora"
-};
+    // Aceita HH, hh e handheld
+    if (
+      tipoBanco === "hh" ||
+      tipoBanco === "handheld"
+    ) {
+      tipo = "hh";
+    }
 
-const tipo =
-  mapaTipos[tipoBanco];
+    // Só adiciona se for um tipo válido
+    if (tipos.includes(tipo)) {
 
-if (tipo) {
-  novosDados[tipo].push(
-    converterRegistro(row)
-  );
-}
+      novosDados[tipo].push(
+        converterRegistro(row)
+      );
+
+    }
 
   });
 
   tipos.forEach(function (tipo) {
-    dados[tipo] = novosDados[tipo];
+
+    dados[tipo] =
+      novosDados[tipo];
+
   });
 
-  console.log("DADOS HH:", dados.hh);
-  console.log("TOTAL HH:", dados.hh.length);
+  // DEBUG TEMPORÁRIO
+  console.log("Dados HH carregados:", dados.hh);
+
 }
 
 
