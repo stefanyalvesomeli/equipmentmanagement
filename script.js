@@ -240,6 +240,39 @@ function normalizarTexto(texto) {
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 }
+/* =========================================================
+   CONTAGEM DE HH POR MODELO
+   ========================================================= */
+
+function obterContagemHHPorModelo() {
+  const contagens = {
+    tc22: 0,
+    tc210k: 0,
+    honeywell: 0
+  };
+
+  const lista =
+    Array.isArray(dados.hh)
+      ? dados.hh
+      : [];
+
+  lista.forEach(function (item) {
+    const nome =
+      normalizarTexto(item.nome);
+
+    if (nome.includes("tc22")) {
+      contagens.tc22++;
+
+    } else if (nome.includes("tc210k")) {
+      contagens.tc210k++;
+
+    } else if (nome.includes("honeywell")) {
+      contagens.honeywell++;
+    }
+  });
+
+  return contagens;
+}
 
 
 /* =========================================================
@@ -527,6 +560,9 @@ async function atualizarDepoisDeAlteracao(
 function atualizarDashboard() {
   const totalHH =
     dados.hh.length;
+   
+   const contagemHH =
+  obterContagemHHPorModelo();
 
   const totalNotebook =
     dados.notebook.length;
@@ -550,6 +586,20 @@ function atualizarDashboard() {
     "totalHH",
     totalHH
   );
+atualizarNumero(
+  "totalHH_TC22",
+  contagemHH.tc22
+);
+
+atualizarNumero(
+  "totalHH_TC210K",
+  contagemHH.tc210k
+);
+
+atualizarNumero(
+  "totalHH_Honeywell",
+  contagemHH.honeywell
+);
 
    
   atualizarNumero(
