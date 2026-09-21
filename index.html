@@ -156,64 +156,297 @@
      HH
      =================================================== -->
 <section id="hh" class="page">
+
+  <!-- CABEÇALHO -->
   <div class="page-header">
     <div>
       <h2>HH</h2>
       <p>Cadastro de Handhelds.</p>
     </div>
   </div>
+
+  <!-- ALERTA -->
   <div id="alert-hh" class="alert"></div>
-  <div class="card">
-    <h3>Novo equipamento</h3>
-    <form id="form-hh">
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="hh-codigo">Código *</label>
-          <input id="hh-codigo" type="text" required>
-        </div>
-        <div class="form-group">
-          <label for="hh-nome">Nome *</label>
-          <input id="hh-nome" type="text" required>
-        </div>
-        <div class="form-group">
-          <label for="hh-status">Status</label>
-          <select id="hh-status">
-            <option value="Funcionando">Funcionando</option>
-            <option value="Quebrado">Quebrado</option>
-          </select>
-        </div>
-        <div class="form-group full">
-          <label for="hh-observacao">Observação</label>
-          <textarea id="hh-observacao"></textarea>
-        </div>
+
+
+  <!-- =================================================
+       FILTROS / CARDS POR MODELO
+       ================================================= -->
+  <div class="hh-modelos">
+
+    <!-- TODOS -->
+    <button
+      type="button"
+      class="hh-modelo-card ativo"
+      onclick="filtrarHHModelo('todos', this)"
+    >
+      <span class="hh-modelo-icon">📱</span>
+
+      <div>
+        <span class="hh-modelo-nome">
+          Todos os HH
+        </span>
+
+        <strong id="totalHHModelos">
+          0
+        </strong>
+
+        <small>
+          cadastrados
+        </small>
       </div>
+    </button>
+
+
+    <!-- ZEBRA TC210K -->
+    <button
+      type="button"
+      class="hh-modelo-card"
+      onclick="filtrarHHModelo('Zebra TC210K', this)"
+    >
+      <span class="hh-modelo-icon">📱</span>
+
+      <div>
+        <span class="hh-modelo-nome">
+          Zebra TC210K
+        </span>
+
+        <strong id="totalHHTC210K">
+          0
+        </strong>
+
+        <small>
+          cadastrados
+        </small>
+      </div>
+    </button>
+
+
+    <!-- ZEBRA TC22 -->
+    <button
+      type="button"
+      class="hh-modelo-card"
+      onclick="filtrarHHModelo('Zebra TC22', this)"
+    >
+      <span class="hh-modelo-icon">📱</span>
+
+      <div>
+        <span class="hh-modelo-nome">
+          Zebra TC22
+        </span>
+
+        <strong id="totalHHTC22">
+          0
+        </strong>
+
+        <small>
+          cadastrados
+        </small>
+      </div>
+    </button>
+
+
+    <!-- HONEYWELL -->
+    <button
+      type="button"
+      class="hh-modelo-card"
+      onclick="filtrarHHModelo('Honeywell', this)"
+    >
+      <span class="hh-modelo-icon">📱</span>
+
+      <div>
+        <span class="hh-modelo-nome">
+          Honeywell
+        </span>
+
+        <strong id="totalHHHoneywell">
+          0
+        </strong>
+
+        <small>
+          cadastrados
+        </small>
+      </div>
+    </button>
+
+  </div>
+
+
+  <!-- =================================================
+       NOVO EQUIPAMENTO
+       ================================================= -->
+  <div class="card">
+
+    <h3>Novo equipamento</h3>
+
+    <form id="form-hh">
+
+      <div class="form-grid">
+
+
+        <!-- CÓDIGO -->
+        <div class="form-group">
+
+          <label for="hh-codigo">
+            Código *
+          </label>
+
+          <input
+            id="hh-codigo"
+            type="text"
+            required
+          >
+
+        </div>
+
+
+        <!-- NOME -->
+        <div class="form-group">
+
+          <label for="hh-nome">
+            Nome *
+          </label>
+
+          <input
+            id="hh-nome"
+            type="text"
+            required
+          >
+
+        </div>
+
+
+        <!-- MODELO -->
+        <div class="form-group">
+
+          <label for="hh-modelo">
+            Modelo *
+          </label>
+
+          <select
+            id="hh-modelo"
+            required
+          >
+
+            <option value="">
+              Selecione o modelo
+            </option>
+
+            <option value="Zebra TC210K">
+              Zebra TC210K
+            </option>
+
+            <option value="Zebra TC22">
+              Zebra TC22
+            </option>
+
+            <option value="Honeywell">
+              Honeywell
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- STATUS -->
+        <div class="form-group">
+
+          <label for="hh-status">
+            Status
+          </label>
+
+          <select id="hh-status">
+
+            <option value="Funcionando">
+              Funcionando
+            </option>
+
+            <option value="Quebrado">
+              Quebrado
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- OBSERVAÇÃO -->
+        <div class="form-group full">
+
+          <label for="hh-observacao">
+            Observação
+          </label>
+
+          <textarea
+            id="hh-observacao"
+          ></textarea>
+
+        </div>
+
+      </div>
+
+
+      <!-- BOTÕES -->
       <div class="actions">
-        <button type="submit" class="btn btn-primary">
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+        >
           Cadastrar HH
         </button>
+
+
         <button
           type="reset"
-          class="btn btn-secondary">
+          class="btn btn-secondary"
+        >
           Limpar
         </button>
+
       </div>
+
     </form>
+
   </div>
+
+
+  <!-- =================================================
+       EQUIPAMENTOS CADASTRADOS
+       ================================================= -->
   <div class="card">
+
     <div class="section-title">
+
       <div>
-        <h3>Equipamentos cadastrados</h3>
+
+        <h3>
+          Equipamentos cadastrados
+        </h3>
+
       </div>
+
+
+      <!-- BUSCA -->
       <input
         id="busca-hh"
         class="search-input"
         type="search"
-        placeholder="🔎 Buscar por código, nome ou observação..."
-        oninput="paginas.hh = 1; renderPage('hh')">
+        placeholder="🔎 Buscar por código, nome, modelo ou observação..."
+        oninput="paginas.hh = 1; renderPage('hh')"
+      >
+
     </div>
+
+
+    <!-- TABELA -->
     <div id="tabela-hh"></div>
+
   </div>
+
 </section>
+
 <!-- ===================================================
      NOTEBOOK
      =================================================== -->
@@ -226,6 +459,7 @@
   </div>
   <div id="alert-notebook" class="alert"></div>
   <div class="card">
+
     <h3>Novo equipamento</h3>
     <form id="form-notebook">
       <div class="form-grid">
