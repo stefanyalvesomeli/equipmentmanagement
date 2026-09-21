@@ -586,20 +586,6 @@ function atualizarDashboard() {
     "totalHH",
     totalHH
   );
-atualizarNumero(
-  "totalHH_TC22",
-  contagemHH.tc22
-);
-
-atualizarNumero(
-  "totalHH_TC210K",
-  contagemHH.tc210k
-);
-
-atualizarNumero(
-  "totalHH_Honeywell",
-  contagemHH.honeywell
-);
 
    
   atualizarNumero(
