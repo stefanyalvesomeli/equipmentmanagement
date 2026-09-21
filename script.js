@@ -410,17 +410,18 @@ async function carregarEquipamentos() {
   const {
     data,
     error
-  } =
-    await supabaseClient
-      .from("equipamentos")
-      .select("*")
-      .order("criado_em", {
-        ascending: false
-      });
+  } = await supabaseClient
+    .from("equipamentos")
+    .select("*")
+    .order("criado_em", {
+      ascending: false
+    });
 
   if (error) {
     throw error;
   }
+
+  console.log("TODOS OS EQUIPAMENTOS DO BANCO:", data);
 
   const novosDados = {
     hh: [],
@@ -432,6 +433,14 @@ async function carregarEquipamentos() {
   };
 
   (data || []).forEach(function (row) {
+
+    console.log(
+      "TIPO ENCONTRADO:",
+      row.tipo,
+      "NOME:",
+      row.nome
+    );
+
     if (tipos.includes(row.tipo)) {
       novosDados[row.tipo].push(
         converterRegistro(row)
@@ -440,10 +449,13 @@ async function carregarEquipamentos() {
   });
 
   tipos.forEach(function (tipo) {
-    dados[tipo] =
-      novosDados[tipo];
+    dados[tipo] = novosDados[tipo];
   });
+
+  console.log("DADOS HH:", dados.hh);
+  console.log("TOTAL HH:", dados.hh.length);
 }
+
 
 
 /* =========================================================
