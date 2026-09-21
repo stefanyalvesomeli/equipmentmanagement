@@ -263,31 +263,22 @@ function obterContagemHHPorModelo() {
     const nome =
       normalizarTexto(item.nome);
 
-    if (nome.includes("tc210k")) {
-      contagens.tc210k++;
-      return;
-    }
-
     if (nome.includes("tc22")) {
       contagens.tc22++;
-      return;
+    }
+
+    if (nome.includes("tc210k")) {
+      contagens.tc210k++;
     }
 
     if (nome.includes("honeywell")) {
       contagens.honeywell++;
-      return;
     }
 
   });
 
-  console.log(
-    "Contagem dos HH:",
-    contagens
-  );
-
   return contagens;
 }
-
 
 
 /* =========================================================
