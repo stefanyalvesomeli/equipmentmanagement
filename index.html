@@ -156,228 +156,64 @@
      HH
      =================================================== -->
 <section id="hh" class="page">
-
-  <!-- CABEÇALHO -->
   <div class="page-header">
     <div>
       <h2>HH</h2>
-      <p>Cadastro e controle dos Handhelds.</p>
+      <p>Cadastro de Handhelds.</p>
     </div>
   </div>
-
-  <!-- ALERTA -->
   <div id="alert-hh" class="alert"></div>
-
-
-  <!-- =================================================
-       RESUMO DOS HH
-       ================================================= -->
-  <div class="stats-grid">
-
-    <!-- TOTAL -->
-    <div class="stat-card green">
-      <span class="stat-icon">📱</span>
-
-      <div>
-        <span class="stat-label">Total de HH</span>
-        <strong id="totalHH_HH">0</strong>
-      </div>
-    </div>
-
-
-    <!-- TC210K -->
-    <div class="stat-card blue">
-      <span class="stat-icon">📱</span>
-
-      <div>
-        <span class="stat-label">Zebra TC210K</span>
-        <strong id="totalHH_TC210K">0</strong>
-      </div>
-    </div>
-
-
-    <!-- TC22 -->
-    <div class="stat-card purple">
-      <span class="stat-icon">📱</span>
-
-      <div>
-        <span class="stat-label">Zebra TC22</span>
-        <strong id="totalHH_TC22">0</strong>
-      </div>
-    </div>
-
-
-    <!-- HONEYWELL -->
-    <div class="stat-card orange">
-      <span class="stat-icon">📱</span>
-
-      <div>
-        <span class="stat-label">Honeywell</span>
-        <strong id="totalHH_Honeywell">0</strong>
-      </div>
-    </div>
-
-  </div>
-
-
-  <!-- =================================================
-       NOVO EQUIPAMENTO
-       ================================================= -->
   <div class="card">
-
-    <div class="section-title">
-      <div>
-        <h3>Novo equipamento</h3>
-        <p>Cadastre um novo Handheld no sistema.</p>
-      </div>
-    </div>
-
+    <h3>Novo equipamento</h3>
     <form id="form-hh">
-
       <div class="form-grid">
-
-        <!-- CÓDIGO -->
         <div class="form-group">
-          <label for="hh-codigo">
-            Código *
-          </label>
-
-          <input
-            id="hh-codigo"
-            type="text"
-            placeholder="Digite o código"
-            required>
+          <label for="hh-codigo">Código *</label>
+          <input id="hh-codigo" type="text" required>
         </div>
-
-
-        <!-- NOME -->
         <div class="form-group">
-          <label for="hh-nome">
-            Nome *
-          </label>
-
-          <input
-            id="hh-nome"
-            type="text"
-            placeholder="Nome do equipamento"
-            required>
+          <label for="hh-nome">Nome *</label>
+          <input id="hh-nome" type="text" required>
         </div>
-
-
-        <!-- MODELO -->
         <div class="form-group">
-          <label for="hh-modelo">
-            Modelo *
-          </label>
-
-          <select id="hh-modelo" required>
-
-            <option value="">
-              Selecione o modelo
-            </option>
-
-            <option value="Zebra TC210K">
-              Zebra TC210K
-            </option>
-
-            <option value="Zebra TC22">
-              Zebra TC22
-            </option>
-
-            <option value="Honeywell">
-              Honeywell
-            </option>
-
-          </select>
-        </div>
-
-
-        <!-- STATUS -->
-        <div class="form-group">
-          <label for="hh-status">
-            Status
-          </label>
-
+          <label for="hh-status">Status</label>
           <select id="hh-status">
-
-            <option value="Funcionando">
-              Funcionando
-            </option>
-
-            <option value="Quebrado">
-              Quebrado
-            </option>
-
+            <option value="Funcionando">Funcionando</option>
+            <option value="Quebrado">Quebrado</option>
           </select>
         </div>
-
-
-        <!-- OBSERVAÇÃO -->
         <div class="form-group full">
-
-          <label for="hh-observacao">
-            Observação
-          </label>
-
-          <textarea
-            id="hh-observacao"
-            placeholder="Adicione alguma observação, se necessário..."></textarea>
-
+          <label for="hh-observacao">Observação</label>
+          <textarea id="hh-observacao"></textarea>
         </div>
-
       </div>
-
-
-      <!-- AÇÕES -->
       <div class="actions">
-
-        <button
-          type="submit"
-          class="btn btn-primary">
+        <button type="submit" class="btn btn-primary">
           Cadastrar HH
         </button>
-
         <button
           type="reset"
           class="btn btn-secondary">
           Limpar
         </button>
-
       </div>
-
     </form>
-
   </div>
-
-
-  <!-- =================================================
-       EQUIPAMENTOS CADASTRADOS
-       ================================================= -->
   <div class="card">
-
     <div class="section-title">
-
       <div>
-        <h3>Equipamentos HH cadastrados</h3>
-        <p>Consulte e gerencie os Handhelds cadastrados.</p>
+        <h3>Equipamentos cadastrados</h3>
       </div>
-
       <input
         id="busca-hh"
         class="search-input"
         type="search"
         placeholder="🔎 Buscar por código, nome ou observação..."
         oninput="paginas.hh = 1; renderPage('hh')">
-
     </div>
-
     <div id="tabela-hh"></div>
-
   </div>
-
 </section>
-
-  
 <!-- ===================================================
      NOTEBOOK
      =================================================== -->
@@ -390,7 +226,6 @@
   </div>
   <div id="alert-notebook" class="alert"></div>
   <div class="card">
-
     <h3>Novo equipamento</h3>
     <form id="form-notebook">
       <div class="form-grid">
