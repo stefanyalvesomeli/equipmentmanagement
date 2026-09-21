@@ -104,17 +104,15 @@ function renderCardsModelosHH() {
     const nome =
       normalizarTexto(item.nome);
 
-    if (nome === "zebra tc22") {
-      tc22++;
-    }
-
-    else if (nome === "zebra tc210k") {
-      tc210k++;
-    }
-
-    else if (nome === "honeywell") {
-      honeywell++;
-    }
+   if (nome.includes("zebra tc22")) {
+  tc22++;
+}
+else if (nome.includes("zebra tc210k")) {
+  tc210k++;
+}
+else if (nome.includes("honeywell")) {
+  honeywell++;
+}
 
   });
 
@@ -877,13 +875,11 @@ function showPage(pageId, button) {
   }
 
   if (tipos.includes(pageId)) {
-  paginas[pageId] =
-    paginas[pageId] || 1;
+    paginas[pageId] =
+      paginas[pageId] || 1;
 
-  renderPage(pageId);
-
+    renderPage(pageId);
   }
-}
 
   if (pageId === "quebrados") {
     paginas.quebrados = 1;
