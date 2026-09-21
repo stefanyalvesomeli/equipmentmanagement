@@ -241,45 +241,6 @@ function normalizarTexto(texto) {
     .trim();
 }
 
-/* =========================================================
-   CONTAGEM DE HH POR MODELO
-   ========================================================= */
-
-function obterContagemHHPorModelo() {
-
-  const contagens = {
-    tc22: 0,
-    tc210k: 0,
-    honeywell: 0
-  };
-
-  const lista =
-    Array.isArray(dados.hh)
-      ? dados.hh
-      : [];
-
-  lista.forEach(function (item) {
-
-    const nome =
-      normalizarTexto(item.nome);
-
-    if (nome.includes("tc22")) {
-      contagens.tc22++;
-    }
-
-    if (nome.includes("tc210k")) {
-      contagens.tc210k++;
-    }
-
-    if (nome.includes("honeywell")) {
-      contagens.honeywell++;
-    }
-
-  });
-
-  return contagens;
-}
-
 
 /* =========================================================
    ALERTA VISUAL
@@ -564,82 +525,82 @@ async function atualizarDepoisDeAlteracao(
    ========================================================= */
 
 function atualizarDashboard() {
-  const totalHH = dados.hh.length;
+  const totalHH =
+    dados.hh.length;
 
-  const contagemHH =
-    obterContagemHHPorModelo();
+  const totalNotebook =
+    dados.notebook.length;
+
+  const totalRadio =
+    dados.radio.length;
+
+  const totalCarregador =
+    dados.carregador.length;
+
+  const totalDoisD =
+    dados.doisD.length;
+
+  const totalImpressora =
+    dados.impressora.length;
+
+  const totalQuebrados =
+    obterTotalQuebrados();
 
   atualizarNumero(
     "totalHH",
     totalHH
   );
 
-  atualizarNumero(
-    "totalTC210K",
-    contagemHH.tc210k
-  );
-
-  atualizarNumero(
-    "totalTC22",
-    contagemHH.tc22
-  );
-
-  atualizarNumero(
-    "totalHoneywell",
-    contagemHH.honeywell
-  );
-
+   
   atualizarNumero(
     "totalNotebook",
-    dados.notebook.length
+    totalNotebook
   );
 
   atualizarNumero(
     "totalRadio",
-    dados.radio.length
+    totalRadio
   );
 
   atualizarNumero(
     "totalCarregador",
-    dados.carregador.length
+    totalCarregador
   );
 
   atualizarNumero(
     "totalDoisD",
-    dados.doisD.length
+    totalDoisD
   );
 
   atualizarNumero(
     "total2D",
-    dados.doisD.length
+    totalDoisD
   );
 
   atualizarNumero(
     "totalImpressora",
-    dados.impressora.length
+    totalImpressora
   );
-
-  const totalQuebrados =
-    obterTotalQuebrados();
 
   atualizarNumero(
     "totalQuebrados",
     totalQuebrados
   );
 
-  atualizarNumero(
-    "totalQuebradosAba",
-    totalQuebrados
-  );
+   atualizarNumero(
+  "totalQuebradosAba",
+  totalQuebrados
+);
+
 
   atualizarNumero(
     "totalEquipamentos",
     totalHH +
-    dados.notebook.length +
-    dados.radio.length +
-    dados.carregador.length +
-    dados.doisD.length +
-    dados.impressora.length
+    totalNotebook +
+    totalRadio +
+    totalCarregador +
+    totalDoisD +
+    totalImpressora
   );
 
   atualizarDashboardQuebrados();
@@ -829,98 +790,59 @@ function obterTotalQuebrados() {
    ========================================================= */
 
 function showPage(pageId, button) {
-
-  // Esconde TODAS as páginas
   document
     .querySelectorAll(".page")
     .forEach(function (page) {
-
       page.classList.remove("active");
-      page.style.display = "none";
-
     });
 
-
-  // Mostra SOMENTE a página clicada
   const pagina =
     document.getElementById(pageId);
 
   if (pagina) {
-
     pagina.classList.add("active");
-    pagina.style.display = "block";
-
   }
 
-
-  // Atualiza o botão ativo do menu
   document
     .querySelectorAll(".nav-btn")
     .forEach(function (btn) {
-
       btn.classList.remove("active");
-
     });
 
-
   if (button) {
-
     button.classList.add("active");
-
   }
 
-
-  // Fecha o menu lateral no celular
   const sidebar =
     document.getElementById("sidebar");
 
   if (sidebar) {
-
     sidebar.classList.remove("open");
-
   }
 
-
-  // Dashboard
   if (pageId === "dashboard") {
-
     atualizarDashboard();
-
   }
 
-
-  // Páginas de equipamentos
   if (tipos.includes(pageId)) {
-
     paginas[pageId] =
       paginas[pageId] || 1;
 
     renderPage(pageId);
-
   }
 
-
-  // Quebrados
   if (pageId === "quebrados") {
-
     paginas.quebrados = 1;
-
     preencherAnos();
-
     renderBroken();
-
   }
 
-
-  // Volta para o topo
   window.scrollTo({
-
     top: 0,
     behavior: "smooth"
-
   });
-
 }
+
 
 /* =========================================================
    MENU
@@ -3805,8 +3727,6 @@ document.addEventListener(
       preencherAnos();
 
       atualizarDashboard();
-
-   
 
     } catch (error) {
 
