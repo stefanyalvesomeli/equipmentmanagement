@@ -422,16 +422,16 @@ function converterQuebrado(row) {
    ========================================================= */
 
 async function carregarEquipamentos() {
-
   const {
     data,
     error
-  } = await supabaseClient
-    .from("equipamentos")
-    .select("*")
-    .order("criado_em", {
-      ascending: false
-    });
+  } =
+    await supabaseClient
+      .from("equipamentos")
+      .select("*")
+      .order("criado_em", {
+        ascending: false
+      });
 
   if (error) {
     throw error;
@@ -447,44 +447,18 @@ async function carregarEquipamentos() {
   };
 
   (data || []).forEach(function (row) {
-
-    // Normaliza o tipo que veio do Supabase
-    const tipoBanco =
-      normalizarTexto(row.tipo);
-
-    let tipo = tipoBanco;
-
-    // Aceita HH, hh e handheld
-    if (
-      tipoBanco === "hh" ||
-      tipoBanco === "handheld"
-    ) {
-      tipo = "hh";
-    }
-
-    // Só adiciona se for um tipo válido
-    if (tipos.includes(tipo)) {
-
-      novosDados[tipo].push(
+    if (tipos.includes(row.tipo)) {
+      novosDados[row.tipo].push(
         converterRegistro(row)
       );
-
     }
-
   });
 
   tipos.forEach(function (tipo) {
-
     dados[tipo] =
       novosDados[tipo];
-
   });
-
-  // DEBUG TEMPORÁRIO
-  console.log("Dados HH carregados:", dados.hh);
-
 }
-
 
 
 /* =========================================================
