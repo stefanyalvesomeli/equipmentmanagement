@@ -257,16 +257,26 @@ function obterContagemHHPorModelo() {
       : [];
 
   lista.forEach(function (item) {
-    const nome =
-      normalizarTexto(item.nome);
 
-    if (nome.includes("tc22")) {
-      contagens.tc22++;
+    const texto = normalizarTexto(
+      `${item.nome || ""} ${item.codigo || ""}`
+    );
 
-    } else if (nome.includes("tc210k")) {
+    if (
+      texto.includes("tc210k") ||
+      texto.includes("tc 210k")
+    ) {
       contagens.tc210k++;
 
-    } else if (nome.includes("honeywell")) {
+    } else if (
+      texto.includes("tc22") ||
+      texto.includes("tc 22")
+    ) {
+      contagens.tc22++;
+
+    } else if (
+      texto.includes("honeywell")
+    ) {
       contagens.honeywell++;
     }
   });
@@ -587,29 +597,87 @@ async function atualizarDepoisDeAlteracao(
    ========================================================= */
 
 function atualizarDashboard() {
-  const totalHH =
-    dados.hh.length;
-   
-   const contagemHH =
-  obterContagemHHPorModelo();
+  const totalHH = dados.hh.length;
 
-  const totalNotebook =
-    dados.notebook.length;
+  const contagemHH =
+    obterContagemHHPorModelo();
 
-  const totalRadio =
-    dados.radio.length;
+  atualizarNumero(
+    "totalHH",
+    totalHH
+  );
 
-  const totalCarregador =
-    dados.carregador.length;
+  atualizarNumero(
+    "totalTC210K",
+    contagemHH.tc210k
+  );
 
-  const totalDoisD =
-    dados.doisD.length;
+  atualizarNumero(
+    "totalTC22",
+    contagemHH.tc22
+  );
 
-  const totalImpressora =
-    dados.impressora.length;
+  atualizarNumero(
+    "totalHoneywell",
+    contagemHH.honeywell
+  );
+
+  atualizarNumero(
+    "totalNotebook",
+    dados.notebook.length
+  );
+
+  atualizarNumero(
+    "totalRadio",
+    dados.radio.length
+  );
+
+  atualizarNumero(
+    "totalCarregador",
+    dados.carregador.length
+  );
+
+  atualizarNumero(
+    "totalDoisD",
+    dados.doisD.length
+  );
+
+  atualizarNumero(
+    "total2D",
+    dados.doisD.length
+  );
+
+  atualizarNumero(
+    "totalImpressora",
+    dados.impressora.length
+  );
 
   const totalQuebrados =
     obterTotalQuebrados();
+
+  atualizarNumero(
+    "totalQuebrados",
+    totalQuebrados
+  );
+
+  atualizarNumero(
+    "totalQuebradosAba",
+    totalQuebrados
+  );
+
+  atualizarNumero(
+    "totalEquipamentos",
+    totalHH +
+    dados.notebook.length +
+    dados.radio.length +
+    dados.carregador.length +
+    dados.doisD.length +
+    dados.impressora.length
+  );
+
+  atualizarDashboardQuebrados();
+}
+
 
   // =====================================================
 // CARDS EXCLUSIVOS DO HH
