@@ -826,59 +826,98 @@ function obterTotalQuebrados() {
    ========================================================= */
 
 function showPage(pageId, button) {
+
+  // Esconde TODAS as páginas
   document
     .querySelectorAll(".page")
     .forEach(function (page) {
+
       page.classList.remove("active");
+      page.style.display = "none";
+
     });
 
+
+  // Mostra SOMENTE a página clicada
   const pagina =
     document.getElementById(pageId);
 
   if (pagina) {
+
     pagina.classList.add("active");
+    pagina.style.display = "block";
+
   }
 
+
+  // Atualiza o botão ativo do menu
   document
     .querySelectorAll(".nav-btn")
     .forEach(function (btn) {
+
       btn.classList.remove("active");
+
     });
 
+
   if (button) {
+
     button.classList.add("active");
+
   }
 
+
+  // Fecha o menu lateral no celular
   const sidebar =
     document.getElementById("sidebar");
 
   if (sidebar) {
+
     sidebar.classList.remove("open");
+
   }
 
+
+  // Dashboard
   if (pageId === "dashboard") {
+
     atualizarDashboard();
+
   }
 
+
+  // Páginas de equipamentos
   if (tipos.includes(pageId)) {
+
     paginas[pageId] =
       paginas[pageId] || 1;
 
     renderPage(pageId);
+
   }
 
+
+  // Quebrados
   if (pageId === "quebrados") {
+
     paginas.quebrados = 1;
+
     preencherAnos();
+
     renderBroken();
+
   }
 
+
+  // Volta para o topo
   window.scrollTo({
+
     top: 0,
     behavior: "smooth"
-  });
-}
 
+  });
+
+}
 
 /* =========================================================
    MENU
@@ -3763,6 +3802,12 @@ document.addEventListener(
       preencherAnos();
 
       atualizarDashboard();
+
+       // Garante que somente a página inicial fique visível
+showPage(
+  "dashboard",
+  document.querySelector(".nav-btn")
+);
 
     } catch (error) {
 
