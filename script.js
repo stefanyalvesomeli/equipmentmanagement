@@ -85,71 +85,53 @@ let paginas = {
 };
 
 /* =========================================================
-   CARDS DE HH POR MODELO
+   ATUALIZAR CARDS DE HH POR MODELO
    ========================================================= */
 
 function renderCardsModelosHH() {
-  const container =
-    document.getElementById("cards-modelos-hh");
-
-  if (!container) {
-    return;
-  }
-
-  const modelos = [
-    "Honeywell",
-    "ZEBRA TC22",
-    "ZEBRA TC210K"
-  ];
-
-  const contagens = {};
-
-  modelos.forEach(function (modelo) {
-    contagens[modelo] = 0;
-  });
 
   const lista =
     Array.isArray(dados.hh)
       ? dados.hh
       : [];
 
+  let tc22 = 0;
+  let tc210k = 0;
+  let honeywell = 0;
+
   lista.forEach(function (item) {
+
     const nome =
       normalizarTexto(item.nome);
 
-    modelos.forEach(function (modelo) {
-      if (
-        nome === normalizarTexto(modelo)
-      ) {
-        contagens[modelo]++;
-      }
-    });
+    if (nome === "zebra tc22") {
+      tc22++;
+    }
+
+    else if (nome === "zebra tc210k") {
+      tc210k++;
+    }
+
+    else if (nome === "honeywell") {
+      honeywell++;
+    }
+
   });
 
-  container.innerHTML =
-    modelos.map(function (modelo) {
+  atualizarNumero(
+    "hh-tc22",
+    tc22
+  );
 
-      return `
-        <div class="stat-card green">
+  atualizarNumero(
+    "hh-tc210k",
+    tc210k
+  );
 
-          <span class="stat-icon">
-            📱
-          </span>
-
-          <div>
-            <span class="stat-label">
-              ${escapeHTML(modelo)}
-            </span>
-
-            <strong>
-              ${contagens[modelo]}
-            </strong>
-          </div>
-
-        </div>
-      `;
-
-    }).join("");
+  atualizarNumero(
+    "hh-honeywell",
+    honeywell
+  );
 }
 
 
@@ -674,6 +656,9 @@ function atualizarDashboard() {
   atualizarDashboardQuebrados();
 }
 
+ // Atualiza os contadores dos modelos de HH
+  renderCardsModelosHH();
+}
 
 /* =========================================================
    ATUALIZAR NÚMERO
@@ -898,8 +883,6 @@ function showPage(pageId, button) {
 
   renderPage(pageId);
 
-  if (pageId === "hh") {
-    renderCardsModelosHH();
   }
 }
 
