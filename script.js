@@ -96,75 +96,61 @@ function renderCardsModelosHH() {
     return;
   }
 
+  const modelos = [
+    "Honeywell",
+    "ZEBRA TC22",
+    "ZEBRA TC210K"
+  ];
+
+  const contagens = {};
+
+  modelos.forEach(function (modelo) {
+    contagens[modelo] = 0;
+  });
+
   const lista =
     Array.isArray(dados.hh)
       ? dados.hh
       : [];
 
-  const modelos = {};
-
   lista.forEach(function (item) {
-    const modelo =
-      String(item.nome || "").trim() ||
-      "Sem modelo";
+    const nome =
+      normalizarTexto(item.nome);
 
-    if (!modelos[modelo]) {
-      modelos[modelo] = 0;
-    }
-
-    modelos[modelo]++;
+    modelos.forEach(function (modelo) {
+      if (
+        nome === normalizarTexto(modelo)
+      ) {
+        contagens[modelo]++;
+      }
+    });
   });
 
-  const modelosOrdenados =
-    Object.entries(modelos).sort(
-      function (a, b) {
-        return a[0].localeCompare(
-          b[0],
-          "pt-BR",
-          {
-            sensitivity: "base"
-          }
-        );
-      }
-    );
-
-  if (modelosOrdenados.length === 0) {
-    container.innerHTML = `
-      <div class="empty">
-        Nenhum HH cadastrado.
-      </div>
-    `;
-
-    return;
-  }
-
   container.innerHTML =
-    modelosOrdenados
-      .map(function ([modelo, quantidade]) {
+    modelos.map(function (modelo) {
 
-        return `
-          <div class="stat-card green">
+      return `
+        <div class="stat-card green">
 
-            <span class="stat-icon">
-              📱
+          <span class="stat-icon">
+            📱
+          </span>
+
+          <div>
+            <span class="stat-label">
+              ${escapeHTML(modelo)}
             </span>
 
-            <div>
-              <span class="stat-label">
-                ${escapeHTML(modelo)}
-              </span>
-
-              <strong>
-                ${quantidade}
-              </strong>
-            </div>
-
+            <strong>
+              ${contagens[modelo]}
+            </strong>
           </div>
-        `;
-      })
-      .join("");
-}
 
+        </div>
+      `;
+
+    }).join("");
+}
 
 
 /* =========================================================
